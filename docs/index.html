@@ -53,6 +53,11 @@ svg{display:block}
 .lock textarea{width:100%;min-height:90px;border:2px solid #d9dfda;border-radius:14px;padding:12px;font:14px ui-monospace,Menlo,monospace;box-sizing:border-box}
 .lock .main{width:100%;margin-top:10px;background:var(--green);border-color:var(--green);color:#fff;font-size:17px}
 .lock .err{color:#c0392b;font-weight:700;min-height:18px}
+.tile,.stile{position:relative}.lockb{position:absolute;top:8px;right:8px;z-index:2;background:rgba(20,34,26,.78);color:#fff;border-radius:999px;font-size:13px;padding:3px 7px;line-height:1}
+.demo{display:flex;align-items:center;gap:10px;background:#fff7dc;border:2px solid #f0d27a;border-radius:18px;padding:12px 14px;margin:12px 0 2px;color:#5b4610;font-weight:700;font-size:14.5px;line-height:1.35}
+.demo button{margin-left:auto;flex:none;border:0;border-radius:12px;background:#2f6b45;color:#fff;font-weight:800;font-size:14px;padding:10px 12px;font-family:inherit}
+.wa{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:10px;border:0;border-radius:14px;padding:14px;font-size:17px;font-weight:800;background:#25D366;color:#fff;text-decoration:none;font-family:inherit}
+.lback{border:0;background:none;color:#2f6b45;font-weight:800;font-size:15px;padding:6px 0;margin-top:8px;font-family:inherit}
 .seg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0 4px}
 .seg button{border:2px solid #1d2a22;background:#fff;color:#1d2a22;border-radius:16px;padding:13px 6px;font-size:16px;font-weight:800}
 .seg button.on{background:var(--green);border-color:var(--green);color:#fff}
@@ -5383,13 +5388,13 @@ function viewCards(){
   if(S.topic!==null && S.cat) return TOPICS[S.topic].daily ? viewWords() : viewCatalog();
   if(S.topic===null){
     const seg = `<div class="seg"><button class="${S.mode===0?"on":""}" data-mode="0">${UI.modeT[L]}</button><button class="${S.mode===1?"on":""}" data-mode="1">${UI.modeD[L]}</button></div>`;
-    if(S.mode===1) return hero() + seg + `<input class="wsearch" id="wq" placeholder="${esc(UI.wsearch[L])}" value="${esc(S.wq)}" autocomplete="off"><div id="wres"></div>
+    if(S.mode===1) return hero() + demoBar() + seg + `<input class="wsearch" id="wq" placeholder="${esc(UI.wsearch[L])}" value="${esc(S.wq)}" autocomplete="off"><div id="wres"></div>
       <div class="h2">${UI.pick[L]} · ${DAILY_N} ${UI.words[L]}</div><div class="grid" id="dgrid">${TOPICS.map((t,i)=>!t.daily?"":`
-      <button class="tile" style="${tint(i)}" data-topic="${i}">
+      <button class="tile" style="${tint(i)}" data-topic="${i}">${lockB(FREE_T.has(i))}
         <div class="art"><div class="emo">${t.emoji}</div></div><b>${esc(t.title[L])}</b><em>${L<3?esc(t.en||""):""}</em><small>${t.cards.length} ${UI.words[L]}</small>
       </button>`).join("")}</div>`;
-    return hero() + seg + `<div class="h2">${UI.pick[L]}</div><div class="grid">${TOPICS.map((t,i)=>t.daily?"":`
-      <button class="tile" style="animation-delay:${Math.min(i,6)*35}ms;${tint(i)}" data-topic="${i}">
+    return hero() + demoBar() + seg + `<div class="h2">${UI.pick[L]}</div><div class="grid">${TOPICS.map((t,i)=>t.daily?"":`
+      <button class="tile" style="animation-delay:${Math.min(i,6)*35}ms;${tint(i)}" data-topic="${i}">${lockB(FREE_T.has(i))}
         <div class="art">${pic(t)}</div><b>${esc(t.title[L])}</b><em>${L<3?esc(t.en||""):""}</em><small>${t.cards.length} ${UI.cards[L]}</small>
       </button>`).join("")}
       <button class="tile" style="animation-delay:210ms;${tint(TOPICS.length)}" data-act="shop">
@@ -5511,8 +5516,8 @@ function viewShop(){
 
 function viewTalk(){
   if(S.dialog===null)
-    return hero() + `<div class="how talk"><b>${UI.talkHow[L]}</b><ol>${UI.talkSteps.map((x,i)=>`<li>${esc(L<3?x[L]:UI_EN.talkSteps[i])}</li>`).join("")}</ol></div><div class="h2">${UI.tabs[L][1]}</div><div class="grid">${DIALOGS.map((d,i)=>`
-      <button class="tile" style="animation-delay:${Math.min(i,6)*35}ms;${tint(i+3)}" data-dialog="${i}">
+    return hero() + demoBar() + `<div class="how talk"><b>${UI.talkHow[L]}</b><ol>${UI.talkSteps.map((x,i)=>`<li>${esc(L<3?x[L]:UI_EN.talkSteps[i])}</li>`).join("")}</ol></div><div class="h2">${UI.tabs[L][1]}</div><div class="grid">${DIALOGS.map((d,i)=>`
+      <button class="tile" style="animation-delay:${Math.min(i,6)*35}ms;${tint(i+3)}" data-dialog="${i}">${lockB(i<2)}
         <div class="art">${d.photo?pic(d):art(d.icon||"chat")}</div><b>${esc(d.title[L])}</b><em>${L<3?esc(d.en||""):""}</em><small>${d.lines.length} ${UI.lines[L]}</small>
       </button>`).join("")}</div>`;
   const d=DIALOGS[S.dialog];
@@ -5534,12 +5539,12 @@ function startRun(cat){
 const sitGroup = k => SIT_GROUPS.find(g=>g[0]===k);
 function viewSit(){
   if(!S.run){
-    return `<img loading="lazy" decoding="async" class="shopimg" src="${SITUATIONS_PHOTO}" alt="">
+    return `${demoBar()}<img loading="lazy" decoding="async" class="shopimg" src="${SITUATIONS_PHOTO}" alt="">
       <button class="main" data-act="mix">${UI.mix[L]}</button>
       <div class="h2 grp">${UI.pickSit[L]}<span>${SITUATIONS.length} ${UI.qs[L]}</span></div>
       <div class="sgrid">${SIT_GROUPS.map(g=>{
         const n=SITUATIONS.filter(q=>q[0]===g[0]).length;
-        return `<button class="stile" style="${tint(SIT_GROUPS.indexOf(g))}" data-sitcat="${g[0]}"><b>${esc(g[1+L])}</b><em>${esc(g[4])}</em><small>${n} ${UI.qs[L]}</small></button>`;
+        return `<button class="stile" style="${tint(SIT_GROUPS.indexOf(g))}" data-sitcat="${g[0]}">${lockB(isFreeSit(g[0]))}<b>${esc(g[1+L])}</b><em>${esc(g[4])}</em><small>${n} ${UI.qs[L]}</small></button>`;
       }).join("")}</div>`;
   }
   const R=S.run, N=R.items.length;
@@ -5597,22 +5602,37 @@ function lockView(){
     <div class="lock"><h3>🔒 ${LK.t[i]}</h3><p>${LK.s1[i]}</p><div class="did">${id}</div>
     <div class="lrow"><button data-lk="copy">${LK.cp[i]}</button><button data-lk="share">${LK.sh[i]}</button></div>
     <p>${LK.s2[i]}</p><textarea id="acode" autocomplete="off" autocapitalize="off" spellcheck="false"></textarea>
-    <button class="main" data-lk="ok">${LK.ok[i]}</button><p class="err">${__msg}</p><p style="font-size:13px">${LK.note[i]}</p></div>`;
+    <button class="main" data-lk="ok">${LK.ok[i]}</button><p class="err">${__msg}</p><p style="font-size:13px">${LK.note[i]}</p>
+    ${WA_NUM?`<a class="wa" href="https://wa.me/${WA_NUM}?text=${encodeURIComponent(DM.msg[i]+" "+id)}" target="_blank" rel="noopener">💬 ${DM.wa[i]}</a>`:""}
+    <button class="lback" data-lk="back">${DM.back[i]}</button></div>`;
 }
 function copyText(t,btn){ const done=()=>{ if(btn) btn.textContent=LK.done[L]; };
   if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(done,()=>{});
   else { const a=document.createElement("textarea"); a.value=t; document.body.appendChild(a); a.select(); try{document.execCommand("copy");done();}catch(e){} a.remove(); } }
 document.addEventListener("click",async e=>{ const b=e.target.closest("[data-lk]"); if(!b) return; e.stopPropagation();
   const id=devId(), k=b.dataset.lk;
+  if(k==="open"){ __lockOpen=true; __msg=""; stopSpeech(); lockView(); window.scrollTo(0,0); return; }
+  if(k==="back"){ __lockOpen=false; render(); window.scrollTo(0,0); return; }
   if(k==="copy") copyText(id,b);
   if(k==="share"){ const t=`${UI.title[0]} — ID: ${id}`; if(navigator.share) navigator.share({text:t}).catch(()=>{}); else copyText(t,b); }
   if(k==="ok"){ const c=($("#acode").value||"").trim();
-    if(c && await checkCode(c)){ try{ localStorage.setItem("act",c); }catch(e){} try{ document.cookie="act="+c+";max-age=315360000;path=/;SameSite=Lax"; }catch(e){} __ok=true; $("#nav").style.display=""; render(); window.scrollTo(0,0); try{ window.goatcounter&&goatcounter.count&&goatcounter.count({path:"activated",title:"Активация",event:true}); }catch(e){} }
+    if(c && await checkCode(c)){ try{ localStorage.setItem("act",c); }catch(e){} try{ document.cookie="act="+c+";max-age=315360000;path=/;SameSite=Lax"; }catch(e){} __ok=true; __lockOpen=false; $("#nav").style.display=""; render(); window.scrollTo(0,0); try{ window.goatcounter&&goatcounter.count&&goatcounter.count({path:"activated",title:"Активация",event:true}); }catch(e){} }
     else { __msg=LK.bad[L]; lockView(); $("#acode").value=c; } }
 },true);
+const WA_NUM = "";  // WhatsApp номери, мисалы "13125550123"
+const FREE_T = new Set([...TOPICS.map((t,i)=>[t,i]).filter(x=>!x[0].daily).slice(0,2).map(x=>x[1]), ...TOPICS.map((t,i)=>[t,i]).filter(x=>x[0].daily).slice(0,2).map(x=>x[1])]);
+const isFreeSit = g => SIT_GROUPS.findIndex(x=>x[0]===g) < 2;
+const lockB = ok => (!__ok && !ok) ? `<span class="lockb">🔒</span>` : "";
+const DM = {t:["🎁 Сынап көрүү: ар бөлүмдө 2 тема бекер","🎁 Сынақ: әр бөлімде 2 тақырып тегін","🎁 Пробный режим: по 2 темы бесплатно","🎁 Free trial: 2 topics in each section"],
+  b:["Толук ачуу","Толық ашу","Открыть всё","Unlock all"], back:["← Артка","← Артқа","← Назад","← Back"],
+  wa:["WhatsApp аркылуу сатып алуу","WhatsApp арқылы сатып алу","Купить через WhatsApp","Buy via WhatsApp"],
+  msg:["Салам! «Айдоочунун англисчеси» колдонмосун сатып алгым келет. Менин ID:","Сәлем! «Айдоочунун англисчеси» қосымшасын сатып алғым келеді. Менің ID:","Здравствуйте! Хочу купить приложение «Айдоочунун англисчеси». Мой ID:","Hi! I want to buy the Trucker English app. My ID:"]};
+const demoBar = () => __ok ? "" : `<div class="demo"><span>${DM.t[L]}</span><button data-lk="open">${DM.b[L]}</button></div>`;
+let __lockOpen=false;
 function stopSpeech(){ try{ const s=window.speechSynthesis; if(s && (s.speaking||s.pending)) s.cancel(); }catch(e){} }
 function render(anim){
-  if(!__ok){ lockView(); return; }
+  if(!__ok && __lockOpen){ lockView(); return; }
+  $("#nav").style.display="";
   document.documentElement.lang = ["ky","kk","ru","en"][L];
   document.title = UI.title[L];
   $("#nav").innerHTML = ["cards","chat","quiz"].map((ic,i)=>
@@ -5654,6 +5674,7 @@ document.addEventListener("click",e=>{
   const el=e.target.closest("[data-mode],[data-word],[data-sitcat],[data-grp],[data-lang],[data-tab],[data-topic],[data-dialog],[data-say],[data-opt],[data-act]");
   if(!el) return;
   const d=el.dataset;
+  if(!__ok && ((d.topic!==undefined && !FREE_T.has(+d.topic)) || (d.word!==undefined && !FREE_T.has(+d.wt)) || (d.dialog!==undefined && +d.dialog>1) || (d.sitcat!==undefined && !isFreeSit(d.sitcat)) || d.act==="mix")){ __lockOpen=true; __msg=""; stopSpeech(); lockView(); window.scrollTo(0,0); return; }
   if(d.grp!==undefined){ S.grp=d.grp||null; render(); const t=document.querySelector('.tip'); if(t&&S.grp) t.scrollIntoView({behavior:'smooth',block:'start'}); return; }
   if(d.mode!==undefined){ S.mode=+d.mode; return render(); }
   if(d.word!==undefined){ S.topic=+d.wt; S.i=+d.word; S.cat=false; S.open=false; stopSpeech(); render(); window.scrollTo(0,0); return; }
