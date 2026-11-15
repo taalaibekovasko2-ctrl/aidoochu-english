@@ -5388,10 +5388,10 @@ function viewCards(){
         <div class="art"><div class="emo">${t.emoji}</div></div><b>${esc(t.title[L])}</b><em>${L<3?esc(t.en||""):""}</em><small>${t.cards.length} ${UI.words[L]}</small>
       </button>`).join("")}</div>`;
     return hero() + seg + `<div class="h2">${UI.pick[L]}</div><div class="grid">${TOPICS.map((t,i)=>t.daily?"":`
-      <button class="tile" style="animation-delay:${i*50}ms;${tint(i)}" data-topic="${i}">
+      <button class="tile" style="animation-delay:${Math.min(i,6)*35}ms;${tint(i)}" data-topic="${i}">
         <div class="art">${pic(t)}</div><b>${esc(t.title[L])}</b><em>${L<3?esc(t.en||""):""}</em><small>${t.cards.length} ${UI.cards[L]}</small>
       </button>`).join("")}
-      <button class="tile" style="animation-delay:${TOPICS.length*50}ms;${tint(TOPICS.length)}" data-act="shop">
+      <button class="tile" style="animation-delay:210ms;${tint(TOPICS.length)}" data-act="shop">
         <div class="art">${pic(SHOP)}</div><b>${UI.shop[L]}</b><em>${L<3?esc(SHOP.en):""}</em><small>${UI.shopSub[L]}</small>
       </button></div>`;
   }
@@ -5492,7 +5492,7 @@ function viewShop(){
       <div class="acts"><a class="chip" href="${mapUrl([m.name,m.address,m.city].filter(Boolean).join(", "))}" target="_blank" rel="noopener">${icon("pin",16)}${UI.map[L]}</a>
       ${m.phone?`<a class="chip" href="tel:${esc(m.phone)}">${icon("phone",16)}${esc(m.phone)}</a>`:""}</div></div>`).join("")}</div>` : "";
   return bar(UI.shop[L], SHOP.en) + `
-    ${SHOP.photo?`<img class="shopimg" src="${SHOP.photo}" alt="">`:""}
+    ${SHOP.photo?`<img loading="lazy" decoding="async" class="shopimg" src="${SHOP.photo}" alt="">`:""}
     <div class="zipbox">
       <b>${UI.zipH[L]}</b>
       <input id="zip" type="text" inputmode="text" autocomplete="postal-code" placeholder="${esc(UI.zip[L])}" value="${esc(S.zip)}">
@@ -5511,14 +5511,14 @@ function viewShop(){
 function viewTalk(){
   if(S.dialog===null)
     return hero() + `<div class="how talk"><b>${UI.talkHow[L]}</b><ol>${UI.talkSteps.map((x,i)=>`<li>${esc(L<3?x[L]:UI_EN.talkSteps[i])}</li>`).join("")}</ol></div><div class="h2">${UI.tabs[L][1]}</div><div class="grid">${DIALOGS.map((d,i)=>`
-      <button class="tile" style="animation-delay:${i*50}ms;${tint(i+3)}" data-dialog="${i}">
+      <button class="tile" style="animation-delay:${Math.min(i,6)*35}ms;${tint(i+3)}" data-dialog="${i}">
         <div class="art">${d.photo?pic(d):art(d.icon||"chat")}</div><b>${esc(d.title[L])}</b><em>${L<3?esc(d.en||""):""}</em><small>${d.lines.length} ${UI.lines[L]}</small>
       </button>`).join("")}</div>`;
   const d=DIALOGS[S.dialog];
   return bar(d.title[L], "") + `<div class="tip">${icon("sound",16)}${UI.line[L].replace("🔊 ","")}</div>
     <div class="chat">${d.lines.map((l,i)=>{
       const who=UI.who[l[0]][L];
-      return `<div class="msg ${l[0]==="me"?"me":""}" style="animation-delay:${i*45}ms" data-say="${esc(l[1])}" data-key="l${i}">
+      return `<div class="msg ${l[0]==="me"?"me":""}" style="animation-delay:${Math.min(i,6)*35}ms" data-say="${esc(l[1])}" data-key="l${i}">
         <div class="ava">${esc(who[0])}</div>
         <div class="bub"><div class="who">${esc(who)}</div><div class="e">${esc(l[1])}</div><div class="k">${esc(tr(l,2))}</div></div>
       </div>`;}).join("")}</div>`;
@@ -5533,7 +5533,7 @@ function startRun(cat){
 const sitGroup = k => SIT_GROUPS.find(g=>g[0]===k);
 function viewSit(){
   if(!S.run){
-    return `<img class="shopimg" src="${SITUATIONS_PHOTO}" alt="">
+    return `<img loading="lazy" decoding="async" class="shopimg" src="${SITUATIONS_PHOTO}" alt="">
       <button class="main" data-act="mix">${UI.mix[L]}</button>
       <div class="h2 grp">${UI.pickSit[L]}<span>${SITUATIONS.length} ${UI.qs[L]}</span></div>
       <div class="sgrid">${SIT_GROUPS.map(g=>{
@@ -5564,7 +5564,7 @@ function viewSit(){
     <div class="tip">${UI.answer[L]}</div>
     ${it.order.map((oi,k)=>{
       const c = R.pick===null ? "" : oi===6 ? "ok" : oi===R.pick ? "no" : "dim";
-      return `<button class="opt ${c}" style="animation-delay:${k*60}ms" data-opt="${oi}"><span class="l">${"ABC"[k]}</span>${esc(q[oi])}</button>`;
+      return `<button class="opt ${c}" style="animation-delay:${k*40}ms" data-opt="${oi}"><span class="l">${"ABC"[k]}</span>${esc(q[oi])}</button>`;
     }).join("")}
     ${R.pick===null ? "" : `<button class="main" data-act="nextq">${UI.next[L]}</button>`}`;
 }
