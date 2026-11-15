@@ -271,6 +271,7 @@ svg{display:block}
 .tile small,.stile small{color:rgba(255,255,255,.72)}
 </style>
 <link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#2F6B45">
+<script data-goatcounter="https://askat.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </head>
 <body>
 <div class="wrap"><main id="app"></main></div>
@@ -5606,7 +5607,7 @@ document.addEventListener("click",async e=>{ const b=e.target.closest("[data-lk]
   if(k==="copy") copyText(id,b);
   if(k==="share"){ const t=`${UI.title[0]} — ID: ${id}`; if(navigator.share) navigator.share({text:t}).catch(()=>{}); else copyText(t,b); }
   if(k==="ok"){ const c=($("#acode").value||"").trim();
-    if(c && await checkCode(c)){ try{ localStorage.setItem("act",c); }catch(e){} try{ document.cookie="act="+c+";max-age=315360000;path=/;SameSite=Lax"; }catch(e){} __ok=true; $("#nav").style.display=""; render(); window.scrollTo(0,0); }
+    if(c && await checkCode(c)){ try{ localStorage.setItem("act",c); }catch(e){} try{ document.cookie="act="+c+";max-age=315360000;path=/;SameSite=Lax"; }catch(e){} __ok=true; $("#nav").style.display=""; render(); window.scrollTo(0,0); try{ window.goatcounter&&goatcounter.count&&goatcounter.count({path:"activated",title:"Активация",event:true}); }catch(e){} }
     else { __msg=LK.bad[L]; lockView(); $("#acode").value=c; } }
 },true);
 function stopSpeech(){ try{ const s=window.speechSynthesis; if(s && (s.speaking||s.pending)) s.cancel(); }catch(e){} }
