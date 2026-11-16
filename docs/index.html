@@ -366,6 +366,7 @@ html,body{background:#f7f7f5;color:#111}
 .lgr{border-color:#E2E2DE}.lgr i{color:#c25e00}.lgr.me{background:#FFF1DC}
 .dvs,.dlink{background:#EFEFEC;color:#111}
 .gx{color:#111}
+.hook{background:#fff1dc;border:2px solid var(--or);border-radius:18px;padding:14px 16px;margin:14px 0 0;font-weight:800;font-size:17px;line-height:1.4;color:#111}
 .glisten{background:var(--or)!important;color:#000!important;box-shadow:0 8px 0 #a85d00!important}
 .gnode{background:#E6E6E2;box-shadow:0 7px 0 #C9C9C4}.gnode .gn{background:#fff;color:#111;box-shadow:0 1px 4px rgba(0,0,0,.2)}
 .gnode.done{background:var(--or);box-shadow:0 7px 0 #a85d00}.gnode.cur{background:#ffb54d;box-shadow:0 7px 0 #c47500}
@@ -5721,14 +5722,18 @@ function devId(){ if(__did) return __did; let id=null; try{ id=localStorage.getI
 const b64u=s=>{ s=s.replace(/[^A-Za-z0-9_\-]/g,"").replace(/-/g,"+").replace(/_/g,"/"); while(s.length%4) s+="="; return Uint8Array.from(atob(s),c=>c.charCodeAt(0)); };
 async function checkCode(code){ try{ const k=await crypto.subtle.importKey("jwk",PUB,{name:"ECDSA",namedCurve:"P-256"},false,["verify"]);
   return await crypto.subtle.verify({name:"ECDSA",hash:"SHA-256"},k,b64u(code),new TextEncoder().encode("AE1:"+devId())); }catch(e){ return false; } }
-let __ok=false, __msg="";
+let __ok=false, __msg="", __hook=false;
+const HOOK=["🔥 Азаматсыз! 3 уровенди өттүңүз. Калган 55 уровень, ALGA лигасы, дуэль жана 5 мини-оюн толук версияда. Улантуу үчүн толук ачыңыз 👇",
+ "🔥 Жарайсыз! 3 деңгейден өттіңіз. Қалған 55 деңгей, ALGA лигасы, дуэль және 5 мини-ойын толық нұсқада. Жалғастыру үшін толық ашыңыз 👇",
+ "🔥 Отлично! Вы прошли 3 уровня. Ещё 55 уровней, лига ALGA, дуэли и 5 мини-игр — в полной версии. Откройте, чтобы продолжить 👇",
+ "🔥 Great job! You passed 3 levels. 55 more levels, ALGA league, duels and 5 mini games are in the full version. Unlock to continue 👇"];
 function lockView(){
   $("#nav").style.display="none";
   const i=L, id=devId();
   $("#app").innerHTML=`<section class="hero"><div class="top"><div class="logo">${icon("truck",22)}</div>
     <div class="langs">${LANGS.map((x,k)=>`<button class="${x.toLowerCase()} ${L===k?"on":""}" data-lang="${k}">${x}</button>`).join("")}</div></div>
     <h1>${UI.slogan[L]}</h1><p>${UI.sub[L]}</p></section>
-    <div class="lock"><h3>🔒 ${LK.t[i]}</h3><p>${LK.s1[i]}</p><div class="did">${id}</div>
+    ${__hook?`<div class="hook">${HOOK[i]}</div>`:""}<div class="lock"><h3>🔒 ${LK.t[i]}</h3><p>${LK.s1[i]}</p><div class="did">${id}</div>
     <div class="lrow"><button data-lk="copy">${LK.cp[i]}</button><button data-lk="share">${LK.sh[i]}</button></div>
     <p>${LK.s2[i]}</p><textarea id="acode" autocomplete="off" autocapitalize="off" spellcheck="false"></textarea>
     <button class="main" data-lk="ok">${LK.ok[i]}</button><p class="err">${__msg}</p><p style="font-size:13px">${LK.note[i]}</p>
@@ -5742,7 +5747,7 @@ function copyText(t,btn){ const done=()=>{ if(btn) btn.textContent=LK.done[L]; }
 document.addEventListener("click",async e=>{ const b=e.target.closest("[data-lk]"); if(!b) return; e.stopPropagation();
   const id=devId(), k=b.dataset.lk;
   if(k==="open"){ __lockOpen=true; __msg=""; stopSpeech(); lockView(); window.scrollTo(0,0); return; }
-  if(k==="back"){ __lockOpen=false; render(); window.scrollTo(0,0); return; }
+  if(k==="back"){ __lockOpen=false; __hook=false; render(); window.scrollTo(0,0); return; }
   if(k==="copy") copyText(id,b);
   if(k==="share"){ const t=`${UI.title[0]} — ID: ${id}`; if(navigator.share) navigator.share({text:t}).catch(()=>{}); else copyText(t,b); }
   if(k==="ok"){ const c=($("#acode").value||"").trim();
@@ -5921,7 +5926,7 @@ function viewGame(){
     let cur=LEVELS.findIndex((_,i)=>!(GP.done[i]>0)); if(cur<0) cur=LEVELS.length-1;
     let lastU=null;
     const nodes=LEVELS.map((lv,i)=>{ const boss=lv.u==="X";
-      const st=GP.done[i]||0, open=gUnlocked(i), locked=!open||!__ok, isCur=i===cur&&open;
+      const st=GP.done[i]||0, open=gUnlocked(i), locked=!open||(!__ok&&i>2), isCur=i===cur&&open;
       const off=[0,60,90,60,0,-60,-90,-60][i%8];
       const head = lv.u!==lastU ? "" : ""; lastU=lv.u;
       return `<div class="gnode-w" style="transform:translateX(${off}px)">
@@ -5972,11 +5977,11 @@ document.addEventListener("click",e=>{
   const b=e.target.closest("[data-gl],[data-ga],[data-gact]"); if(!b) return; e.stopPropagation();
   const d=b.dataset;
   if(d.gl!==undefined){ const i=+d.gl;
-    if(!__ok){ __lockOpen=true; __msg=""; lockView(); window.scrollTo(0,0); return; }
+    if(!__ok && i>2){ __hook=GP.done[2]>0; __lockOpen=true; __msg=""; lockView(); window.scrollTo(0,0); return; }
     if(!gUnlocked(i)){ try{ b.animate([{transform:"translateX(-8px)"},{transform:"translateX(8px)"},{transform:"translateX(0)"}],{duration:300}); }catch(e){} return; }
     gStart(i); render(); window.scrollTo(0,0); gTimer(); if(S.g.qs[0].type==="listen") setTimeout(()=>speak(S.g.qs[0].c[0],"g"),300); return; }
   const og=d.gact;
-  if(!__ok && ["league","duels","dnew","djoin","next","retry"].includes(og)){ clearInterval(__gt); S.g=null; __lockOpen=true; __msg=""; lockView(); window.scrollTo(0,0); return; }
+  if(!__ok && ["league","duels","dnew","djoin"].includes(og)){ clearInterval(__gt); S.g=null; __lockOpen=true; __msg=""; lockView(); window.scrollTo(0,0); return; }
   if(og==="league"||og==="duels"||og==="reload"){ clearInterval(__gt); S.g=null; if(og!=="reload") S.gv=og; loadOnline(); render(); window.scrollTo(0,0); return; }
   if(og==="gback"){ S.gv=null; S.gdata=null; render(); window.scrollTo(0,0); return; }
   if(og==="savename"){ const v=((document.getElementById("gname")||{}).value||"").trim().replace(/\s+/g," ").slice(0,20); if(!v) return;
@@ -5994,7 +5999,7 @@ document.addEventListener("click",e=>{
   if(d.gact==="say"){ speak(G.qs[G.pos].c[0],"g"); return; }
   if(d.gact==="cont"){ if(G.hearts<=0){ gFinish(); } else if(G.pos+1>=G.qs.length){ gFinish(); } else { G.pos++; G.pick=null; G.timeout=false; }
     render(); window.scrollTo(0,0); gTimer(); if(!S.g.end && S.g.qs[S.g.pos].type==="listen") setTimeout(()=>speak(S.g.qs[S.g.pos].c[0],"g"),250); return; }
-  if(d.gact==="next"){ const i=G.i+1; if(!(GP.done[G.i]>0)) return; if(!__ok && i>1){ S.g=null; __lockOpen=true; lockView(); return; } gStart(i); render(); window.scrollTo(0,0); gTimer(); return; }
+  if(d.gact==="next"){ const i=G.i+1; if(!(GP.done[G.i]>0)) return; if(!__ok && i>2){ S.g=null; __hook=true; __lockOpen=true; __msg=""; lockView(); window.scrollTo(0,0); return; } gStart(i); render(); window.scrollTo(0,0); gTimer(); return; }
   if(d.gact==="retry"){ gStart(G.i); render(); gTimer(); return; }
   if(d.gact==="map"){ clearInterval(__gt); const wasD=G.duel; S.g=null; if(wasD){ S.gv="duels"; loadOnline(); } render(); window.scrollTo(0,0); return; }
 },true);
