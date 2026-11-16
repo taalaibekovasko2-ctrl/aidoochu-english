@@ -5723,17 +5723,17 @@ const b64u=s=>{ s=s.replace(/[^A-Za-z0-9_\-]/g,"").replace(/-/g,"+").replace(/_/
 async function checkCode(code){ try{ const k=await crypto.subtle.importKey("jwk",PUB,{name:"ECDSA",namedCurve:"P-256"},false,["verify"]);
   return await crypto.subtle.verify({name:"ECDSA",hash:"SHA-256"},k,b64u(code),new TextEncoder().encode("AE1:"+devId())); }catch(e){ return false; } }
 let __ok=false, __msg="", __hook=false;
-const HOOK=["🔥 Азаматсыз! 3 уровенди өттүңүз. Калган 55 уровень, ALGA лигасы, дуэль жана 5 мини-оюн толук версияда. Улантуу үчүн толук ачыңыз 👇",
- "🔥 Жарайсыз! 3 деңгейден өттіңіз. Қалған 55 деңгей, ALGA лигасы, дуэль және 5 мини-ойын толық нұсқада. Жалғастыру үшін толық ашыңыз 👇",
- "🔥 Отлично! Вы прошли 3 уровня. Ещё 55 уровней, лига ALGA, дуэли и 5 мини-игр — в полной версии. Откройте, чтобы продолжить 👇",
- "🔥 Great job! You passed 3 levels. 55 more levels, ALGA league, duels and 5 mini games are in the full version. Unlock to continue 👇"];
+const HOOK=["🔥 Азаматсыз! 3 уровенди өттүңүз. Калган {n} уровень, ALGA лигасы, дуэль жана 5 мини-оюн толук версияда. Улантуу үчүн толук ачыңыз 👇",
+ "🔥 Жарайсыз! 3 деңгейден өттіңіз. Қалған {n} деңгей, ALGA лигасы, дуэль және 5 мини-ойын толық нұсқада. Жалғастыру үшін толық ашыңыз 👇",
+ "🔥 Отлично! Вы прошли 3 уровня. Ещё {n} уровней, лига ALGA, дуэли и 5 мини-игр — в полной версии. Откройте, чтобы продолжить 👇",
+ "🔥 Great job! You passed 3 levels. {n} more levels, ALGA league, duels and 5 mini games are in the full version. Unlock to continue 👇"];
 function lockView(){
   $("#nav").style.display="none";
   const i=L, id=devId();
   $("#app").innerHTML=`<section class="hero"><div class="top"><div class="logo">${icon("truck",22)}</div>
     <div class="langs">${LANGS.map((x,k)=>`<button class="${x.toLowerCase()} ${L===k?"on":""}" data-lang="${k}">${x}</button>`).join("")}</div></div>
     <h1>${UI.slogan[L]}</h1><p>${UI.sub[L]}</p></section>
-    ${__hook?`<div class="hook">${HOOK[i]}</div>`:""}<div class="lock"><h3>🔒 ${LK.t[i]}</h3><p>${LK.s1[i]}</p><div class="did">${id}</div>
+    ${__hook?`<div class="hook">${HOOK[i].replace("{n}",NL-3)}</div>`:""}<div class="lock"><h3>🔒 ${LK.t[i]}</h3><p>${LK.s1[i]}</p><div class="did">${id}</div>
     <div class="lrow"><button data-lk="copy">${LK.cp[i]}</button><button data-lk="share">${LK.sh[i]}</button></div>
     <p>${LK.s2[i]}</p><textarea id="acode" autocomplete="off" autocapitalize="off" spellcheck="false"></textarea>
     <button class="main" data-lk="ok">${LK.ok[i]}</button><p class="err">${__msg}</p><p style="font-size:13px">${LK.note[i]}</p>
@@ -5819,8 +5819,8 @@ const POOLS=(()=>{
 })();
 const LEVELS=(()=>{
   const chunk=(u,n,size)=>{const pool=POOLS[u],out=[];for(let i=0;i<n;i++){const it=pool.slice(i*size,i*size+size);if(it.length>=8)out.push({u,items:it});}return out;};
-  const src={W:chunk("W",10,10),P:chunk("P",10,10),D:chunk("D",12,12),S:chunk("S",9,10),A:chunk("A",7,9)};
-  const order=["W","P","D","S","A"]; const L=[]; let k=0, normal=0;
+  const src={W:chunk("W",10,10),P:chunk("P",14,10),D:chunk("D",52,12),S:chunk("S",10,10),A:chunk("A",7,9)};
+  const order=["W","P","D","S","A","D","D"]; const L=[]; let k=0, normal=0;
   const boss=()=>{ const seen=[].concat(...L.filter(x=>x.u!=="X").map(x=>x.items)); L.push({u:"X",items:shuf(seen.slice(-70)).slice(0,40)}); };
   while(order.some(u=>src[u].length)){
     const u=order[k++%order.length]; if(!src[u].length) continue;
