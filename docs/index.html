@@ -5921,7 +5921,7 @@ function viewGame(){
     let cur=LEVELS.findIndex((_,i)=>!(GP.done[i]>0)); if(cur<0) cur=LEVELS.length-1;
     let lastU=null;
     const nodes=LEVELS.map((lv,i)=>{ const boss=lv.u==="X";
-      const st=GP.done[i]||0, open=gUnlocked(i), locked=!open||(!__ok&&i>1), isCur=i===cur&&open;
+      const st=GP.done[i]||0, open=gUnlocked(i), locked=!open||!__ok, isCur=i===cur&&open;
       const off=[0,60,90,60,0,-60,-90,-60][i%8];
       const head = lv.u!==lastU ? "" : ""; lastU=lv.u;
       return `<div class="gnode-w" style="transform:translateX(${off}px)">
@@ -5931,9 +5931,9 @@ function viewGame(){
     }).join("");
     return hero() + demoBar() + `<div class="gtop"><div><b>🎮 ${GM.title[L]}</b><small>${GM.sub[L]}</small></div>
       <div class="gstats"><span>⭐ ${GP.xp} ${GM.xp[L]}</span><span>🔥 ${GP.streak} ${GM.days[L]}</span><span>🏁 ${doneN}/${LEVELS.length}</span></div></div>
-      <div class="gmodes"><button data-gact="league">🏆 ${NM.league[L]}</button><button data-gact="duels">⚔️ ${NM.duel[L]}</button></div>
+      <div class="gmodes"><button data-gact="league">${__ok?"🏆":"🔒"} ${NM.league[L]}</button><button data-gact="duels">${__ok?"⚔️":"🔒"} ${NM.duel[L]}</button></div>
       <div class="h2" style="margin-top:4px">🎲 ${MG.title[L]}</div>
-      <div class="mgrid">${[["sent","🧩"],["pairs","🔗"],["insp","👮"],["speed","⚡"],["spell","🔤"],["badges","🏅"]].map(([k,ic])=>`<button data-mg="${k}"><span>${ic}</span>${MG[k][L]}${k==="speed"&&gst("speedBest")?`<small>${MG.best[L]}: ${gst("speedBest")}</small>`:""}${k==="badges"?`<small>${Object.keys(GP.bg||{}).length}/${BADGES.length}</small>`:""}</button>`).join("")}</div>
+      <div class="mgrid">${[["sent","🧩"],["pairs","🔗"],["insp","👮"],["speed","⚡"],["spell","🔤"],["badges","🏅"]].map(([k,ic])=>`<button data-mg="${k}"><span>${!__ok&&k!=="badges"?"🔒":ic}</span>${MG[k][L]}${k==="speed"&&gst("speedBest")?`<small>${MG.best[L]}: ${gst("speedBest")}</small>`:""}${k==="badges"?`<small>${Object.keys(GP.bg||{}).length}/${BADGES.length}</small>`:""}</button>`).join("")}</div>
       <div class="gpath">${nodes}</div>`;
   }
   if(G.end==="duel"){ const n=G.qs.length, D=G.duel; let body;
@@ -5972,10 +5972,11 @@ document.addEventListener("click",e=>{
   const b=e.target.closest("[data-gl],[data-ga],[data-gact]"); if(!b) return; e.stopPropagation();
   const d=b.dataset;
   if(d.gl!==undefined){ const i=+d.gl;
-    if(!__ok && i>1){ __lockOpen=true; __msg=""; lockView(); window.scrollTo(0,0); return; }
+    if(!__ok){ __lockOpen=true; __msg=""; lockView(); window.scrollTo(0,0); return; }
     if(!gUnlocked(i)){ try{ b.animate([{transform:"translateX(-8px)"},{transform:"translateX(8px)"},{transform:"translateX(0)"}],{duration:300}); }catch(e){} return; }
     gStart(i); render(); window.scrollTo(0,0); gTimer(); if(S.g.qs[0].type==="listen") setTimeout(()=>speak(S.g.qs[0].c[0],"g"),300); return; }
   const og=d.gact;
+  if(!__ok && ["league","duels","dnew","djoin","next","retry"].includes(og)){ clearInterval(__gt); S.g=null; __lockOpen=true; __msg=""; lockView(); window.scrollTo(0,0); return; }
   if(og==="league"||og==="duels"||og==="reload"){ clearInterval(__gt); S.g=null; if(og!=="reload") S.gv=og; loadOnline(); render(); window.scrollTo(0,0); return; }
   if(og==="gback"){ S.gv=null; S.gdata=null; render(); window.scrollTo(0,0); return; }
   if(og==="savename"){ const v=((document.getElementById("gname")||{}).value||"").trim().replace(/\s+/g," ").slice(0,20); if(!v) return;
@@ -6049,9 +6050,9 @@ const MPOOL=(()=>{
   return {SENT,QA,ME,SP,PR};
 })();
 const mtr=x=> L<3 ? x[L] : x[0];
-const MTRY=2;
+const MTRY=0;
 function mStart(k){
-  if(!__ok){ GP.mtry=GP.mtry||{}; if((GP.mtry[k]||0)>=MTRY){ __lockOpen=true; __msg=""; lockView(); window.scrollTo(0,0); return false; } GP.mtry[k]=(GP.mtry[k]||0)+1; gsave(); }
+  if(!__ok && k!=="badges"){ GP.mtry=GP.mtry||{}; if((GP.mtry[k]||0)>=MTRY){ __lockOpen=true; __msg=""; lockView(); window.scrollTo(0,0); return false; } GP.mtry[k]=(GP.mtry[k]||0)+1; gsave(); }
   clearInterval(window.__mt);
   const M={k,tires:3,maxT:3,wrong:0,ok:0,pos:0,end:null,t0:Date.now()};
   if(k==="sent"){ M.items=shuf(MPOOL.SENT).slice(0,8); mSentPrep(M); }
