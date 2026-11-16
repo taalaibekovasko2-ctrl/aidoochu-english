@@ -8,14 +8,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#f4f5f1; --card:#fff; --ink:#14221a; --muted:#87918a; --line:#e6e9e4;
-  --green:#2f6b45; --green-d:#1f4d31; --soft:#eaf3ed; --bad:#c8574a; --bad-soft:#fbeeec;
+  --bg:#000; --card:#1b1b1b; --ink:#fff; --muted:#9a9a9a; --line:#2c2c2c;
+  --green:#ff9000; --green-d:#e07b00; --soft:#2a1c08; --bad:#ff4d3d; --bad-soft:#2a1412;
+  --or:#ff9000;
   --shadow:0 1px 2px rgba(20,34,26,.04),0 12px 32px rgba(20,34,26,.08);
 }
-@media (prefers-color-scheme:dark){
-  :root{--bg:#0d1310;--card:#161e19;--ink:#edf3ee;--muted:#86928a;--line:#232d27;
-    --green:#4f9e6e;--green-d:#2f6b45;--soft:#1b2a21;--bad:#e07a6d;--bad-soft:#2a1c1a;--shadow:0 1px 2px rgba(0,0,0,.35)}
-}
+@media all{ :root{--shadow:0 1px 2px rgba(0,0,0,.5)} }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;background:var(--bg);color:var(--ink)}
 body{font-family:Inter,-apple-system,system-ui,sans-serif;-webkit-font-smoothing:antialiased;letter-spacing:-.01em}
@@ -310,7 +308,7 @@ svg{display:block}
 .nav button.on{background:#fff;color:#111;border-color:var(--ink)}
 .nav button:not(.on){opacity:.55}
 .tab{font-size:15px}
-@media (prefers-color-scheme:dark){
+@media all{
   .circle,.say,.opt,.opt .l,.main,.chip,.spk,.find,.find .ic,.nav,.nav button.on{background:var(--card);color:var(--ink)}
   .nav button{color:var(--ink)}
 }
@@ -320,8 +318,58 @@ svg{display:block}
 .tile b,.stile b{color:#fff}
 .tile em,.stile em{color:#FFE7A3}
 .tile small,.stile small{color:rgba(255,255,255,.72)}
+
+/* ===== Кара-сары тема ===== */
+html,body{background:#000;color:#fff}
+.hero{background:#111!important;border:2px solid #222}
+.hero:after,.hero:before{background:rgba(255,144,0,.09)}
+.hero h1{color:#fff}.hero h1 b,.hero h1 em{color:var(--or)}
+.logo{background:var(--or)!important;color:#000}
+.stats span{background:#262626;color:#fff}
+.tile,.stile{background:#1b1b1b!important;border:2px solid #2c2c2c!important}
+.tile em,.stile em{color:var(--or)!important}
+.tile b,.stile b{color:#fff}
+.nav{background:#111!important;border:2px solid #2c2c2c!important}
+.nav button{color:#fff!important}
+.nav button.on{background:var(--or)!important;color:#000!important;border-color:var(--or)!important;opacity:1}
+.nav button.on svg{stroke:#000}
+.main,.lock .main{background:var(--or)!important;color:#000!important;border-color:var(--or)!important}
+.seg button.on,.tab.on{background:var(--or)!important;border-color:var(--or)!important;color:#000!important}
+.seg button:not(.on){background:#1b1b1b;color:#fff;border-color:#3a3a3a}
+.opt.ok .l{color:#000!important}
+.circle,.say,.opt,.chip,.spk,.find,.find .ic{border-color:#3a3a3a!important}
+.say.on{background:var(--or)!important;color:#000!important}
+.demo{background:#1b1206;border-color:var(--or);color:#ffd9a0}
+.demo button{background:var(--or);color:#000}
+.did{background:#262626;color:var(--or)}
+.lrow button{background:#1b1b1b;color:#fff;border-color:#3a3a3a}
+.lock textarea,#zip,.onl input{background:#111;color:#fff;border-color:#3a3a3a}
+.lback{color:var(--or)}
+.gtop,.onl,.gq{background:#1b1b1b!important}
+.gstats span{background:#262626;color:var(--or)}
+.gsec{background:#1b1b1b;color:#fff;border-color:#3a3a3a}
+.gopt{background:#1b1b1b;color:#fff;border-color:#333}
+.gopt.ok{background:#1f2e12;border-color:#7cc443;color:#c9f59e}
+.gopt.no{background:#2e1412;border-color:#ff4d3d;color:#ffb3aa}
+.gword,.gend h2,.onl h2{color:#fff}
+.gpron{color:var(--or)}.gpr{color:#9a9a9a}
+.gfb.ok{background:#1f2e12;color:#c9f59e}.gfb.no{background:#2e1412;color:#ffb3aa}
+.gfbw{color:#ddd}.gfbw span{color:var(--or)}
+.gfb button,.gfb.no button{background:var(--or);color:#000}
+.gend p{color:var(--or)}
+.gprog{background:#262626}.gprog i{background:var(--or)}
+.gmodes button{background:var(--or)!important;color:#000}
+.gmodes button+button{background:#262626!important;color:var(--or);border:2px solid var(--or)}
+.lgr{border-color:#2c2c2c}.lgr i{color:var(--or)}.lgr.me{background:#2a1c08}
+.dvs,.dlink{background:#262626;color:#fff}
+.gx{color:#fff}
+.gnode{background:#2a2a2a;box-shadow:0 7px 0 #151515}.gnode .gn{background:#000;color:#fff}
+.gnode.done{background:var(--or);box-shadow:0 7px 0 #a85d00}.gnode.cur{background:#ffb54d;box-shadow:0 7px 0 #c47500}
+.gnode.boss{background:#3a2a10;box-shadow:0 7px 0 #1e1608}.gnode.boss.done{background:var(--or);box-shadow:0 7px 0 #a85d00}
+.gtimer{background:#262626}.gtimer i{background:var(--or)}
+.gst small{color:#9a9a9a}
 </style>
-<link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#2F6B45">
+<link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#000000">
 <script data-goatcounter="https://askat.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://taalaibekovasko2-ctrl.github.io/aidoochu-english/">
@@ -5392,7 +5440,7 @@ const ICONS = {
   sound:'<path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/>'
 };
 const icon = (n,s=22,w=1.9) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round">${ICONS[n]||ICONS.truck}</svg>`;
-const TINTS=['#2F6B45'];
+const TINTS=['#1b1b1b'];
 const tint = i => `--tint:${TINTS[i%TINTS.length]}`;
 const art = n => ART[n] || ART.depot;
 const pic = o => o.photo ? `<img src="${o.photo}" alt="" loading="lazy">` : art(o.icon);
