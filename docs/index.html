@@ -387,6 +387,10 @@ html,body{background:#f7f7f5;color:#111}
 .food .ft{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.food .ft b{font-size:19px}.food .ft span{background:#fff1dc;color:#9a3412;font-weight:800;font-size:13px;border-radius:999px;padding:3px 10px}
 .food p{margin:6px 0;font-size:16px;line-height:1.4}.fbtn{display:flex;gap:8px;margin-top:10px}
 .fbtn a{flex:1;text-align:center;text-decoration:none;border-radius:12px;padding:11px;font-weight:800;font-size:16px;background:#111;color:#fff}.fbtn a+a{background:#1f9d55}
+.fadm{display:block;margin:24px auto 8px;border:0;background:none;color:#999;font-size:14px;font-family:inherit}
+.fform{background:#fff;border:2px dashed #ff9000;border-radius:18px;padding:14px;margin:12px 0}.fform h3{margin:0 0 8px}
+.fform input,.fform select{width:100%;box-sizing:border-box;border:2px solid #e2e2de;border-radius:12px;padding:12px;font-size:16px;font-family:inherit;margin:0 0 8px;background:#fff}
+.fbtn a.fdel{flex:0 0 52px;background:#d63a2b}
 .fnote{color:#6b6b6b;font-size:15px;margin:0 0 12px}
 .fund{background:#fff;border-radius:22px;overflow:hidden;box-shadow:var(--shadow);margin:0 0 16px;border:2px solid #e2e2de}
 .fund img{width:100%;height:200px;object-fit:cover;display:block}.fund .fb{padding:16px}
@@ -5835,29 +5839,59 @@ const STATES={AL:"Алабама",AK:"Аляска",AZ:"Аризона",AR:"Ар
 const TR={"а":"a","б":"b","в":"v","г":"g","д":"d","е":"e","ё":"e","ж":"zh","з":"z","и":"i","й":"y","к":"k","л":"l","м":"m","н":"n","ң":"n","о":"o","ө":"o","п":"p","р":"r","с":"s","т":"t","у":"u","ү":"u","ф":"f","х":"h","ц":"ts","ч":"ch","ш":"sh","щ":"sh","ъ":"","ы":"y","ь":"","э":"e","ю":"yu","я":"ya"};
 const fnorm=t=>String(t||"").toLowerCase().split("").map(c=>TR[c]!==undefined?TR[c]:c).join("").replace(/[^a-z0-9]/g,"").replace(/ch/g,"k").replace(/c/g,"k").replace(/q/g,"k").replace(/x/g,"ks").replace(/w/g,"v").replace(/y/g,"i").replace(/(.)\1+/g,"$1");
 const foodHay=f=>[f.name,f.city,f.cityEn,f.state,STATES[f.state],f.food,f.type,f.addr].map(fnorm).join("|");
-function foodFind(q){ const qs=String(q||"").trim().split(/[\s,]+/).filter(Boolean).map(fnorm).filter(Boolean); if(!qs.length) return FOODS.slice();
-  return FOODS.filter(f=>{ const h=foodHay(f); return qs.every(x=>h.includes(x)); }); }
+let FOOD_DB=[], FOOD_ST=0;
+const allFoods=()=>FOODS.concat(FOOD_DB);
+function foodLoad(){ FOOD_ST=1; rpc("food_list",{}).then(r=>{ FOOD_DB=(r||[]).map(x=>({id:x.id,name:x.name,type:x.type,city:x.city,cityEn:x.city_en,state:x.state,addr:x.addr,phone:x.phone,food:x.food,hours:x.hours,note:x.note})); FOOD_ST=2; if(S.food) foodRefresh(); }).catch(()=>{ FOOD_ST=3; if(S.food) foodRefresh(); }); }
+function foodRefresh(){ const r=document.getElementById("fres"); if(r){ r.innerHTML=foodCards(foodFind(S.fq)); } else render(); }
+function foodFind(q){ const qs=String(q||"").trim().split(/[\s,]+/).filter(Boolean).map(fnorm).filter(Boolean); if(!qs.length) return allFoods();
+  return allFoods().filter(f=>{ const h=foodHay(f); return qs.every(x=>h.includes(x)); }); }
 const fesc=t=>esc(t||"");
 function foodCards(list){
-  if(!list.length) return `<div class="fund"><div class="fb" style="text-align:center"><div style="font-size:46px">🍽️</div><h3>${FOODS.length?"Бул шаардан азырынча жер табылган жок":"Азырынча тизме бош"}</h3><p>Жакшы СНГ кафе же дүкөн билсеңиз, бизге жазыңыз — тизмеге кошобуз.</p>
+  if(!list.length&&FOOD_ST===1) return `<p style="text-align:center;font-size:30px">⏳</p>`;
+  if(!list.length) return `<div class="fund"><div class="fb" style="text-align:center"><div style="font-size:46px">🍽️</div><h3>${allFoods().length?"Бул шаардан азырынча жер табылган жок":"Азырынча тизме бош"}</h3><p>Жакшы СНГ кафе же дүкөн билсеңиз, бизге жазыңыз — тизмеге кошобуз.</p>
     <a class="wa" href="https://wa.me/${WA_NUM}?text=${encodeURIComponent("Салам! Тамак-аш тизмесине жер кошуу керек:")}" target="_blank" rel="noopener">💬 WhatsApp · ${WA_NAME}</a></div></div>`;
   const by={}; list.forEach(f=>{ const k=(f.city||"")+", "+(f.state||""); (by[k]=by[k]||[]).push(f); });
   return Object.keys(by).sort().map(k=>`<div class="fcity">📍 ${fesc(k)}${STATES[by[k][0].state]?` · ${STATES[by[k][0].state]}`:""} <span>${by[k].length}</span></div>`+by[k].map(f=>`<div class="food">
     <div class="ft"><b>${fesc(f.name)}</b>${f.type?`<span>${fesc(f.type)}</span>`:""}</div>
     ${f.food?`<p>🍲 ${fesc(f.food)}</p>`:""}${f.addr?`<p>🏠 ${fesc(f.addr)}</p>`:""}${f.hours?`<p>🕒 ${fesc(f.hours)}</p>`:""}${f.note?`<p>ℹ️ ${fesc(f.note)}</p>`:""}
-    <div class="fbtn">${f.addr?`<a href="https://maps.google.com/?q=${encodeURIComponent(f.name+" "+f.addr)}" target="_blank" rel="noopener">🗺️ Карта</a>`:""}${f.phone?`<a href="tel:${fesc(f.phone.replace(/[^0-9+]/g,""))}">📞 Чалуу</a>`:""}</div></div>`).join("")).join(""); }
+    <div class="fbtn">${f.addr?`<a href="https://maps.google.com/?q=${encodeURIComponent(f.name+" "+f.addr)}" target="_blank" rel="noopener">🗺️ Карта</a>`:""}${f.phone?`<a href="tel:${fesc(f.phone.replace(/[^0-9+]/g,""))}">📞 Чалуу</a>`:""}${S.fadm&&f.id?`<a class="fdel" data-fdel="${f.id}">🗑</a>`:""}</div></div>`).join("")).join(""); }
 const foodBar=()=>`<button class="foodbar" data-fo="open"><b>🍲 СНГ тамак-аштар</b><span>Шаарыңызды жазыңыз — жакын кафе, дүкөндөр чыгат →</span></button>`;
-function viewFood(){ const st=[...new Set(FOODS.map(f=>f.state).filter(Boolean))].sort();
+function viewFood(){ if(!FOOD_ST) foodLoad(); const st=[...new Set(allFoods().map(f=>f.state).filter(Boolean))].sort();
   return hero()+`<button class="gsec" data-fo="back" style="margin-top:14px">← Артка</button>
   <div class="h2">🍲 СНГ тамак-аштар</div><p class="fnote">Кыргыз, казак, өзбек, орус ашканалары жана дүкөндөрү. Шаардын же штаттын атын жазыңыз.</p>
   <input class="wsearch" id="fq" placeholder="Мисалы: Чикаго, Нью-Йорк, лагман…" value="${fesc(S.fq||"")}" autocomplete="off">
   ${st.length?`<div class="fst">${st.map(x=>`<button data-fs="${x}">${STATES[x]||x}</button>`).join("")}</div>`:""}
-  <div id="fres">${foodCards(foodFind(S.fq))}</div>`; }
+  ${S.fadm?foodForm():""}<div id="fres">${foodCards(foodFind(S.fq))}</div>
+  <button class="fadm" data-fo="adm">${S.fadm?"🔓 Админден чыгуу":"✏️ Админ"}</button>`; }
+function foodForm(){ const opt=Object.keys(STATES).map(k=>`<option value="${k}">${k} — ${STATES[k]}</option>`).join("");
+  return `<div class="fform"><h3>➕ Жаңы жер кошуу</h3>
+   <input id="ff_name" placeholder="Аты (мисалы: Бишкек кафе) *">
+   <select id="ff_type"><option>кафе</option><option>ресторан</option><option>дүкөн</option><option>бакалея</option><option>нан</option><option>фуд-трак</option></select>
+   <input id="ff_city" placeholder="Шаар (мисалы: Чикаго) *">
+   <select id="ff_state"><option value="">Штат *</option>${opt}</select>
+   <input id="ff_addr" placeholder="Дарек (англисче, картага керек)">
+   <input id="ff_phone" placeholder="Телефон" inputmode="tel">
+   <input id="ff_food" placeholder="Тамактар: лагман, плов, манты">
+   <input id="ff_hours" placeholder="Убактысы: 10:00–22:00">
+   <input id="ff_note" placeholder="Кошумча (halal, парковка бар…)">
+   <button class="main" data-fo="add">Кошуу</button><p class="err" id="ff_err"></p></div>`; }
 document.addEventListener("input",e=>{ if(e.target.id!=="fq") return; S.fq=e.target.value; const r=document.getElementById("fres"); if(r) r.innerHTML=foodCards(foodFind(S.fq)); });
 document.addEventListener("click",e=>{ const s2=e.target.closest("[data-fs]"); if(s2){ e.stopPropagation(); S.fq=STATES[s2.dataset.fs]||s2.dataset.fs; const i=document.getElementById("fq"); if(i) i.value=S.fq; document.getElementById("fres").innerHTML=foodCards(foodFind(S.fq)); return; }
   const b=e.target.closest("[data-fo]"); if(!b) return; e.stopPropagation();
   if(b.dataset.fo==="open"){ S.food=true; S.fund=false; stopSpeech(); render(); window.scrollTo(0,0); try{ window.goatcounter&&goatcounter.count&&goatcounter.count({path:"food-open",title:"Тамак-аш",event:true}); }catch(x){} }
-  if(b.dataset.fo==="back"){ S.food=false; render(); window.scrollTo(0,0); } },true);
+  if(b.dataset.fo==="back"){ S.food=false; render(); window.scrollTo(0,0); }
+  if(b.dataset.fo==="adm"){ if(S.fadm){ S.fadm=null; try{ localStorage.removeItem("fpin"); }catch(x){} render(); return; }
+    const pin=prompt("Админ PIN:"); if(!pin) return;
+    rpc("admin_ok",{p_pin:pin}).then(ok=>{ if(ok===true){ S.fadm=pin; try{ localStorage.setItem("fpin",pin); }catch(x){} render(); window.scrollTo(0,0); } else alert("PIN туура эмес"); }).catch(()=>alert("Интернет же сервер жок")); }
+  if(b.dataset.fo==="add"){ const g=id=>((document.getElementById(id)||{}).value||"").trim(); const er=document.getElementById("ff_err");
+    const p={name:g("ff_name"),type:g("ff_type"),city:g("ff_city"),state:g("ff_state"),addr:g("ff_addr"),phone:g("ff_phone"),food:g("ff_food"),hours:g("ff_hours"),note:g("ff_note")};
+    if(!p.name||!p.city||!p.state){ er.textContent="Аты, шаары жана штаты милдеттүү"; return; }
+    b.disabled=true; er.textContent="⏳";
+    rpc("food_add",{p_pin:S.fadm,p}).then(()=>{ er.textContent=""; ["ff_name","ff_addr","ff_phone","ff_food","ff_hours","ff_note"].forEach(i=>{ const x=document.getElementById(i); if(x) x.value=""; }); b.disabled=false; S.fq=p.city; const q=document.getElementById("fq"); if(q) q.value=p.city; foodLoad(); alert("✅ Кошулду: "+p.name); })
+     .catch(()=>{ b.disabled=false; er.textContent="Кошулган жок. PIN же интернетти текшериңиз."; }); } },true);
+document.addEventListener("click",e=>{ const d=e.target.closest("[data-fdel]"); if(!d) return; e.stopPropagation(); e.preventDefault();
+  if(!confirm("Бул жерди өчүрөсүзбү?")) return; rpc("food_del",{p_pin:S.fadm,p_id:+d.dataset.fdel}).then(()=>foodLoad()).catch(()=>alert("Өчкөн жок")); },true);
+try{ const fp=localStorage.getItem("fpin"); if(fp) S.fadm=fp; }catch(e){}
 // ===== Сборлор (жардам) =====
 // Жаңы сбор кошуу: {title, who, text, img (шилтеме же бош), url: GoFundMe шилтемеси, goal: максат $}
 const FUNDS=[];
@@ -6358,7 +6392,7 @@ document.addEventListener("click",e=>{
 (()=>{ const m=(location.hash||"").match(/d=([A-Za-z0-9]{6})/); if(m){ S.tab=3; S.gv="invite"; S.dc=m[1].toUpperCase(); try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){} loadOnline(); } })();
 (async()=>{ try{ if(document.referrer.indexOf("android-app://com.aidoochu.english")===0) localStorage.setItem("twa","1"); if(localStorage.getItem("twa")==="1"){ __ok=true; render(); return; } const po=localStorage.getItem("promoOk"); if(po&&PROMOS[po]){ __ok=true; render(); return; } }catch(e){}
   let c=null; try{ c=localStorage.getItem("act"); }catch(e){} if(!c){ const m=document.cookie.match(/(?:^|; )act=([A-Za-z0-9_-]+)/); if(m) c=m[1]; } if(c && await checkCode(c)) __ok=true; render(); })();
-const APP_VER="aidoochu-v32";
+const APP_VER="aidoochu-v33";
 function checkUpdate(){ if(location.protocol!=="https:") return; if((S.g&&!S.g.end)||(S.m&&!S.m.end)) return;
   fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(r=>r.ok?r.text():"").then(v=>{ v=(v||"").trim(); if(!v||v===APP_VER) return;
     let tried=""; try{ tried=sessionStorage.getItem("upd")||""; }catch(e){} if(tried===v) return; try{ sessionStorage.setItem("upd",v); }catch(e){}
