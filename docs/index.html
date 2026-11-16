@@ -363,11 +363,34 @@ html,body{background:#000;color:#fff}
 .lgr{border-color:#2c2c2c}.lgr i{color:var(--or)}.lgr.me{background:#2a1c08}
 .dvs,.dlink{background:#262626;color:#fff}
 .gx{color:#fff}
+.glisten{background:var(--or)!important;color:#000!important;box-shadow:0 8px 0 #a85d00!important}
 .gnode{background:#2a2a2a;box-shadow:0 7px 0 #151515}.gnode .gn{background:#000;color:#fff}
 .gnode.done{background:var(--or);box-shadow:0 7px 0 #a85d00}.gnode.cur{background:#ffb54d;box-shadow:0 7px 0 #c47500}
 .gnode.boss{background:#3a2a10;box-shadow:0 7px 0 #1e1608}.gnode.boss.done{background:var(--or);box-shadow:0 7px 0 #a85d00}
 .gtimer{background:#262626}.gtimer i{background:var(--or)}
 .gst small{color:#9a9a9a}
+.mgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin:0 0 18px}
+.mgrid button{background:#1b1b1b;border:2px solid #2c2c2c;border-radius:18px;padding:12px 4px;color:#fff;font-weight:800;font-size:13px;line-height:1.2;font-family:inherit}
+.mgrid button span{display:block;font-size:30px;margin-bottom:4px}.mgrid button small{display:block;color:var(--or);font-size:11.5px;margin-top:3px}
+.bgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:8px}
+.bdg{background:#111;border:2px solid #262626;border-radius:16px;padding:12px;text-align:center;opacity:.45;filter:grayscale(1)}
+.bdg.on{opacity:1;filter:none;border-color:var(--or)}.bdg span{font-size:34px;display:block}.bdg b{display:block;font-size:14px;margin:4px 0 2px}.bdg small{color:#9a9a9a;font-size:12px}
+.bnew{display:inline-block;background:#2a1c08;border:2px solid var(--or);border-radius:999px;padding:8px 14px;margin:4px;font-weight:800;color:#fff}
+.mline{min-height:64px;background:#111;border:2px dashed #333;border-radius:16px;padding:10px;display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px}
+.mchips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.mw{background:#1b1b1b;border:2px solid #3a3a3a;border-bottom-width:4px;border-radius:12px;padding:10px 13px;font-size:17px;font-weight:800;color:#fff;font-family:inherit}
+.mw.ok{background:#2a1c08;border-color:var(--or)}.mw.ph{border-style:dashed;color:#555}.mw.used{visibility:hidden}.mw.bad,.mp.bad,.mtiles .bad{border-color:#ff4d3d;background:#2e1412;animation:shk .3s}
+@keyframes shk{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.mpairs{display:grid;grid-template-columns:1fr 1fr;gap:10px}.mpairs>div{display:grid;gap:9px;align-content:start}
+.mp{background:#1b1b1b;border:2px solid #333;border-bottom-width:4px;border-radius:14px;padding:12px 8px;min-height:64px;color:#fff;font-weight:800;font-size:15px;font-family:inherit}
+.mp small{display:block;color:var(--or);font-size:12px;font-weight:600;margin-top:2px}.mp.sel{border-color:var(--or);background:#2a1c08}.mp.gone{opacity:.15}
+.myn{display:grid;grid-template-columns:1fr 1fr;gap:10px}.myn button{border-radius:18px;padding:22px 6px;font-size:19px;font-weight:900;font-family:inherit;border:0}
+.myn .yes{background:#1f2e12;color:#c9f59e;border:2px solid #7cc443}.myn .nob{background:#2e1412;color:#ffb3aa;border:2px solid #ff4d3d}
+.gq.fok{box-shadow:0 0 0 3px #7cc443}.gq.fno{box-shadow:0 0 0 3px #ff4d3d}
+.mslots{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin:4px 0 16px}.mslots span{width:38px;height:46px;border-bottom:3px solid #555;display:grid;place-items:center;font-size:24px;font-weight:900;color:var(--or)}.mslots span.f{border-color:var(--or)}
+.mtiles{display:flex;flex-wrap:wrap;gap:9px;justify-content:center}.mtiles button{width:52px;height:56px;border-radius:14px;background:#1b1b1b;border:2px solid #3a3a3a;border-bottom-width:4px;color:#fff;font-size:24px;font-weight:900;font-family:inherit}.mtiles button.used{visibility:hidden}
+.mhint{background:none;border:0;color:var(--or);font-weight:700;font-size:14px;text-decoration:underline;font-family:inherit;margin:6px 0}
+.glisten.sm{width:48px;height:48px;font-size:22px;margin:6px auto}
 </style>
 <link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#000000">
 <script data-goatcounter="https://askat.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
@@ -5773,6 +5796,7 @@ const SB_URL="https://ecfuobsggznwierzsgux.supabase.co", SB_KEY="sb_publishable_
 async function rpc(fn,body){ const ctl=new AbortController(); const tm=setTimeout(()=>ctl.abort(),12000);
   try{ const r=await fetch(SB_URL+"/rest/v1/rpc/"+fn,{method:"POST",headers:{apikey:SB_KEY,"Content-Type":"application/json"},body:JSON.stringify(body),signal:ctl.signal});
     if(!r.ok) throw new Error("http "+r.status); const t=await r.text(); return t?JSON.parse(t):null; } finally{ clearTimeout(tm); } }
+const GM_TIRE=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 170" width="170" height="145"><ellipse cx="100" cy="158" rx="80" ry="7" fill="#000" opacity=".15"/><g fill="#cfd6d2" opacity=".9"><circle cx="150" cy="40" r="14"/><circle cx="166" cy="28" r="10"/><circle cx="160" cy="54" r="9"/><circle cx="178" cy="44" r="7"/></g><path d="M28 92 C28 42 60 14 100 14 C140 14 172 42 172 92 C172 128 160 150 150 154 L50 154 C40 150 28 128 28 92Z" fill="#1f2421"/><g stroke="#3a423d" stroke-width="7" stroke-linecap="round"><path d="M52 34 l10 10M80 20 l4 13M120 20 l-4 13M148 34 l-10 10M166 62 l-13 6M34 62 l13 6"/></g><path d="M50 150 C70 156 130 156 150 150" stroke="#111" stroke-width="6" fill="none"/><ellipse cx="100" cy="94" rx="44" ry="40" fill="#8d9792"/><ellipse cx="100" cy="94" rx="34" ry="30" fill="#b9c2bd"/><circle cx="100" cy="94" r="11" fill="#6f7a74"/><g fill="#6f7a74"><circle cx="100" cy="72" r="4"/><circle cx="121" cy="88" r="4"/><circle cx="113" cy="113" r="4"/><circle cx="87" cy="113" r="4"/><circle cx="79" cy="88" r="4"/></g><path d="M136 30 l8 12 -7 4 9 12 -6 3 7 11" stroke="#e8432e" stroke-width="5" fill="none" stroke-linejoin="round" stroke-linecap="round"/></svg>`;
 const GU_IC={P:"🔧",S:"🚦",W:"💬",D:"🍎",A:"🎧",X:"🏆"};
 let RND=Math.random;
 const seeded=s=>()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};
@@ -5872,10 +5896,10 @@ function gTimer(){ clearInterval(__gt); const G=S.g; if(!G||G.end||G.pick!==null
     if(left<=0){ clearInterval(__gt); G.pick=-1; G.timeout=true; G.hearts--; G.wrong++; gBeep(false); render(); } },100); }
 function gStart(i){ const C=gCfg(i); S.g={i,qs:gMakeQ(i),pos:0,pick:null,hearts:C.hearts,maxH:C.hearts,wrong:0,end:null,timeout:false}; }
 function gFinish(){ const G=S.g;
-  if(G.duel){ clearInterval(__gt); G.end="duel"; G.score=G.qs.length-G.wrong; G.ms=Date.now()-G.t0; const D=G.duel; pushXp(5+G.score);
+  if(G.duel){ clearInterval(__gt); G.end="duel"; G.score=G.qs.length-G.wrong; G.ms=Date.now()-G.t0; const D=G.duel; pushXp(5+G.score); ginc("duel");
     try{ window.goatcounter&&goatcounter.count&&goatcounter.count({path:D.join?"duel-join":"duel-new",title:"Дуэль",event:true}); }catch(e){}
     const fail=()=>{ G.derr=1; if(S.g===G) render(); };
-    if(D.join) rpc("duel_join",{p_code:D.join,p_id:GP.pid,p_name:GP.nm,p_score:G.score,p_ms:G.ms}).then(()=>rpc("duel_get",{p_code:D.join})).then(r=>{ G.dres=(r&&r[0])||{}; if(S.g===G) render(); }).catch(fail);
+    if(D.join) rpc("duel_join",{p_code:D.join,p_id:GP.pid,p_name:GP.nm,p_score:G.score,p_ms:G.ms}).then(()=>rpc("duel_get",{p_code:D.join})).then(r=>{ G.dres=(r&&r[0])||{}; const q=G.dres; if(q.b_score===G.score&&q.b_ms===G.ms&&dWin(G.score,G.ms,q.a_score,q.a_ms)>0) ginc("dwin"); badgeCheck(); if(S.g===G) render(); }).catch(fail);
     else rpc("duel_new",{p_id:GP.pid,p_name:GP.nm,p_lvl:G.i,p_seed:D.seed,p_score:G.score,p_ms:G.ms}).then(c=>{ G.dcode=c; if(S.g===G) render(); }).catch(fail);
     return; }
   if(G.hearts<=0){G.end="lose";return;}
@@ -5887,6 +5911,7 @@ function gFinish(){ const G=S.g;
 }
 function viewGame(){
   const G=S.g;
+  if(!G && S.m) return viewMini();
   if(!G && S.gv) return viewOnline();
   if(!G){
     const doneN=Object.keys(GP.done).filter(k=>GP.done[k]>0).length;
@@ -5904,6 +5929,8 @@ function viewGame(){
     return hero() + demoBar() + `<div class="gtop"><div><b>🎮 ${GM.title[L]}</b><small>${GM.sub[L]}</small></div>
       <div class="gstats"><span>⭐ ${GP.xp} ${GM.xp[L]}</span><span>🔥 ${GP.streak} ${GM.days[L]}</span><span>🏁 ${doneN}/${LEVELS.length}</span></div></div>
       <div class="gmodes"><button data-gact="league">🏆 ${NM.league[L]}</button><button data-gact="duels">⚔️ ${NM.duel[L]}</button></div>
+      <div class="h2" style="margin-top:4px">🎲 ${MG.title[L]}</div>
+      <div class="mgrid">${[["sent","🧩"],["pairs","🔗"],["insp","👮"],["speed","⚡"],["spell","🔤"],["badges","🏅"]].map(([k,ic])=>`<button data-mg="${k}"><span>${ic}</span>${MG[k][L]}${k==="speed"&&gst("speedBest")?`<small>${MG.best[L]}: ${gst("speedBest")}</small>`:""}${k==="badges"?`<small>${Object.keys(GP.bg||{}).length}/${BADGES.length}</small>`:""}</button>`).join("")}</div>
       <div class="gpath">${nodes}</div>`;
   }
   if(G.end==="duel"){ const n=G.qs.length, D=G.duel; let body;
@@ -5919,7 +5946,7 @@ function viewGame(){
   }
   if(G.end){
     const win=G.end==="win";
-    return `<div class="gend ${win?"w":"l"}"><div class="gbig">${win?"🏆":`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 170" width="170" height="145"><ellipse cx="100" cy="158" rx="80" ry="7" fill="#000" opacity=".15"/><g fill="#cfd6d2" opacity=".9"><circle cx="150" cy="40" r="14"/><circle cx="166" cy="28" r="10"/><circle cx="160" cy="54" r="9"/><circle cx="178" cy="44" r="7"/></g><path d="M28 92 C28 42 60 14 100 14 C140 14 172 42 172 92 C172 128 160 150 150 154 L50 154 C40 150 28 128 28 92Z" fill="#1f2421"/><g stroke="#3a423d" stroke-width="7" stroke-linecap="round"><path d="M52 34 l10 10M80 20 l4 13M120 20 l-4 13M148 34 l-10 10M166 62 l-13 6M34 62 l13 6"/></g><path d="M50 150 C70 156 130 156 150 150" stroke="#111" stroke-width="6" fill="none"/><ellipse cx="100" cy="94" rx="44" ry="40" fill="#8d9792"/><ellipse cx="100" cy="94" rx="34" ry="30" fill="#b9c2bd"/><circle cx="100" cy="94" r="11" fill="#6f7a74"/><g fill="#6f7a74"><circle cx="100" cy="72" r="4"/><circle cx="121" cy="88" r="4"/><circle cx="113" cy="113" r="4"/><circle cx="87" cy="113" r="4"/><circle cx="79" cy="88" r="4"/></g><path d="M136 30 l8 12 -7 4 9 12 -6 3 7 11" stroke="#e8432e" stroke-width="5" fill="none" stroke-linejoin="round" stroke-linecap="round"/></svg>`}</div>
+    return `<div class="gend ${win?"w":"l"}"><div class="gbig">${win?"🏆":GM_TIRE}</div>
       <h2>${win?GM.win[L]:GM.lose[L]}</h2>${win?`<div class="gstars">${"★".repeat(G.stars)}<span>${"☆".repeat(3-G.stars)}</span></div><p>+${10+G.stars*5} ${GM.xp[L]}</p>`:""}
       ${win&&G.i+1<LEVELS.length?`<button class="main" data-gact="next">${GM.next[L]} →</button>`:""}
       ${!win?`<button class="main" data-gact="retry">${GM.retry[L]}</button>`:""}
@@ -5966,6 +5993,161 @@ document.addEventListener("click",e=>{
   if(d.gact==="next"){ const i=G.i+1; if(!(GP.done[G.i]>0)) return; if(!__ok && i>1){ S.g=null; __lockOpen=true; lockView(); return; } gStart(i); render(); window.scrollTo(0,0); gTimer(); return; }
   if(d.gact==="retry"){ gStart(G.i); render(); gTimer(); return; }
   if(d.gact==="map"){ clearInterval(__gt); const wasD=G.duel; S.g=null; if(wasD){ S.gv="duels"; loadOnline(); } render(); window.scrollTo(0,0); return; }
+},true);
+
+// ===== Мини-оюндар жана белгилер =====
+const MG={title:["Мини-оюндар","Мини-ойындар","Мини-игры","Mini games"],
+ sent:["Сүйлөм түз","Сөйлем құра","Собери фразу","Build a sentence"],
+ pairs:["Жуп тап","Жұп тап","Найди пару","Match pairs"],
+ insp:["Инспекторго жооп","Инспекторға жауап","Ответь инспектору","Answer the officer"],
+ speed:["60 секунд","60 секунд","60 секунд","60 seconds"],
+ spell:["Тамгадан сөз","Әріптен сөз","Слово из букв","Spell the word"],
+ badges:["Белгилерим","Белгілерім","Мои награды","My badges"],
+ sentQ:["Англисче сүйлөмдү туура тизип чыгыңыз","Ағылшынша сөйлемді дұрыс құраңыз","Соберите фразу по-английски","Put the English words in order"],
+ pairsQ:["Англисче сөздү котормосу менен жупташтырыңыз","Ағылшын сөзін аудармасымен жұптаңыз","Соедините слово с переводом","Match each word with its translation"],
+ inspQ:["Инспектор сурады. Туура жооп бериңиз:","Инспектор сұрады. Дұрыс жауап беріңіз:","Инспектор спросил. Выберите ответ:","The officer asks. Pick your answer:"],
+ speedQ:["Котормосу туурабы?","Аудармасы дұрыс па?","Перевод верный?","Is the translation right?"],
+ spellQ:["Тамгаларды басып, англисче жазыңыз","Әріптерді басып, ағылшынша жазыңыз","Нажимайте буквы по порядку","Tap the letters in order"],
+ yes:["Туура","Дұрыс","Верно","Right"],no:["Туура эмес","Дұрыс емес","Неверно","Wrong"],
+ score:["Упай","Ұпай","Очки","Score"],best:["Рекорд","Рекорд","Рекорд","Best"],round:["Раунд","Раунд","Раунд","Round"],
+ done:["Бүттү!","Бітті!","Готово!","Done!"],again:["Дагы ойноо","Тағы ойнау","Ещё раз","Play again"],
+ hint:["Котормосун көрүү","Аудармасын көру","Показать перевод","Show translation"],
+ got:["алынды","алынды","получено","earned"]};
+const BADGES=[
+ ["🚚",["Биринчи рейс","Алғашқы рейс","Первый рейс","First trip"],["1 уровень өтүү","1 деңгей өту","Пройти 1 уровень","Pass 1 level"],()=>gDoneN()>=1],
+ ["🛣️",["Узак жол","Ұзақ жол","Дальний путь","Long haul"],["10 уровень өтүү","10 деңгей өту","Пройти 10 уровней","Pass 10 levels"],()=>gDoneN()>=10],
+ ["🏁",["Финиш","Мәре","Финиш","Finish line"],["Бардык уровендер","Барлық деңгейлер","Все уровни","All levels"],()=>gDoneN()>=NL],
+ ["⭐",["Жылдыз айдоочу","Жұлдыз жүргізуші","Звёздный водитель","Star driver"],["10 уровень ★★★ менен","10 деңгей ★★★","10 уровней на ★★★","10 levels with ★★★"],()=>Object.values(GP.done).filter(v=>v>=3).length>=10],
+ ["🔥",["3 күн катары","3 күн қатарынан","3 дня подряд","3-day streak"],["3 күн катары ойноо","3 күн қатарынан ойнау","Играть 3 дня подряд","Play 3 days in a row"],()=>GP.streak>=3],
+ ["🌙",["Жети күн","Жеті күн","Неделя","One week"],["7 күн катары","7 күн қатарынан","7 дней подряд","7 days in a row"],()=>GP.streak>=7],
+ ["⚔️",["Дуэлчи","Дуэльші","Дуэлянт","Duelist"],["Биринчи дуэль","Алғашқы дуэль","Первая дуэль","First duel"],()=>gst("duel")>=1],
+ ["🏆",["Жеңүүчү","Жеңімпаз","Победитель","Winner"],["Дуэлде жеңүү","Дуэльде жеңу","Победить в дуэли","Win a duel"],()=>gst("dwin")>=1],
+ ["🧩",["Сүйлөм устасы","Сөйлем шебері","Мастер фраз","Sentence pro"],["50 сүйлөм түзүү","50 сөйлем құру","Собрать 50 фраз","Build 50 sentences"],()=>gst("sent")>=50],
+ ["🔗",["Эс тутум","Есте сақтау","Память","Memory"],["10 раунд жуп табуу","10 раунд жұп табу","10 раундов пар","10 pair rounds"],()=>gst("pairs")>=10],
+ ["👮",["Инспектордон өттү","Инспектордан өтті","Прошёл инспекцию","Passed inspection"],["Инспектор оюнун катасыз бүтүрүү","Инспектор ойынын қатесіз бітіру","Инспектор без ошибок","Officer game with no mistakes"],()=>gst("inspPerfect")>=1],
+ ["⚡",["Чагылган","Найзағай","Молния","Lightning"],["60 секундда 20 упай","60 секундта 20 ұпай","20 очков за 60 сек","20 points in 60 sec"],()=>gst("speedBest")>=20],
+ ["🔤",["Тамга устасы","Әріп шебері","Мастер букв","Speller"],["30 сөз жазуу","30 сөз жазу","Собрать 30 слов","Spell 30 words"],()=>gst("spell")>=30],
+ ["💯",["1000 упай","1000 ұпай","1000 очков","1000 XP"],["1000 упай топтоо","1000 ұпай жинау","Набрать 1000 очков","Earn 1000 XP"],()=>GP.xp>=1000]];
+const gDoneN=()=>Object.keys(GP.done).filter(k=>GP.done[k]>0).length;
+const gst=k=>(GP.st&&GP.st[k])||0;
+const ginc=(k,n=1)=>{ GP.st=GP.st||{}; GP.st[k]=(GP.st[k]||0)+n; gsave(); };
+const gmax=(k,v)=>{ GP.st=GP.st||{}; if(v>(GP.st[k]||0)){ GP.st[k]=v; gsave(); return true;} return false; };
+function badgeCheck(){ GP.bg=GP.bg||{}; const nw=[]; BADGES.forEach((b,i)=>{ if(!GP.bg[i]&&b[3]()){ GP.bg[i]=1; nw.push(b); } }); if(nw.length) gsave(); return nw; }
+const MPOOL=(()=>{
+  const words=s=>s.trim().split(/\s+/);
+  const ok=s=>{const n=words(s).length; return n>=3&&n<=8&&s.length<=48;};
+  const SENT=[]; DIALOGS.forEach(d=>d.lines.forEach(l=>{ if(ok(l[1])) SENT.push({en:l[1],tr:[l[2],l[3],l[4]]}); }));
+  POOLS.W.forEach(c=>{ if(ok(c[0])) SENT.push({en:c[0],tr:[c[2],c[3],c[4]],pr:c[1]}); });
+  const QA=[]; const ME=[];
+  DIALOGS.forEach(d=>{ for(let i=0;i<d.lines.length;i++){ const l=d.lines[i]; if(l[0]==="me") ME.push(l);
+    if(l[0]!=="me"&&d.lines[i+1]&&d.lines[i+1][0]==="me") QA.push({o:l,a:d.lines[i+1],t:d.title}); } });
+  const SP=[...POOLS.D,...POOLS.P].filter(c=>/^[A-Za-z]{3,9}$/.test(c[0]));
+  const PR=[...POOLS.W.filter(c=>c[0].length<=22),...POOLS.D,...POOLS.P];
+  return {SENT,QA,ME,SP,PR};
+})();
+const mtr=x=> L<3 ? x[L] : x[0];
+const MTRY=2;
+function mStart(k){
+  if(!__ok){ GP.mtry=GP.mtry||{}; if((GP.mtry[k]||0)>=MTRY){ __lockOpen=true; __msg=""; lockView(); window.scrollTo(0,0); return false; } GP.mtry[k]=(GP.mtry[k]||0)+1; gsave(); }
+  clearInterval(window.__mt);
+  const M={k,tires:3,maxT:3,wrong:0,ok:0,pos:0,end:null,t0:Date.now()};
+  if(k==="sent"){ M.items=shuf(MPOOL.SENT).slice(0,8); mSentPrep(M); }
+  if(k==="pairs"){ M.round=0; M.rounds=3; mPairsPrep(M); M.tires=99; }
+  if(k==="insp"){ M.qs=shuf(MPOOL.QA).slice(0,8).map(q=>{ const others=shuf(MPOOL.ME.filter(x=>x[1]!==q.a[1])).slice(0,3); const opts=shuf([q.a,...others]); return {...q,opts,ans:opts.indexOf(q.a)}; }); M.pick=null; }
+  if(k==="speed"){ M.tires=99; M.until=Date.now()+60000; mSpeedNext(M);
+    window.__mt=setInterval(()=>{ const m=S.m; if(!m||m!==M||M.end){ clearInterval(window.__mt); return; } const left=Math.max(0,(M.until-Date.now())/1000); const el=document.getElementById("mtime"); if(el) el.textContent=Math.ceil(left);
+      const bar=document.getElementById("mbar"); if(bar) bar.style.width=(left/60*100)+"%"; if(left<=0){ clearInterval(window.__mt); mEnd(M); render(); } },200); }
+  if(k==="spell"){ M.items=shuf(MPOOL.SP).slice(0,8); mSpellPrep(M); }
+  if(k==="badges"){ M.tires=0; }
+  S.m=M; return true;
+}
+function mSentPrep(M){ const it=M.items[M.pos]; M.target=it.en.split(/\s+/); M.chips=shuf(M.target.map((w,i)=>({w,i,used:false}))); M.built=[]; M.solved=false; M.showTr=true; }
+function mPairsPrep(M){ const seen=new Set(); const L5=[]; for(const c of shuf(MPOOL.PR)){ const t=trTxt(c); if(!t||seen.has(t)||seen.has(c[0])) continue; seen.add(t); seen.add(c[0]); L5.push(c); if(L5.length>=5) break; }
+  M.left=shuf(L5); M.right=shuf(L5); M.gone=[]; M.sl=null; M.sr=null; M.bad=null; }
+function mSpeedNext(M){ const c=MPOOL.PR[Math.random()*MPOOL.PR.length|0]; const truth=Math.random()<.5; let shown=trTxt(c);
+  if(!truth){ let o; do{ o=MPOOL.PR[Math.random()*MPOOL.PR.length|0]; }while(trTxt(o)===shown); shown=trTxt(o); } M.cur={c,shown,truth}; M.flash=null; }
+function mSpellPrep(M){ const c=M.items[M.pos]; M.word=c[0].toLowerCase(); const extra="etaoinsrl".split("").filter(x=>!M.word.includes(x)); 
+  M.tiles=shuf([...M.word.split(""),...shuf(extra).slice(0,2)].map(ch=>({ch,used:false}))); M.typed=""; M.solved=false; }
+function mEnd(M,lose){ if(M.end) return; M.end=lose?"lose":"win"; clearInterval(window.__mt);
+  const total = M.k==="sent"?M.items.length : M.k==="insp"?M.qs.length : M.k==="spell"?M.items.length : M.k==="pairs"?15 : M.ok;
+  M.total=total; M.stars = M.k==="speed" ? (M.ok>=25?3:M.ok>=15?2:M.ok>=5?1:0) : lose?0:(M.wrong===0?3:M.wrong<=2?2:1);
+  if(M.k==="speed"){ M.newBest=gmax("speedBest",M.ok); }
+  if(M.k==="insp"&&!lose&&M.wrong===0) ginc("inspPerfect");
+  M.xp = lose?2:5+M.ok; GP.xp+=M.xp; gsave(); pushXp(M.xp); M.newBadges=badgeCheck();
+  try{ window.goatcounter&&goatcounter.count&&goatcounter.count({path:"mini-"+M.k,title:"Мини",event:true}); }catch(e){} }
+function mBar(M,prog){ return `<div class="gbar"><button class="gx" data-mx="exit">✕</button><div class="gprog"><i style="width:${prog*100}%"></i></div><b class="gh">${M.tires>9?"✅ "+M.ok:"🛞".repeat(Math.max(0,M.tires))+`<span class="gdead">🛞</span>`.repeat(Math.max(0,M.maxT-M.tires))}</b></div>`; }
+function viewMini(){
+  const M=S.m, K=M.k;
+  if(K==="badges"){ badgeCheck(); const n=BADGES.filter((b,i)=>GP.bg&&GP.bg[i]).length;
+    return hero()+`<button class="gsec" data-mx="exit" style="margin-top:14px">${NM.back[L]}</button><div class="onl"><h2>🏅 ${MG.badges[L]}</h2><small>${n}/${BADGES.length} ${MG.got[L]}</small><div class="bgrid">${BADGES.map((b,i)=>{ const on=GP.bg&&GP.bg[i]; return `<div class="bdg ${on?"on":""}"><span>${b[0]}</span><b>${esc(b[1][L])}</b><small>${esc(b[2][L])}</small></div>`; }).join("")}</div></div>`; }
+  if(M.end){ const win=M.end==="win";
+    return `<div class="gend"><div class="gbig">${win?"🏆":GM_TIRE}</div><h2>${win?MG.done[L]:GM.lose[L]}</h2>
+      ${K==="speed"?`<h2>${MG.score[L]}: ${M.ok}</h2><p>${MG.best[L]}: ${gst("speedBest")}${M.newBest?" 🎉":""}</p>`:`<p>${M.ok}/${M.total}</p>`}
+      ${M.stars?`<div class="gstars">${"★".repeat(M.stars)}<span>${"☆".repeat(3-M.stars)}</span></div>`:""}<p>+${M.xp} ${GM.xp[L]}</p>
+      ${(M.newBadges||[]).map(b=>`<div class="bnew">${b[0]} ${esc(b[1][L])}</div>`).join("")}
+      <button class="main" data-mx="again">${MG.again[L]}</button><button class="gsec" data-mx="exit">${GM.map[L]}</button></div>`; }
+  if(K==="sent"){ const it=M.items[M.pos];
+    return mBar(M,(M.pos+(M.solved?1:0))/M.items.length)+`<div class="gq"><div class="gqt">${MG.sent[L]} · ${M.pos+1}/${M.items.length}</div><div class="gword" style="font-size:22px">${esc(mtr(it.tr))}</div><small class="gpr">${MG.sentQ[L]}</small></div>
+      <div class="mline">${M.built.map(w=>`<span class="mw ok">${esc(w)}</span>`).join("")}${M.solved?"":`<span class="mw ph">…</span>`}</div>
+      ${M.solved?`<div class="gfb ok"><b>${GM.ok[L]}</b><div class="gfbw">${esc(it.en)}${it.pr&&L<3?` · <span>${esc(it.pr)}</span>`:""}</div><button data-mx="next">${GM.cont[L]}</button></div>`
+       :`<div class="mchips">${M.chips.map((c,j)=>`<button class="mw ${c.used?"used":""} ${M.bad===j?"bad":""}" data-mi="${j}">${esc(c.w)}</button>`).join("")}</div>`}`; }
+  if(K==="pairs"){ 
+    const col=(arr,side)=>arr.map((c,j)=>{ const gone=M.gone.includes(c), sel=(side==="l"?M.sl:M.sr)===j, bad=M.bad&&M.bad[side]===j;
+      return `<button class="mp ${gone?"gone":""} ${sel?"sel":""} ${bad?"bad":""}" ${gone?"disabled":""} data-mp="${side}${j}">${esc(side==="l"?c[0]:trTxt(c))}${side==="l"&&L<3&&c[1]?`<small>${esc(c[1])}</small>`:""}</button>`; }).join("");
+    return mBar(M,(M.round*5+M.gone.length)/15)+`<div class="gq"><div class="gqt">${MG.pairs[L]} · ${MG.round[L]} ${M.round+1}/${M.rounds}</div><small class="gpr">${MG.pairsQ[L]}</small></div>
+      <div class="mpairs"><div>${col(M.left,"l")}</div><div>${col(M.right,"r")}</div></div>`; }
+  if(K==="insp"){ const q=M.qs[M.pos], picked=M.pick!==null;
+    return mBar(M,(M.pos+(picked?1:0))/M.qs.length)+`<div class="gq"><div class="gqt">👮 ${esc(q.t[L<3?L:0])} · ${M.pos+1}/${M.qs.length}</div>
+      <div class="gword" style="font-size:21px">“${esc(q.o[1])}”</div><button class="glisten sm" data-mx="say">🔊</button>
+      ${M.showTr||picked?`<div class="gpr" style="font-size:15px">${esc(mtr([q.o[2],q.o[3],q.o[4]]))}</div>`:`<button class="mhint" data-mx="tr">${MG.hint[L]}</button>`}<small class="gpr">${MG.inspQ[L]}</small></div>
+      <div class="gopts">${q.opts.map((o,k)=>`<button class="gopt ${picked?(k===q.ans?"ok":(k===M.pick?"no":"dim")):""}" data-mo="${k}">${esc(o[1])}${picked?`<small class="gpr">${esc(mtr([o[2],o[3],o[4]]))}</small>`:""}</button>`).join("")}</div>
+      ${picked?`<div class="gfb ${M.pick===q.ans?"ok":"no"}"><b>${M.pick===q.ans?GM.ok[L]:GM.bad[L]+" "+esc(q.a[1])}</b><button data-mx="next">${GM.cont[L]}</button></div>`:""}`; }
+  if(K==="speed"){ const q=M.cur;
+    return `<div class="gbar"><button class="gx" data-mx="exit">✕</button><div class="gprog"><i id="mbar" style="width:${Math.max(0,(M.until-Date.now())/600)}%"></i></div><b class="gh">⏱ <span id="mtime">${Math.ceil(Math.max(0,(M.until-Date.now())/1000))}</span></b></div>
+      <div class="gq ${M.flash||""}"><div class="gqt">⚡ ${MG.score[L]}: ${M.ok} · ${MG.best[L]}: ${gst("speedBest")}</div><div class="gword">${esc(q.c[0])}</div>${L<3&&q.c[1]?`<div class="gpron">[${esc(q.c[1])}]</div>`:""}
+      <div style="font-size:15px;color:#9a9a9a;margin:10px 0 2px">${MG.speedQ[L]}</div><div class="gword" style="font-size:24px;color:var(--or)">${esc(q.shown)}</div></div>
+      <div class="myn"><button class="yes" data-my="1">✅ ${MG.yes[L]}</button><button class="nob" data-my="0">❌ ${MG.no[L]}</button></div>`; }
+  if(K==="spell"){ const c=M.items[M.pos];
+    const pic=c[5]? (/^\p{Extended_Pictographic}/u.test(c[5])?`<div class="gemo">${c[5]}</div>`:`<img class="gimg" src="${c[5]}" alt="">`):"";
+    return mBar(M,(M.pos+(M.solved?1:0))/M.items.length)+`<div class="gq"><div class="gqt">🔤 ${M.pos+1}/${M.items.length} · ${MG.spellQ[L]}</div>${pic}<div class="gword" style="font-size:22px">${esc(trTxt(c))}</div></div>
+      <div class="mslots">${M.word.split("").map((ch,i)=>`<span class="${i<M.typed.length?"f":""}">${i<M.typed.length?ch.toUpperCase():""}</span>`).join("")}</div>
+      ${M.solved?`<div class="gfb ok"><b>${GM.ok[L]} ${esc(c[0])}</b>${L<3&&c[1]?`<div class="gfbw"><span>${esc(c[1])}</span></div>`:""}<button data-mx="next">${GM.cont[L]}</button></div>`
+       :`<div class="mtiles">${M.tiles.map((t,j)=>`<button class="${t.used?"used":""} ${M.bad===j?"bad":""}" ${t.used?"disabled":""} data-ms="${j}">${t.ch.toUpperCase()}</button>`).join("")}</div>`}`; }
+  return "";
+}
+function mMiss(M,defer){ M.wrong++; gBeep(false); if(M.tires<=9){ M.tires--; if(M.tires<=0&&!defer){ mEnd(M,true); } } }
+document.addEventListener("click",e=>{
+  const b=e.target.closest("[data-mg],[data-mx],[data-mi],[data-mp],[data-mo],[data-my],[data-ms]"); if(!b) return; e.stopPropagation();
+  const d=b.dataset;
+  if(d.mg){ if(mStart(d.mg)){ render(); window.scrollTo(0,0); const M=S.m; if(M.k==="insp") setTimeout(()=>speak(M.qs[0].o[1],"g"),300); } return; }
+  const M=S.m; if(!M) return;
+  if(d.mx==="exit"){ clearInterval(window.__mt); S.m=null; render(); window.scrollTo(0,0); return; }
+  if(d.mx==="again"){ if(mStart(M.k)){ render(); window.scrollTo(0,0); if(S.m.k==="insp") setTimeout(()=>speak(S.m.qs[0].o[1],"g"),300); } return; }
+  if(d.mx==="say"&&M.k==="insp"){ speak(M.qs[M.pos].o[1],"g"); return; }
+  if(d.mx==="tr"){ M.showTr=true; render(); return; }
+  if(d.mx==="next"){
+    if(M.k==="sent"){ if(M.pos+1>=M.items.length) mEnd(M); else { M.pos++; mSentPrep(M); } }
+    if(M.k==="insp"){ if(M.tires<=0) mEnd(M,true); else if(M.pos+1>=M.qs.length) mEnd(M); else { M.pos++; M.pick=null; M.showTr=false; setTimeout(()=>speak(M.qs[M.pos].o[1],"g"),250); } }
+    if(M.k==="spell"){ if(M.pos+1>=M.items.length) mEnd(M); else { M.pos++; mSpellPrep(M); } }
+    render(); window.scrollTo(0,0); return; }
+  if(M.end) return;
+  if(d.mi!==undefined && M.k==="sent" && !M.solved){ const j=+d.mi, ch=M.chips[j]; if(ch.used) return;
+    if(ch.w===M.target[M.built.length]){ ch.used=true; M.built.push(ch.w); M.bad=null; if(M.built.length===M.target.length){ M.solved=true; M.ok++; ginc("sent"); gBeep(true); speak(M.items[M.pos].en,"g"); } }
+    else { M.bad=j; mMiss(M); } render(); return; }
+  if(d.mp!==undefined && M.k==="pairs"){ const side=d.mp[0], j=+d.mp.slice(1); M.bad=null; if(side==="l") M.sl=j; else M.sr=j;
+    if(side==="l") try{ speak(M.left[j][0],"g"); }catch(e){}
+    if(M.sl!==null&&M.sr!==null){ const a=M.left[M.sl], c=M.right[M.sr];
+      if(a===c){ M.gone.push(a); M.ok++; gBeep(true); }
+      else { M.bad={l:M.sl,r:M.sr}; mMiss(M); }
+      M.sl=null; M.sr=null;
+      if(M.gone.length>=5){ ginc("pairs"); M.round++; if(M.round>=M.rounds) mEnd(M); else setTimeout(()=>{ if(S.m===M){ mPairsPrep(M); render(); } },450); } }
+    render(); return; }
+  if(d.mo!==undefined && M.k==="insp" && M.pick===null){ const q=M.qs[M.pos]; M.pick=+d.mo; if(M.pick===q.ans){ M.ok++; gBeep(true); } else mMiss(M,true); speak(q.a[1],"g"); render(); return; }
+  if(d.my!==undefined && M.k==="speed"){ const ans=d.my==="1"; if(ans===M.cur.truth){ M.ok++; gBeep(true); } else { M.wrong++; gBeep(false); }
+    const fl=ans===M.cur.truth?"fok":"fno"; mSpeedNext(M); M.flash=fl; render(); return; }
+  if(d.ms!==undefined && M.k==="spell" && !M.solved){ const j=+d.ms, t=M.tiles[j]; if(t.used) return;
+    if(t.ch===M.word[M.typed.length]){ t.used=true; M.typed+=t.ch; M.bad=null; if(M.typed===M.word){ M.solved=true; M.ok++; ginc("spell"); gBeep(true); speak(M.items[M.pos][0],"g"); } }
+    else { M.bad=j; mMiss(M); } render(); return; }
 },true);
 
 function stopSpeech(){ try{ const s=window.speechSynthesis; if(s && (s.speaking||s.pending)) s.cancel(); }catch(e){} }
