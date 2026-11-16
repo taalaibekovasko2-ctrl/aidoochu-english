@@ -58,6 +58,35 @@ svg{display:block}
 .demo button{margin-left:auto;flex:none;border:0;border-radius:12px;background:#2f6b45;color:#fff;font-weight:800;font-size:14px;padding:10px 12px;font-family:inherit}
 .wa{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:10px;border:0;border-radius:14px;padding:14px;font-size:17px;font-weight:800;background:#25D366;color:#fff;text-decoration:none;font-family:inherit}
 .lback{border:0;background:none;color:#2f6b45;font-weight:800;font-size:15px;padding:6px 0;margin-top:8px;font-family:inherit}
+.gtop{background:var(--card);border-radius:22px;box-shadow:var(--shadow);padding:16px;margin:14px 0}
+.gtop b{font-size:20px;display:block}.gtop small{color:var(--muted);font-size:14px}
+.gstats{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.gstats span{background:#eef5ef;border-radius:999px;padding:7px 11px;font-weight:800;font-size:13.5px;color:#1f4d31}
+.gpath{display:flex;flex-direction:column;align-items:center;gap:14px;padding:10px 0 30px}
+.gnode-w{display:flex;flex-direction:column;align-items:center}
+.gnode{width:84px;height:84px;border-radius:50%;border:0;background:#cfd8d2;box-shadow:0 7px 0 #a9b5ad;display:grid;place-items:center;position:relative;font-family:inherit;cursor:pointer}
+.gnode .gi{font-size:34px;line-height:1}.gnode .gn{position:absolute;bottom:-6px;right:-6px;background:#fff;border-radius:999px;font-weight:900;font-size:13px;padding:3px 8px;box-shadow:0 2px 6px rgba(0,0,0,.15);color:#1f4d31}
+.gnode.done{background:#3f8a5c;box-shadow:0 7px 0 #24563a}.gnode.cur{background:#FFD45C;box-shadow:0 7px 0 #c99a1e;animation:gpulse 1.4s ease-in-out infinite}
+.gnode.lk{opacity:.75}.gnode:active{transform:translateY(5px);box-shadow:0 2px 0 #a9b5ad}
+@keyframes gpulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+.gst{margin-top:10px;color:#e0a800;font-size:17px;letter-spacing:2px;min-height:18px}.gst small{color:var(--muted);font-size:11.5px;letter-spacing:0;font-weight:700}
+.gbar{display:flex;align-items:center;gap:12px;margin:14px 0}.gx{border:0;background:none;font-size:24px;color:#6b786f;font-family:inherit}
+.gprog{flex:1;height:16px;background:#e2e8e3;border-radius:99px;overflow:hidden}.gprog i{display:block;height:100%;background:linear-gradient(90deg,#58c27d,#2f6b45);border-radius:99px;transition:width .3s}
+.gh{font-size:18px;color:#d0342c}
+.gq{background:var(--card);border-radius:24px;box-shadow:var(--shadow);padding:18px;text-align:center;margin-bottom:14px}
+.gqt{font-weight:800;color:var(--muted);font-size:15px;margin-bottom:12px}
+.gimg{width:100%;max-height:260px;object-fit:contain;border-radius:16px;background:#fff}
+.gemo{font-size:80px;line-height:1.1}.gword{font-size:28px;font-weight:900;margin:6px 0;color:#14221a}
+.glisten{width:120px;height:120px;border-radius:50%;border:0;background:#2f6b45;color:#fff;font-size:52px;box-shadow:0 8px 0 #1f4d31}
+.gopts{display:grid;gap:10px}.gopt{border:2px solid #d4ddd6;border-bottom-width:5px;background:#fff;border-radius:16px;padding:15px;font-size:17px;font-weight:800;text-align:left;font-family:inherit;color:#14221a}
+.gopt.ok{background:#dff5e5;border-color:#3f9a5f;color:#1f6b3a}.gopt.no{background:#fde4e1;border-color:#d0342c;color:#a1271f}.gopt.dim{opacity:.5}
+.gfb{position:sticky;bottom:86px;margin-top:14px;border-radius:20px;padding:16px;font-size:17px}
+.gfb.ok{background:#d7f2de;color:#1f6b3a}.gfb.no{background:#fbdcd8;color:#a1271f}
+.gfbw{font-size:14.5px;margin:6px 0 10px;color:#3b4a40}.gfbw span{color:#2f6b45}
+.gfb button{width:100%;border:0;border-radius:14px;padding:14px;font-size:17px;font-weight:900;color:#fff;background:#2f6b45;font-family:inherit}.gfb.no button{background:#c0392b}
+.gend{text-align:center;padding:30px 10px}.gbig{font-size:96px}.gend h2{font-size:28px;margin:10px 0}
+.gstars{font-size:52px;color:#f2b705;letter-spacing:6px}.gstars span{color:#cfd8d2}.gend p{font-weight:800;color:#2f6b45;font-size:18px}
+.gsec{width:100%;margin-top:10px;border:2px solid #1d2a22;background:#fff;border-radius:14px;padding:14px;font-size:16px;font-weight:800;font-family:inherit}
+#nav button{font-size:11px}
 .seg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0 4px}
 .seg button{border:2px solid #1d2a22;background:#fff;color:#1d2a22;border-radius:16px;padding:13px 6px;font-size:16px;font-weight:800}
 .seg button.on{background:var(--green);border-color:var(--green);color:#fff}
@@ -310,7 +339,7 @@ const UI = {
   pick:   ["Теманы танда","Тақырыпты таңда","Выбери тему"],
   cards:  ["карточка","карточка","карточек"],
   lines:  ["сап","жол","реплик"],
-  tabs:   [["Карточкалар","Сүйлөшүү","Кырдаалдар"],["Карточкалар","Сөйлесу","Жағдайлар"],["Карточки","Диалоги","Ситуации"]],
+  tabs:   [["Карточкалар","Сүйлөшүү","Кырдаалдар","Оюн"],["Карточкалар","Сөйлесу","Жағдайлар","Ойын"],["Карточки","Диалоги","Ситуации","Игра"]],
   tap:    ["басып котормосун көр","басып аудармасын көр","нажми — увидишь перевод"],
   swipe:  ["‹ сүр — кийинки ›","‹ сырғыт — келесі ›","‹ листай — дальше ›"],
   line:   ["🔊 сапты бас","🔊 жолды бас","🔊 нажми на строку"],
@@ -5250,7 +5279,7 @@ I need a doctor's note for work|ай нид э доктэрз ноут фор у
 /* ===================== АНГЛИСЧЕ (US) ИНТЕРФЕЙС ===================== */
 const UI_EN = {
   title:"Driver's English", slogan:"On the road and at work — English.", sub:"English for US roads",
-  pick:"Choose a topic", cards:"cards", lines:"lines", tabs:["Cards","Dialogs","Situations"],
+  pick:"Choose a topic", cards:"cards", lines:"lines", tabs:["Cards","Dialogs","Situations","Game"],
   tap:"Tap 🔊 to listen", swipe:"‹ swipe — next ›", line:"🔊 tap a line", right:"correct answers",
   again:"Start again", next:"Next", shop:"Truck shop", shopSub:"repair shops", near:"Find the nearest truck shop",
   maps:"Opens in Google Maps", nets:"Big networks", map:"Map", mine:"My shops", phr:"Phrases for the shop",
@@ -5325,6 +5354,7 @@ const ART = {
 /* ===================== КОД ===================== */
 const ICONS = {
   truck:'<path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/>',
+  game:'<rect x="2.5" y="7" width="19" height="11" rx="5.5"/><path d="M7 10.5v4M5 12.5h4"/><circle cx="15.5" cy="11.5" r=".9"/><circle cx="18" cy="13.8" r=".9"/>',
   cards:'<rect x="4" y="6" width="13" height="15" rx="2.5"/><path d="M8 3h9.5A2.5 2.5 0 0 1 20 5.5V17"/>',
   chat:'<path d="M4 5h16v11H9l-5 4z"/>',
   quiz:'<circle cx="12" cy="12" r="9"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/>',
@@ -5639,15 +5669,133 @@ const DM = {t:["🎁 Сынап көрүү: ар бөлүмдө 2 тема бе�
   msg:["Салам! «Айдоочунун англисчеси» колдонмосун сатып алгым келет. Менин ID:","Сәлем! «Айдоочунун англисчеси» қосымшасын сатып алғым келеді. Менің ID:","Здравствуйте! Хочу купить приложение «Айдоочунун англисчеси». Мой ID:","Hi! I want to buy the Trucker English app. My ID:"]};
 const demoBar = () => __ok ? "" : `<div class="demo"><span>${DM.t[L]}</span><button data-lk="open">${DM.b[L]}</button></div>`;
 let __lockOpen=false;
+/* ===== ОЮН (уровендер) ===== */
+const GM={title:["Оюн","Ойын","Игра","Game"],lvl:["Уровень","Деңгей","Уровень","Level"],
+ sub:["Уровенди өт — кийинкиси ачылат","Деңгейді өт — келесісі ашылады","Пройди уровень — откроется следующий","Pass a level to unlock the next"],
+ xp:["упай","ұпай","очков","XP"],days:["күн катары","күн қатарынан","дней подряд","day streak"],
+ q_img:["Бул эмне?","Бұл не?","Что это?","What is this?"],q_tr:["Котормосун тап","Аудармасын тап","Найди перевод","Pick the translation"],
+ q_en:["Англисчесин тап","Ағылшыншасын тап","Найди по-английски","Pick the English"],q_listen:["Угуп, туурасын тап","Тыңдап, дұрысын тап","Послушай и выбери","Listen and choose"],
+ q_sign:["Бул белги эмнени билдирет?","Бұл белгі нені білдіреді?","Что означает этот знак?","What does this sign mean?"],
+ ok:["Туура! 🎉","Дұрыс! 🎉","Верно! 🎉","Correct! 🎉"],bad:["Туура жооп:","Дұрыс жауап:","Правильно:","Correct answer:"],
+ cont:["Улантуу","Жалғастыру","Дальше","Continue"],win:["Уровень өттү!","Деңгей өтті!","Уровень пройден!","Level complete!"],
+ lose:["Жүрөкчөлөр бүттү 💔","Жүрекшелер бітті 💔","Сердечки закончились 💔","Out of hearts 💔"],
+ retry:["Кайра аракет","Қайта көру","Ещё раз","Try again"],next:["Кийинки уровень","Келесі деңгей","Следующий уровень","Next level"],
+ map:["Картага","Картаға","К карте","Back to map"],play:["Ойноо","Ойнау","Играть","Play"],
+ units:{P:["Тетиктер","Бөлшектер","Запчасти","Truck parts"],S:["Жол белгилери","Жол белгілері","Дорожные знаки","Road signs"],
+  W:["Айдоочунун сөздөрү","Жүргізуші сөздері","Слова водителя","Driver words"],D:["Күнүмдүк сөздөр","Күнделікті сөздер","Слова на каждый день","Everyday words"],
+  A:["Угуп тап","Тыңдап тап","Аудирование","Listening"]}};
+const GU_IC={P:"🔧",S:"🚦",W:"💬",D:"🍎",A:"🎧"};
+const shuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]];}return a;};
+const POOLS=(()=>{
+  const P=TOPICS.find(t=>t.parts).cards.filter(c=>c[5]);
+  const S=TOPICS.find(t=>t.signs).cards;
+  const W=[].concat(...TOPICS.filter(t=>!t.daily&&!t.parts&&!t.signs).map(t=>t.cards)).filter(c=>c[0].length<=34);
+  const D=[].concat(...TOPICS.filter(t=>t.daily).map(t=>t.cards)).filter(c=>c[0].length<=24&&c[5]&&!/[?!]/.test(c[0]));
+  return {P,S,W,D,A:W.filter(c=>c[0].length<=26)};
+})();
+const LEVELS=(()=>{
+  const chunk=(u,n,size)=>{const pool=POOLS[u],out=[];for(let i=0;i<n;i++){const it=pool.slice(i*size,i*size+size);if(it.length>=8)out.push({u,items:it});}return out;};
+  const P=chunk("P",11,12),S=chunk("S",8,12),W=chunk("W",14,12),D=chunk("D",14,12),A=chunk("A",8,12);
+  const L=[];let k=0;
+  while(P.length||S.length||W.length||D.length||A.length){
+    for(const arr of [W,P,D,S]) if(arr.length) L.push(arr.shift());
+    if(++k%1===0 && A.length && k>1) L.push(A.shift());
+  }
+  return L;
+})();
+let GP=(()=>{try{return JSON.parse(localStorage.getItem("game")||"null")||{done:{},xp:0,streak:0,day:""};}catch(e){return {done:{},xp:0,streak:0,day:""};}})();
+const gsave=()=>{try{localStorage.setItem("game",JSON.stringify(GP));}catch(e){}};
+const gUnlocked=i=> i===0 || (GP.done[i-1]>0);
+const trTxt=c=> L<3 ? c[2+L] : c[1];
+function gBeep(ok){ try{ const A=window.__ac||(window.__ac=new (window.AudioContext||window.webkitAudioContext)()); const t=A.currentTime;
+  (ok?[660,880]:[300,220]).forEach((f,i)=>{const o=A.createOscillator(),g=A.createGain();o.type=ok?"sine":"triangle";o.frequency.value=f;g.gain.setValueAtTime(.0001,t+i*.09);g.gain.exponentialRampToValueAtTime(.18,t+i*.09+.02);g.gain.exponentialRampToValueAtTime(.0001,t+i*.09+.22);o.connect(g);g.connect(A.destination);o.start(t+i*.09);o.stop(t+i*.09+.25);}); }catch(e){} }
+function gMakeQ(lv){
+  const pool=POOLS[lv.u], items=shuf(lv.items).slice(0,10);
+  return items.map(c=>{
+    let type;
+    if(lv.u==="A") type="listen";
+    else if(lv.u==="P") type=Math.random()<.6?"img":"tr";
+    else if(lv.u==="S") type=Math.random()<.6?"sign":"img";
+    else type=L<3?(Math.random()<.5?"tr":"en"):"en";
+    const others=shuf(pool.filter(x=>x!==c&&x[0]!==c[0])).slice(0,3);
+    const opts=shuf([c,...others]);
+    const label=x=> (type==="tr"||type==="sign") ? trTxt(x) : x[0];
+    return {c,type,opts:opts.map(label),ans:opts.indexOf(c)};
+  });
+}
+function gStart(i){ const lv=LEVELS[i]; S.g={i,qs:gMakeQ(lv),pos:0,pick:null,hearts:3,wrong:0,end:null}; }
+function gFinish(){ const G=S.g; if(G.hearts<=0){G.end="lose";return;}
+  const stars=G.wrong===0?3:G.wrong===1?2:1; G.end="win"; G.stars=stars;
+  GP.done[G.i]=Math.max(GP.done[G.i]||0,stars); GP.xp+=10+stars*5;
+  const today=new Date().toDateString(), y=new Date(Date.now()-864e5).toDateString();
+  GP.streak = GP.day===today?GP.streak:(GP.day===y?GP.streak+1:1); GP.day=today; gsave();
+  try{ window.goatcounter&&goatcounter.count&&goatcounter.count({path:"game-level-"+(G.i+1),title:"Оюн",event:true}); }catch(e){}
+}
+function viewGame(){
+  const G=S.g;
+  if(!G){
+    const doneN=Object.keys(GP.done).filter(k=>GP.done[k]>0).length;
+    let cur=LEVELS.findIndex((_,i)=>!(GP.done[i]>0)); if(cur<0) cur=LEVELS.length-1;
+    let lastU=null;
+    const nodes=LEVELS.map((lv,i)=>{
+      const st=GP.done[i]||0, open=gUnlocked(i), locked=!open||(!__ok&&i>1), isCur=i===cur&&open;
+      const off=[0,60,90,60,0,-60,-90,-60][i%8];
+      const head = lv.u!==lastU ? "" : ""; lastU=lv.u;
+      return `<div class="gnode-w" style="transform:translateX(${off}px)">
+        <button class="gnode ${st?"done":""} ${isCur?"cur":""} ${locked?"lk":""}" data-gl="${i}">
+          <span class="gi">${locked&&!st?"🔒":GU_IC[lv.u]}</span><span class="gn">${i+1}</span></button>
+        <div class="gst">${st?"★".repeat(st)+"☆".repeat(3-st):`<small>${esc(GM.units[lv.u][L])}</small>`}</div></div>`;
+    }).join("");
+    return hero() + demoBar() + `<div class="gtop"><div><b>🎮 ${GM.title[L]}</b><small>${GM.sub[L]}</small></div>
+      <div class="gstats"><span>⭐ ${GP.xp} ${GM.xp[L]}</span><span>🔥 ${GP.streak} ${GM.days[L]}</span><span>🏁 ${doneN}/${LEVELS.length}</span></div></div>
+      <div class="gpath">${nodes}</div>`;
+  }
+  if(G.end){
+    const win=G.end==="win";
+    return `<div class="gend ${win?"w":"l"}"><div class="gbig">${win?"🏆":"💔"}</div>
+      <h2>${win?GM.win[L]:GM.lose[L]}</h2>${win?`<div class="gstars">${"★".repeat(G.stars)}<span>${"☆".repeat(3-G.stars)}</span></div><p>+${10+G.stars*5} ${GM.xp[L]}</p>`:""}
+      ${win&&G.i+1<LEVELS.length?`<button class="main" data-gact="next">${GM.next[L]} →</button>`:""}
+      ${!win?`<button class="main" data-gact="retry">${GM.retry[L]}</button>`:""}
+      <button class="gsec" data-gact="map">${GM.map[L]}</button></div>`;
+  }
+  const q=G.qs[G.pos], c=q.c, n=G.qs.length;
+  const prompt = q.type==="listen" ? `<button class="glisten" data-gact="say">🔊</button>`
+    : (q.type==="img"||q.type==="sign") && c[5] && !/^\p{Extended_Pictographic}/u.test(c[5]) ? `<img class="gimg" src="${c[5]}" alt="">`
+    : (POOLS.D.includes(c) ? `<div class="gemo">${c[5]}</div>` : "")+`<div class="gword">${esc(q.type==="en"?trTxt(c):c[0])}</div>`;
+  const qt = {img:GM.q_img,sign:GM.q_sign,tr:GM.q_tr,en:GM.q_en,listen:GM.q_listen}[q.type][L];
+  const picked=G.pick!==null;
+  return `<div class="gbar"><button class="gx" data-gact="map">✕</button><div class="gprog"><i style="width:${(G.pos+(picked?1:0))/n*100}%"></i></div><b class="gh">❤️ ${G.hearts}</b></div>
+    <div class="gq"><div class="gqt">${qt}</div>${prompt}</div>
+    <div class="gopts">${q.opts.map((o,k)=>`<button class="gopt ${picked?(k===q.ans?"ok":(k===G.pick?"no":"dim")):""}" data-ga="${k}">${esc(o)}</button>`).join("")}</div>
+    ${picked?`<div class="gfb ${G.pick===q.ans?"ok":"no"}"><b>${G.pick===q.ans?GM.ok[L]:GM.bad[L]+" "+esc(q.opts[q.ans])}</b>
+      <div class="gfbw">${esc(c[0])} · <span>${esc(c[1]||"")}</span></div><button data-gact="cont">${GM.cont[L]}</button></div>`:""}`;
+}
+document.addEventListener("click",e=>{
+  const b=e.target.closest("[data-gl],[data-ga],[data-gact]"); if(!b) return; e.stopPropagation();
+  const d=b.dataset;
+  if(d.gl!==undefined){ const i=+d.gl;
+    if(!__ok && i>1){ __lockOpen=true; __msg=""; lockView(); window.scrollTo(0,0); return; }
+    if(!gUnlocked(i)) return; gStart(i); render(); window.scrollTo(0,0); return; }
+  const G=S.g; if(!G) return;
+  if(d.ga!==undefined && G.pick===null){ const q=G.qs[G.pos]; G.pick=+d.ga; const ok=G.pick===q.ans; gBeep(ok);
+    if(!ok){ G.hearts--; G.wrong++; } try{ speak(q.c[0],"g"); }catch(e){} render(); return; }
+  if(d.gact==="say"){ speak(G.qs[G.pos].c[0],"g"); return; }
+  if(d.gact==="cont"){ if(G.hearts<=0){ gFinish(); } else if(G.pos+1>=G.qs.length){ gFinish(); } else { G.pos++; G.pick=null; }
+    render(); window.scrollTo(0,0); if(!S.g.end && S.g.qs[S.g.pos].type==="listen") setTimeout(()=>speak(S.g.qs[S.g.pos].c[0],"g"),250); return; }
+  if(d.gact==="next"){ const i=G.i+1; if(!__ok && i>1){ S.g=null; __lockOpen=true; lockView(); return; } gStart(i); render(); window.scrollTo(0,0); return; }
+  if(d.gact==="retry"){ gStart(G.i); render(); return; }
+  if(d.gact==="map"){ S.g=null; render(); window.scrollTo(0,0); return; }
+},true);
+
 function stopSpeech(){ try{ const s=window.speechSynthesis; if(s && (s.speaking||s.pending)) s.cancel(); }catch(e){} }
 function render(anim){
   if(!__ok && __lockOpen){ lockView(); return; }
   $("#nav").style.display="";
   document.documentElement.lang = ["ky","kk","ru","en"][L];
   document.title = UI.title[L];
-  $("#nav").innerHTML = ["cards","chat","quiz"].map((ic,i)=>
+  $("#nav").innerHTML = ["cards","chat","quiz","game"].map((ic,i)=>
     `<button class="${S.tab===i?"on":""}" data-tab="${i}">${icon(ic,22)}${UI.tabs[L][i]}</button>`).join("");
-  $("#app").innerHTML = [viewCards,viewTalk,viewSit][S.tab]();
+  $("#app").innerHTML = [viewCards,viewTalk,viewSit,viewGame][S.tab]();
   const c=$("#card"); if(c && anim) c.classList.add(anim>0?"in-l":"in-r");
   bindSwipe(); mark(); wsearch();
 }
