@@ -77,6 +77,7 @@ svg{display:block}
 .gq{background:var(--card);border-radius:24px;box-shadow:var(--shadow);padding:18px;text-align:center;margin-bottom:14px}
 .gqt{font-weight:800;color:var(--muted);font-size:15px;margin-bottom:12px}
 .gimg{width:100%;max-height:260px;object-fit:contain;border-radius:16px;background:#fff}
+.gdead{filter:grayscale(1);opacity:.3}
 .gpron{font-size:18px;color:#2f6b45;font-weight:700;margin-top:-2px}.gpr{display:block;font-size:14px;color:#5d7466;font-weight:600;margin-top:3px}
 .gemo{font-size:80px;line-height:1.1}.gword{font-size:28px;font-weight:900;margin:6px 0;color:#14221a}
 .glisten{width:120px;height:120px;border-radius:50%;border:0;background:#2f6b45;color:#fff;font-size:52px;box-shadow:0 8px 0 #1f4d31}
@@ -5694,7 +5695,7 @@ const GM={title:["Оюн","Ойын","Игра","Game"],lvl:["Уровень","�
  q_sign:["Бул белги эмнени билдирет?","Бұл белгі нені білдіреді?","Что означает этот знак?","What does this sign mean?"],
  ok:["Туура! 🎉","Дұрыс! 🎉","Верно! 🎉","Correct! 🎉"],bad:["Туура жооп:","Дұрыс жауап:","Правильно:","Correct answer:"],
  cont:["Улантуу","Жалғастыру","Дальше","Continue"],win:["Уровень өттү!","Деңгей өтті!","Уровень пройден!","Level complete!"],
- lose:["Дөңгөлөктөр жарылды 💥","Дөңгелектер жарылды 💥","Колёса лопнули 💥","Tires blown 💥"],
+ lose:["Дөңгөлөк жарылды!","Дөңгелек жарылды!","Колесо лопнуло!","Blown tire!"],
  retry:["Кайра аракет","Қайта көру","Ещё раз","Try again"],next:["Кийинки уровень","Келесі деңгей","Следующий уровень","Next level"],
  map:["Картага","Картаға","К карте","Back to map"],play:["Ойноо","Ойнау","Играть","Play"],
  units:{P:["Тетиктер","Бөлшектер","Запчасти","Truck parts"],S:["Жол белгилери","Жол белгілері","Дорожные знаки","Road signs"],
@@ -5870,7 +5871,7 @@ function viewGame(){
   }
   if(G.end){
     const win=G.end==="win";
-    return `<div class="gend ${win?"w":"l"}"><div class="gbig">${win?"🏆":"💥"}</div>
+    return `<div class="gend ${win?"w":"l"}"><div class="gbig">${win?"🏆":`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 170" width="170" height="145"><ellipse cx="100" cy="158" rx="80" ry="7" fill="#000" opacity=".15"/><g fill="#cfd6d2" opacity=".9"><circle cx="150" cy="40" r="14"/><circle cx="166" cy="28" r="10"/><circle cx="160" cy="54" r="9"/><circle cx="178" cy="44" r="7"/></g><path d="M28 92 C28 42 60 14 100 14 C140 14 172 42 172 92 C172 128 160 150 150 154 L50 154 C40 150 28 128 28 92Z" fill="#1f2421"/><g stroke="#3a423d" stroke-width="7" stroke-linecap="round"><path d="M52 34 l10 10M80 20 l4 13M120 20 l-4 13M148 34 l-10 10M166 62 l-13 6M34 62 l13 6"/></g><path d="M50 150 C70 156 130 156 150 150" stroke="#111" stroke-width="6" fill="none"/><ellipse cx="100" cy="94" rx="44" ry="40" fill="#8d9792"/><ellipse cx="100" cy="94" rx="34" ry="30" fill="#b9c2bd"/><circle cx="100" cy="94" r="11" fill="#6f7a74"/><g fill="#6f7a74"><circle cx="100" cy="72" r="4"/><circle cx="121" cy="88" r="4"/><circle cx="113" cy="113" r="4"/><circle cx="87" cy="113" r="4"/><circle cx="79" cy="88" r="4"/></g><path d="M136 30 l8 12 -7 4 9 12 -6 3 7 11" stroke="#e8432e" stroke-width="5" fill="none" stroke-linejoin="round" stroke-linecap="round"/></svg>`}</div>
       <h2>${win?GM.win[L]:GM.lose[L]}</h2>${win?`<div class="gstars">${"★".repeat(G.stars)}<span>${"☆".repeat(3-G.stars)}</span></div><p>+${10+G.stars*5} ${GM.xp[L]}</p>`:""}
       ${win&&G.i+1<LEVELS.length?`<button class="main" data-gact="next">${GM.next[L]} →</button>`:""}
       ${!win?`<button class="main" data-gact="retry">${GM.retry[L]}</button>`:""}
@@ -5882,7 +5883,7 @@ function viewGame(){
     : (POOLS.D.includes(c) ? `<div class="gemo">${c[5]}</div>` : "")+`<div class="gword">${esc(q.type==="en"?trTxt(c):c[0])}</div>${q.type!=="en"&&L<3&&c[1]?`<div class="gpron">[${esc(c[1])}]</div>`:""}`;
   const qt = {img:GM.q_img,sign:GM.q_sign,tr:GM.q_tr,en:GM.q_en,listen:GM.q_listen}[q.type][L];
   const picked=G.pick!==null;
-  return `<div class="gbar"><button class="gx" data-gact="map">✕</button><div class="gprog"><i style="width:${(G.pos+(picked?1:0))/n*100}%"></i></div><b class="gh">${G.duel?"⚔️ ✅"+(G.pos+(picked?1:0)-G.wrong):"🛞".repeat(Math.max(0,G.hearts))+"💨".repeat(Math.max(0,G.maxH-G.hearts))}</b></div>
+  return `<div class="gbar"><button class="gx" data-gact="map">✕</button><div class="gprog"><i style="width:${(G.pos+(picked?1:0))/n*100}%"></i></div><b class="gh">${G.duel?"⚔️ ✅"+(G.pos+(picked?1:0)-G.wrong):"🛞".repeat(Math.max(0,G.hearts))+`<span class="gdead">🛞</span>`.repeat(Math.max(0,G.maxH-G.hearts))}</b></div>
     ${(gCfg(G.i).time||G.duel)&&!picked?`<div class="gtimer"><i id="gtime" style="width:100%"></i></div>`:""}
     <div class="gq"><div class="gqt">${GM.lvl[L]} ${G.i+1} · ${qt}</div>${prompt}</div>
     <div class="gopts">${q.opts.map((o,k)=>`<button class="gopt ${picked?(k===q.ans?"ok":(k===G.pick?"no":"dim")):""}" data-ga="${k}">${esc(o)}${q.pr&&q.pr[k]?`<small class="gpr">[${esc(q.pr[k])}]</small>`:""}</button>`).join("")}</div>
