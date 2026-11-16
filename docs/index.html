@@ -6234,6 +6234,15 @@ document.addEventListener("click",e=>{
 (()=>{ const m=(location.hash||"").match(/d=([A-Za-z0-9]{6})/); if(m){ S.tab=3; S.gv="invite"; S.dc=m[1].toUpperCase(); try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){} loadOnline(); } })();
 (async()=>{ try{ if(document.referrer.indexOf("android-app://com.aidoochu.english")===0) localStorage.setItem("twa","1"); if(localStorage.getItem("twa")==="1"){ __ok=true; render(); return; } }catch(e){}
   let c=null; try{ c=localStorage.getItem("act"); }catch(e){} if(!c){ const m=document.cookie.match(/(?:^|; )act=([A-Za-z0-9_-]+)/); if(m) c=m[1]; } if(c && await checkCode(c)) __ok=true; render(); })();
+const APP_VER="aidoochu-v20";
+function checkUpdate(){ if(location.protocol!=="https:") return; if(S.g||S.m) return;
+  fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(r=>r.ok?r.text():"").then(v=>{ v=(v||"").trim(); if(!v||v===APP_VER) return;
+    let tried=""; try{ tried=sessionStorage.getItem("upd")||""; }catch(e){} if(tried===v) return; try{ sessionStorage.setItem("upd",v); }catch(e){}
+    try{ navigator.serviceWorker&&navigator.serviceWorker.getRegistration().then(g=>g&&g.update()); }catch(e){}
+    location.reload(); }).catch(()=>{}); }
+setTimeout(checkUpdate,1500);
+document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible") checkUpdate(); });
+window.addEventListener("pageshow",e=>{ if(e.persisted) checkUpdate(); });
 if("serviceWorker" in navigator && location.protocol==="https:"){ try{ navigator.serviceWorker.register("sw.js").catch(()=>{}); }catch(e){} }
 </script>
 </body>
