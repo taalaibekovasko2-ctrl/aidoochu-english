@@ -5603,7 +5603,8 @@ function lockView(){
     <div class="lrow"><button data-lk="copy">${LK.cp[i]}</button><button data-lk="share">${LK.sh[i]}</button></div>
     <p>${LK.s2[i]}</p><textarea id="acode" autocomplete="off" autocapitalize="off" spellcheck="false"></textarea>
     <button class="main" data-lk="ok">${LK.ok[i]}</button><p class="err">${__msg}</p><p style="font-size:13px">${LK.note[i]}</p>
-    ${WA_NUM?`<a class="wa" href="https://wa.me/${WA_NUM}?text=${encodeURIComponent(DM.msg[i]+" "+id)}" target="_blank" rel="noopener">💬 ${DM.wa[i]}</a>`:""}
+    ${WA_NUM?`<a class="wa" href="https://wa.me/${WA_NUM}?text=${encodeURIComponent(DM.msg[i]+" "+id)}" target="_blank" rel="noopener">💬 ${DM.wa[i]} · ${WA_NAME}</a>`:""}
+    ${CALL_NUM?`<a class="wa" style="background:#2f6b45" href="tel:${CALL_NUM}">📞 ${DM.call[i]} · ${CALL_NAME}</a>`:""}
     <button class="lback" data-lk="back">${DM.back[i]}</button></div>`;
 }
 function copyText(t,btn){ const done=()=>{ if(btn) btn.textContent=LK.done[L]; };
@@ -5619,13 +5620,14 @@ document.addEventListener("click",async e=>{ const b=e.target.closest("[data-lk]
     if(c && await checkCode(c)){ try{ localStorage.setItem("act",c); }catch(e){} try{ document.cookie="act="+c+";max-age=315360000;path=/;SameSite=Lax"; }catch(e){} __ok=true; __lockOpen=false; $("#nav").style.display=""; render(); window.scrollTo(0,0); try{ window.goatcounter&&goatcounter.count&&goatcounter.count({path:"activated",title:"Активация",event:true}); }catch(e){} }
     else { __msg=LK.bad[L]; lockView(); $("#acode").value=c; } }
 },true);
-const WA_NUM = "";  // WhatsApp номери, мисалы "13125550123"
+const WA_NUM = "18722881102", WA_NAME = "Аскат", CALL_NUM = "+17473249540", CALL_NAME = "Рамис";
 const FREE_T = new Set([...TOPICS.map((t,i)=>[t,i]).filter(x=>!x[0].daily).slice(0,2).map(x=>x[1]), ...TOPICS.map((t,i)=>[t,i]).filter(x=>x[0].daily).slice(0,2).map(x=>x[1])]);
 const isFreeSit = g => SIT_GROUPS.findIndex(x=>x[0]===g) < 2;
 const lockB = ok => (!__ok && !ok) ? `<span class="lockb">🔒</span>` : "";
 const DM = {t:["🎁 Сынап көрүү: ар бөлүмдө 2 тема бекер","🎁 Сынақ: әр бөлімде 2 тақырып тегін","🎁 Пробный режим: по 2 темы бесплатно","🎁 Free trial: 2 topics in each section"],
   b:["Толук ачуу","Толық ашу","Открыть всё","Unlock all"], back:["← Артка","← Артқа","← Назад","← Back"],
   wa:["WhatsApp аркылуу сатып алуу","WhatsApp арқылы сатып алу","Купить через WhatsApp","Buy via WhatsApp"],
+  call:["Чалуу","Қоңырау шалу","Позвонить","Call"],
   msg:["Салам! «Айдоочунун англисчеси» колдонмосун сатып алгым келет. Менин ID:","Сәлем! «Айдоочунун англисчеси» қосымшасын сатып алғым келеді. Менің ID:","Здравствуйте! Хочу купить приложение «Айдоочунун англисчеси». Мой ID:","Hi! I want to buy the Trucker English app. My ID:"]};
 const demoBar = () => __ok ? "" : `<div class="demo"><span>${DM.t[L]}</span><button data-lk="open">${DM.b[L]}</button></div>`;
 let __lockOpen=false;
