@@ -5829,11 +5829,16 @@ const FD={h:["🤝 Сборлор — жардам","🤝 Жиналым — к�
  note:["Акча GoFundMe аркылуу түз алуучуга барат. Ким канча салганы GoFundMe барагында автоматтык көрүнөт.","Ақша GoFundMe арқылы тікелей алушыға барады.","Деньги идут напрямую получателю через GoFundMe. Кто сколько дал — видно на странице GoFundMe автоматически.","Money goes directly to the recipient via GoFundMe; donations are tracked there automatically."],
  copy:["Номерди көчүрүү","Нөмірді көшіру","Скопировать номер","Copy number"],copied:["Көчүрүлдү ✓","Көшірілді ✓","Скопировано ✓","Copied ✓"],
  zhow:["Банк тиркемеңизди ачып → Zelle → ушул номерге которуңуз","Банк қосымшасын ашып → Zelle → осы нөмірге аударыңыз","Откройте приложение банка → Zelle → переведите на этот номер","Open your bank app → Zelle → send to this number"],
+ none:["Азырынча сбор жок","Әзірге жиналым жоқ","Пока сборов нет","No fundraisers yet"],
+ ask:["Сизге же жакыныңызга жардам керек болсо, бизге жазыңыз — сборду ушул жерге чыгарабыз.","Сізге көмек керек болса, бізге жазыңыз — жиналымды осында шығарамыз.","Если вам или близкому нужна помощь — напишите нам, и мы разместим сбор здесь.","If you or someone close needs help, message us and we will post a fundraiser here."],
+ askmsg:["Салам! Сбор ачуу боюнча жардам керек.","Сәлем! Жиналым ашуға көмек керек.","Здравствуйте! Нужна помощь со сбором.","Hello! I need help with a fundraiser."],
  open:["Сборлорду көрүү","Жиналымдарды көру","Смотреть сборы","See fundraisers"]};
 const gfmSlug=u=>{ const m=String(u||"").match(/gofundme\.com\/f\/([A-Za-z0-9_-]+)/); return m?m[1]:""; };
-const fundBar=()=> FUNDS.length?`<button class="fundbar" data-fd="open"><b>${FD.h[L]}</b><span>${FD.sub[L]} →</span></button>`:"";
+const fundBar=()=> true?`<button class="fundbar" data-fd="open"><b>${FD.h[L]}</b><span>${FD.sub[L]} →</span></button>`:"";
 function viewFunds(){ return hero()+`<button class="gsec" data-fd="back" style="margin-top:14px">${NM.back[L]}</button>
-  <div class="h2">${FD.h[L]}</div>${FUNDS.some(f=>f.url)?`<p class="fnote">${FD.note[L]}</p>`:""}`+FUNDS.map((f,i)=>`<div class="fund">${f.img?`<img src="${esc(f.img)}" alt="" loading="lazy">`:""}
+  <div class="h2">${FD.h[L]}</div>${FUNDS.length?"":`<div class="fund"><div class="fb" style="text-align:center"><div style="font-size:52px">🤝</div><h3>${FD.none[L]}</h3><p>${FD.ask[L]}</p>
+   <a class="wa" href="https://wa.me/${WA_NUM}?text=${encodeURIComponent(FD.askmsg[L])}" target="_blank" rel="noopener">💬 WhatsApp · ${WA_NAME}</a>
+   <a class="wa" style="background:#2f6b45" href="tel:${CALL_NUM}">📞 ${CALL_NAME}</a></div></div>`}${FUNDS.some(f=>f.url)?`<p class="fnote">${FD.note[L]}</p>`:""}`+FUNDS.map((f,i)=>`<div class="fund">${f.img?`<img src="${esc(f.img)}" alt="" loading="lazy">`:""}
    <div class="fb"><h3>${esc(f.title)}</h3>${f.who?`<small>👤 ${esc(f.who)}</small>`:""}<p>${esc(f.text||"")}</p>${f.goal?`<div class="fg">🎯 ${FD.goal[L]}: $${Number(f.goal).toLocaleString("en-US")}</div>`:""}
    ${f.zelle?`<div class="zel"><div class="zt">Zelle</div><div class="zn">${esc(f.zelle)}</div><div class="zw">${esc(f.zname||"")}</div><button data-fd="zcopy" data-i="${i}">📋 ${FD.copy[L]}</button><small>${FD.zhow[L]}</small></div>`:""}
    ${gfmSlug(f.url)?`<iframe class="gfm" src="https://www.gofundme.com/f/${gfmSlug(f.url)}/widget/large" loading="lazy" title="GoFundMe"></iframe>`:""}
@@ -6315,7 +6320,7 @@ document.addEventListener("click",e=>{
 (()=>{ const m=(location.hash||"").match(/d=([A-Za-z0-9]{6})/); if(m){ S.tab=3; S.gv="invite"; S.dc=m[1].toUpperCase(); try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){} loadOnline(); } })();
 (async()=>{ try{ if(document.referrer.indexOf("android-app://com.aidoochu.english")===0) localStorage.setItem("twa","1"); if(localStorage.getItem("twa")==="1"){ __ok=true; render(); return; } const po=localStorage.getItem("promoOk"); if(po&&PROMOS[po]){ __ok=true; render(); return; } }catch(e){}
   let c=null; try{ c=localStorage.getItem("act"); }catch(e){} if(!c){ const m=document.cookie.match(/(?:^|; )act=([A-Za-z0-9_-]+)/); if(m) c=m[1]; } if(c && await checkCode(c)) __ok=true; render(); })();
-const APP_VER="aidoochu-v30";
+const APP_VER="aidoochu-v31";
 function checkUpdate(){ if(location.protocol!=="https:") return; if((S.g&&!S.g.end)||(S.m&&!S.m.end)) return;
   fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(r=>r.ok?r.text():"").then(v=>{ v=(v||"").trim(); if(!v||v===APP_VER) return;
     let tried=""; try{ tried=sessionStorage.getItem("upd")||""; }catch(e){} if(tried===v) return; try{ sessionStorage.setItem("upd",v); }catch(e){}
