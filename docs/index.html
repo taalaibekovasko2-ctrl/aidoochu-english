@@ -87,6 +87,19 @@ svg{display:block}
 .gfb button{width:100%;border:0;border-radius:14px;padding:14px;font-size:17px;font-weight:900;color:#fff;background:#2f6b45;font-family:inherit}.gfb.no button{background:#c0392b}
 .gend{text-align:center;padding:30px 10px}.gbig{font-size:96px}.gend h2{font-size:28px;margin:10px 0}
 .gstars{font-size:52px;color:#f2b705;letter-spacing:6px}.gstars span{color:#cfd8d2}.gend p{font-weight:800;color:#2f6b45;font-size:18px}
+.gmodes{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 14px}
+.gmodes button{border:0;border-radius:18px;padding:14px 8px;font-size:16px;font-weight:900;font-family:inherit;color:#fff;background:linear-gradient(135deg,#2f6b45,#1f4d31);box-shadow:var(--shadow)}
+.gmodes button+button{background:linear-gradient(135deg,#c0392b,#8e2a20)}
+.onl{background:var(--card);border-radius:22px;box-shadow:var(--shadow);padding:16px;margin:14px 0}
+.onl h2{margin:4px 0 4px;font-size:22px}.onl>small{color:var(--muted);font-size:14px;display:block;margin-bottom:10px}
+.lgr{display:flex;align-items:center;gap:10px;padding:11px 8px;border-bottom:1px solid #eef1ef;font-size:16px}
+.lgr b{width:34px;text-align:center;font-size:18px}.lgr span{flex:1;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.lgr i{font-style:normal;font-weight:900;color:#2f6b45}
+.lgr.me{background:#fff6d6;border-radius:12px}
+.onl input{width:100%;box-sizing:border-box;border:2px solid #1d2a22;border-radius:14px;padding:14px;font-size:18px;font-family:inherit;margin:8px 0}
+.dvs{display:flex;justify-content:space-between;align-items:center;gap:8px;background:#f4f7f5;border-radius:16px;padding:12px;margin:8px 0;font-weight:800}
+.dvs div{flex:1;text-align:center;overflow:hidden}.dvs div small{display:block;color:var(--muted);font-weight:600;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dvs div b{font-size:24px}
+.dlink{word-break:break-all;background:#f4f7f5;border-radius:12px;padding:10px;font-size:14px;margin:8px 0;user-select:all}
+.gwa{display:block;width:100%;box-sizing:border-box;text-align:center;text-decoration:none;border-radius:14px;padding:14px;font-size:16px;font-weight:900;color:#fff;background:#25d366;margin-top:10px}
 .gsec{width:100%;margin-top:10px;border:2px solid #1d2a22;background:#fff;border-radius:14px;padding:14px;font-size:16px;font-weight:800;font-family:inherit}
 #nav button{font-size:11px}
 .seg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0 4px}
@@ -5688,8 +5701,32 @@ const GM={title:["Оюн","Ойын","Игра","Game"],lvl:["Уровень","�
   A:["Угуп тап","Тыңдап тап","Аудирование","Listening"],X:["Чоң сынак","Үлкен сынақ","Большой экзамен","Big test"]},
  time:["сек","сек","сек","sec"],timeup:["Убакыт бүттү ⏰","Уақыт бітті ⏰","Время вышло ⏰","Time's up ⏰"],
  hard:["Кыйынчылык","Қиындық","Сложность","Difficulty"],need:["Мурунку уровенди өтүңүз","Алдыңғы деңгейді өтіңіз","Сначала пройдите предыдущий","Pass the previous level first"]};
+const NM={league:["ALGA лигасы","ALGA лигасы","Лига ALGA","ALGA League"],duel:["Дуэль","Дуэль","Дуэль","Duel"],
+ week:["Бул жуманын рейтинги","Осы аптаның рейтингі","Рейтинг недели","This week's ranking"],
+ weekSub:["Ар бир өткөн уровень XP берет. Дүйшөмбүдө жаңы жума башталат.","Әр өткен деңгей XP береді. Дүйсенбіде жаңа апта басталады.","Каждый пройденный уровень даёт XP. Новая неделя — с понедельника.","Every level gives XP. A new week starts on Monday."],
+ empty:["Азырынча эч ким жок — биринчи болуңуз!","Әзірге ешкім жоқ — бірінші болыңыз!","Пока никого — будьте первым!","Nobody yet — be the first!"],
+ name:["Атыңызды жазыңыз (рейтингде көрүнөт)","Атыңызды жазыңыз (рейтингте көрінеді)","Ваше имя (будет видно в рейтинге)","Your name (shown in the ranking)"],
+ save:["Сактоо","Сақтау","Сохранить","Save"],
+ neterr:["Интернет жок же сервер жооп берген жок. Кайра аракет кылыңыз.","Интернет жоқ немесе сервер жауап бермеді. Қайта көріңіз.","Нет интернета или сервер не ответил. Попробуйте ещё раз.","No internet or the server didn't respond. Try again."],
+ reload:["Жаңылоо","Жаңарту","Обновить","Refresh"],dnew:["⚔️ Жаңы дуэль баштоо","⚔️ Жаңа дуэль бастау","⚔️ Начать новую дуэль","⚔️ Start a new duel"],
+ dhow:["Суроолорго жооп бериңиз, анан шилтемени досуңузга жөнөтүңүз. Ал ошол эле суроолорго жооп берет — ким көп тапса, ошол жеңет!","Сұрақтарға жауап беріңіз, сосын сілтемені досыңызға жіберіңіз. Ол сол сұрақтарға жауап береді — кім көп тапса, сол жеңеді!","Ответьте на вопросы и отправьте ссылку другу. Он ответит на те же вопросы — кто больше угадает, тот победил!","Answer the questions, then send the link to a friend. They get the same questions — most correct answers wins!"],
+ mine:["Менин дуэлдерим","Менің дуэльдерім","Мои дуэли","My duels"],wait:["күтүүдө…","күтуде…","ждём…","waiting…"],
+ send:["Досуңузга жөнөтүңүз:","Досыңызға жіберіңіз:","Отправьте другу:","Send to a friend:"],share:["Бөлүшүү","Бөлісу","Поделиться","Share"],copied:["Көчүрүлдү ✓","Көшірілді ✓","Скопировано ✓","Copied ✓"],
+ invite:["сизди дуэлге чакырды! ⚔️","сізді дуэльге шақырды! ⚔️","вызывает вас на дуэль! ⚔️","challenges you to a duel! ⚔️"],
+ inv2:["Сиз жеңе аласызбы? Суроолор ошол эле.","Сіз жеңе аласыз ба? Сұрақтар сол.","Сможете победить? Вопросы те же.","Can you beat it? Same questions."],
+ accept:["Кабыл алуу","Қабылдау","Принять","Accept"],notfound:["Дуэль табылган жок","Дуэль табылмады","Дуэль не найдена","Duel not found"],
+ won:["Сиз жеңдиңиз! 🏆","Сіз жеңдіңіз! 🏆","Вы победили! 🏆","You won! 🏆"],lost:["Бул жолу утулдуңуз 💪","Бұл жолы ұтылдыңыз 💪","В этот раз проигрыш 💪","You lost this time 💪"],tie:["Тең чыкты 🤝","Тең түсті 🤝","Ничья 🤝","It's a tie 🤝"],
+ taken:["Бул дуэлди башка бирөө ойноп койгон","Бұл дуэльді басқа біреу ойнап қойған","Эту дуэль уже сыграл другой","Someone else already played this duel"],
+ msg:["⚔️ Айдоочунун англисчеси: мени менен дуэлге чык! Менин упайым {s}. Жеңе аласыңбы? 👉 ","⚔️ Ағылшын тілі: менімен дуэльге шық! Менің ұпайым {s}. Жеңе аласың ба? 👉 ","⚔️ Английский для водителей: вызываю на дуэль! Мой счёт {s}. Сможешь победить? 👉 ","⚔️ English for truck drivers: duel me! My score is {s}. Can you beat it? 👉 "],
+ back:["← Артка","← Артқа","← Назад","← Back"],you:["сиз","сіз","вы","you"],pts:["туура","дұрыс","верно","correct"]};
+const SB_URL="https://ecfuobsggznwierzsgux.supabase.co", SB_KEY="sb_publishable_SzZgKSXOMNvDtcmPGc8Kvw_X8w9QvZg";
+async function rpc(fn,body){ const ctl=new AbortController(); const tm=setTimeout(()=>ctl.abort(),12000);
+  try{ const r=await fetch(SB_URL+"/rest/v1/rpc/"+fn,{method:"POST",headers:{apikey:SB_KEY,"Content-Type":"application/json"},body:JSON.stringify(body),signal:ctl.signal});
+    if(!r.ok) throw new Error("http "+r.status); const t=await r.text(); return t?JSON.parse(t):null; } finally{ clearTimeout(tm); } }
 const GU_IC={P:"🔧",S:"🚦",W:"💬",D:"🍎",A:"🎧",X:"🏆"};
-const shuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]];}return a;};
+let RND=Math.random;
+const seeded=s=>()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};
+const shuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=RND()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]];}return a;};
 const GRP=new Map();
 const POOLS=(()=>{
   const P=TOPICS.find(t=>t.parts).cards.filter(c=>c[5]); P.forEach(c=>GRP.set(c,"p"+c[7]));
@@ -5718,6 +5755,38 @@ const gCfg=i=>{ const d=gDiff(i), boss=LEVELS[i].u==="X";
            time: i<6?0:Math.max(7,Math.round(16-10*d)-(boss?2:0)), close: d>=.2, reverse: d>=.35, listen: d>=.5 }; };
 let GP=(()=>{try{return JSON.parse(localStorage.getItem("game")||"null")||{done:{},xp:0,streak:0,day:""};}catch(e){return {done:{},xp:0,streak:0,day:""};}})();
 const gsave=()=>{try{localStorage.setItem("game",JSON.stringify(GP));}catch(e){}};
+if(!GP.pid){ try{ GP.pid=Array.from(crypto.getRandomValues(new Uint8Array(10)),b=>b.toString(16).padStart(2,"0")).join(""); }catch(e){ GP.pid="p"+Date.now().toString(36)+Math.random().toString(36).slice(2,10); } gsave(); }
+function pushXp(x){ GP.pend=(GP.pend||0)+x; gsave(); if(!GP.nm||GP.pend<1) return; const v=Math.min(300,GP.pend);
+  rpc("add_xp",{p_id:GP.pid,p_name:GP.nm,p_xp:v}).then(()=>{ GP.pend=Math.max(0,(GP.pend||0)-v); gsave(); }).catch(()=>{}); }
+const dWin=(a,am,b,bm)=> a>b?1:(a<b?-1:(am<bm?1:(am>bm?-1:0)));
+const dLink=c=> location.origin+location.pathname+"#d="+c;
+function loadOnline(){ S.gdata=null; S.gerr=0; const v=S.gv;
+  const p= v==="league"?rpc("league",{p_id:GP.pid}) : v==="duels"?rpc("duel_mine",{p_id:GP.pid}) : v==="invite"?rpc("duel_get",{p_code:S.dc}) : null;
+  if(!p) return; p.then(r=>{ if(S.gv===v){ S.gdata=r||[]; if(S.tab===3&&!S.g) render(); } }).catch(()=>{ if(S.gv===v){ S.gerr=1; if(S.tab===3&&!S.g) render(); } }); }
+function gStartDuel(lvl,seed,join){ RND=seeded(seed); let qs; try{ qs=gMakeQ(lvl); } finally{ RND=Math.random; }
+  S.g={i:lvl,qs,pos:0,pick:null,hearts:99,maxH:0,wrong:0,end:null,timeout:false,duel:{seed,join},t0:Date.now()}; S.gv=null; }
+function viewOnline(){
+  const top=`<button class="gsec" data-gact="gback" style="margin-top:14px">${NM.back[L]}</button>`;
+  if(!GP.nm) return hero()+top+`<div class="onl"><h2>👤</h2><small>${NM.name[L]}</small><input id="gname" maxlength="20" autocomplete="nickname"><button class="main" data-gact="savename">${NM.save[L]}</button></div>`;
+  const wait=S.gerr?`<p>${NM.neterr[L]}</p><button class="gsec" data-gact="reload">${NM.reload[L]}</button>`:`<p style="text-align:center;font-size:30px">⏳</p>`;
+  const D=S.gdata;
+  if(S.gv==="league"){
+    const rows=!D?wait:(!D.length?`<p>${NM.empty[L]}</p>`:D.map((r,k)=>`<div class="lgr ${r.is_me?"me":""}"><b>${["🥇","🥈","🥉"][k]||k+1}</b><span>${esc(r.name)}${r.is_me?" ("+NM.you[L]+")":""}</span><i>${r.xp} XP</i></div>`).join(""));
+    return hero()+top+`<div class="onl"><h2>🏆 ${NM.league[L]}</h2><small>${NM.week[L]} · ${NM.weekSub[L]}</small>${rows}</div>`;
+  }
+  if(S.gv==="duels"){
+    const rows=!D?wait:D.map(r=>`<div class="dvs"><div><small>${esc(r.a_name)}</small><b>${r.a_score}</b></div>⚔️<div><small>${r.b_name?esc(r.b_name):NM.wait[L]}</small><b>${r.b_name?r.b_score:"…"}</b></div></div>`).join("");
+    return hero()+top+`<div class="onl"><h2>⚔️ ${NM.duel[L]}</h2><small>${NM.dhow[L]}</small><button class="main" data-gact="dnew">${NM.dnew[L]}</button></div>`+(D&&!D.length?"":`<div class="onl"><h2>${NM.mine[L]}</h2>${rows}</div>`);
+  }
+  if(S.gv==="invite"){
+    if(!D) return hero()+top+`<div class="onl">${wait}</div>`;
+    const r=D[0]; if(!r) return hero()+top+`<div class="onl"><h2>${NM.notfound[L]}</h2><button class="main" data-gact="duels">${NM.dnew[L]}</button></div>`;
+    const n=gCfg(r.lvl).n;
+    if(r.b_name) return hero()+top+`<div class="onl"><h2>⚔️</h2><div class="dvs"><div><small>${esc(r.a_name)}</small><b>${r.a_score}/${n}</b></div>⚔️<div><small>${esc(r.b_name)}</small><b>${r.b_score}/${n}</b></div></div><small>${NM.taken[L]}</small><button class="main" data-gact="duels">${NM.dnew[L]}</button></div>`;
+    return hero()+top+`<div class="onl" style="text-align:center"><div class="gbig">⚔️</div><h2>${esc(r.a_name)} ${NM.invite[L]}</h2><div class="dvs"><div><small>${esc(r.a_name)}</small><b>${r.a_score}/${n}</b></div></div><small>${NM.inv2[L]}</small><button class="main" data-gact="djoin">${NM.accept[L]}</button></div>`;
+  }
+  S.gv=null; return viewGame();
+}
 const gUnlocked=i=> i===0 || (GP.done[i-1]>0);
 const trTxt=c=> L<3 ? c[2+L] : c[1];
 function gBeep(ok){ try{ const A=window.__ac||(window.__ac=new (window.AudioContext||window.webkitAudioContext)()); const t=A.currentTime;
@@ -5729,10 +5798,10 @@ function gMakeQ(i){
   return items.slice(0,C.n).map(c=>{
     const u=pick(c); let type;
     if(lv.u==="A") type="listen";
-    else if(u==="P") type=Math.random()<(C.reverse?.4:.65)?"img":(C.reverse&&L<3?"en":"tr");
+    else if(u==="P") type=RND()<(C.reverse?.4:.65)?"img":(C.reverse&&L<3?"en":"tr");
     else if(u==="S") type=L<3?"sign":"img";
-    else type=L<3?(Math.random()<(C.reverse?.6:.4)?"en":"tr"):"en";
-    if(C.listen && (u==="W"||u==="D") && Math.random()<.3) type="listen";
+    else type=L<3?(RND()<(C.reverse?.6:.4)?"en":"tr"):"en";
+    if(C.listen && (u==="W"||u==="D") && RND()<.3) type="listen";
     if(type==="en" && L>=3) type="img";
     const pool=POOLS[u==="X"?"W":u];
     let cand=pool.filter(x=>x!==c&&x[0]!==c[0]&&trTxt(x)!==trTxt(c));
@@ -5745,21 +5814,29 @@ function gMakeQ(i){
   });
 }
 let __gt=null;
-function gTimer(){ clearInterval(__gt); const G=S.g; if(!G||G.end||G.pick!==null) return; const C=gCfg(G.i); if(!C.time) return;
+function gTimer(){ clearInterval(__gt); const G=S.g; if(!G||G.end||G.pick!==null) return; const C=Object.assign({},gCfg(G.i)); if(G.duel&&!C.time) C.time=12; if(!C.time) return;
   G.left=C.time; const t0=Date.now();
   __gt=setInterval(()=>{ const G2=S.g; if(!G2||G2!==G||G.pick!==null||G.end){ clearInterval(__gt); return; }
     const left=Math.max(0,C.time-(Date.now()-t0)/1000); const bar=document.getElementById("gtime"); if(bar){ bar.style.width=(left/C.time*100)+"%"; bar.parentNode.classList.toggle("warn",left<4); }
     if(left<=0){ clearInterval(__gt); G.pick=-1; G.timeout=true; G.hearts--; G.wrong++; gBeep(false); render(); } },100); }
 function gStart(i){ const C=gCfg(i); S.g={i,qs:gMakeQ(i),pos:0,pick:null,hearts:C.hearts,maxH:C.hearts,wrong:0,end:null,timeout:false}; }
-function gFinish(){ const G=S.g; if(G.hearts<=0){G.end="lose";return;}
+function gFinish(){ const G=S.g;
+  if(G.duel){ clearInterval(__gt); G.end="duel"; G.score=G.qs.length-G.wrong; G.ms=Date.now()-G.t0; const D=G.duel; pushXp(5+G.score);
+    try{ window.goatcounter&&goatcounter.count&&goatcounter.count({path:D.join?"duel-join":"duel-new",title:"Дуэль",event:true}); }catch(e){}
+    const fail=()=>{ G.derr=1; if(S.g===G) render(); };
+    if(D.join) rpc("duel_join",{p_code:D.join,p_id:GP.pid,p_name:GP.nm,p_score:G.score,p_ms:G.ms}).then(()=>rpc("duel_get",{p_code:D.join})).then(r=>{ G.dres=(r&&r[0])||{}; if(S.g===G) render(); }).catch(fail);
+    else rpc("duel_new",{p_id:GP.pid,p_name:GP.nm,p_lvl:G.i,p_seed:D.seed,p_score:G.score,p_ms:G.ms}).then(c=>{ G.dcode=c; if(S.g===G) render(); }).catch(fail);
+    return; }
+  if(G.hearts<=0){G.end="lose";return;}
   const stars=G.wrong===0?3:(G.wrong<G.maxH-1||G.maxH===1?2:1); G.end="win"; G.stars=stars;
   GP.done[G.i]=Math.max(GP.done[G.i]||0,stars); GP.xp+=10+stars*5;
   const today=new Date().toDateString(), y=new Date(Date.now()-864e5).toDateString();
-  GP.streak = GP.day===today?GP.streak:(GP.day===y?GP.streak+1:1); GP.day=today; gsave();
+  GP.streak = GP.day===today?GP.streak:(GP.day===y?GP.streak+1:1); GP.day=today; gsave(); pushXp(10+stars*5);
   try{ window.goatcounter&&goatcounter.count&&goatcounter.count({path:"game-level-"+(G.i+1),title:"Оюн",event:true}); }catch(e){}
 }
 function viewGame(){
   const G=S.g;
+  if(!G && S.gv) return viewOnline();
   if(!G){
     const doneN=Object.keys(GP.done).filter(k=>GP.done[k]>0).length;
     let cur=LEVELS.findIndex((_,i)=>!(GP.done[i]>0)); if(cur<0) cur=LEVELS.length-1;
@@ -5775,7 +5852,19 @@ function viewGame(){
     }).join("");
     return hero() + demoBar() + `<div class="gtop"><div><b>🎮 ${GM.title[L]}</b><small>${GM.sub[L]}</small></div>
       <div class="gstats"><span>⭐ ${GP.xp} ${GM.xp[L]}</span><span>🔥 ${GP.streak} ${GM.days[L]}</span><span>🏁 ${doneN}/${LEVELS.length}</span></div></div>
+      <div class="gmodes"><button data-gact="league">🏆 ${NM.league[L]}</button><button data-gact="duels">⚔️ ${NM.duel[L]}</button></div>
       <div class="gpath">${nodes}</div>`;
+  }
+  if(G.end==="duel"){ const n=G.qs.length, D=G.duel; let body;
+    if(G.derr) body=`<p>${NM.neterr[L]}</p>`;
+    else if(D.join){ const r=G.dres; if(!r) body=`<p>⏳</p>`; else {
+        const mine=r.b_score===G.score&&r.b_ms===G.ms; const w=dWin(G.score,G.ms,r.a_score,r.a_ms);
+        body=`<div class="dvs"><div><small>${esc(r.a_name||"?")}</small><b>${r.a_score}/${n}</b><small>⏱ ${((r.a_ms||0)/1000).toFixed(1)}</small></div>⚔️<div><small>${esc(GP.nm)}</small><b>${G.score}/${n}</b><small>⏱ ${(G.ms/1000).toFixed(1)}</small></div></div>`+
+          (mine?`<h2>${w>0?NM.won[L]:w<0?NM.lost[L]:NM.tie[L]}</h2>`:`<p>${NM.taken[L]}</p>`); } }
+    else if(!G.dcode) body=`<p>⏳</p>`;
+    else { const link=dLink(G.dcode), txt=NM.msg[L].replace("{s}",G.score+"/"+n);
+      body=`<p>${NM.send[L]}</p><div class="dlink">${esc(link)}</div><a class="gwa" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(txt+link)}">WhatsApp</a><button class="main" style="margin-top:10px" data-gact="dshare">${NM.share[L]}</button>`; }
+    return `<div class="gend w"><div class="gbig">⚔️</div><h2>${G.score}/${n} ${NM.pts[L]}</h2><p>⏱ ${(G.ms/1000).toFixed(1)} ${GM.time[L]}</p>${body}<button class="gsec" data-gact="map">${GM.map[L]}</button></div>`;
   }
   if(G.end){
     const win=G.end==="win";
@@ -5791,8 +5880,8 @@ function viewGame(){
     : (POOLS.D.includes(c) ? `<div class="gemo">${c[5]}</div>` : "")+`<div class="gword">${esc(q.type==="en"?trTxt(c):c[0])}</div>`;
   const qt = {img:GM.q_img,sign:GM.q_sign,tr:GM.q_tr,en:GM.q_en,listen:GM.q_listen}[q.type][L];
   const picked=G.pick!==null;
-  return `<div class="gbar"><button class="gx" data-gact="map">✕</button><div class="gprog"><i style="width:${(G.pos+(picked?1:0))/n*100}%"></i></div><b class="gh">${"❤️".repeat(Math.max(0,G.hearts))}${"🤍".repeat(Math.max(0,G.maxH-G.hearts))}</b></div>
-    ${gCfg(G.i).time&&!picked?`<div class="gtimer"><i id="gtime" style="width:100%"></i></div>`:""}
+  return `<div class="gbar"><button class="gx" data-gact="map">✕</button><div class="gprog"><i style="width:${(G.pos+(picked?1:0))/n*100}%"></i></div><b class="gh">${G.duel?"⚔️ ✅"+(G.pos+(picked?1:0)-G.wrong):"❤️".repeat(Math.max(0,G.hearts))+"🤍".repeat(Math.max(0,G.maxH-G.hearts))}</b></div>
+    ${(gCfg(G.i).time||G.duel)&&!picked?`<div class="gtimer"><i id="gtime" style="width:100%"></i></div>`:""}
     <div class="gq"><div class="gqt">${GM.lvl[L]} ${G.i+1} · ${qt}</div>${prompt}</div>
     <div class="gopts">${q.opts.map((o,k)=>`<button class="gopt ${picked?(k===q.ans?"ok":(k===G.pick?"no":"dim")):""}" data-ga="${k}">${esc(o)}</button>`).join("")}</div>
     ${picked?`<div class="gfb ${G.pick===q.ans?"ok":"no"}"><b>${G.pick===q.ans?GM.ok[L]:(G.timeout?GM.timeup[L]+" ":"")+GM.bad[L]+" "+esc(q.opts[q.ans])}</b>
@@ -5805,7 +5894,19 @@ document.addEventListener("click",e=>{
     if(!__ok && i>1){ __lockOpen=true; __msg=""; lockView(); window.scrollTo(0,0); return; }
     if(!gUnlocked(i)){ try{ b.animate([{transform:"translateX(-8px)"},{transform:"translateX(8px)"},{transform:"translateX(0)"}],{duration:300}); }catch(e){} return; }
     gStart(i); render(); window.scrollTo(0,0); gTimer(); if(S.g.qs[0].type==="listen") setTimeout(()=>speak(S.g.qs[0].c[0],"g"),300); return; }
+  const og=d.gact;
+  if(og==="league"||og==="duels"||og==="reload"){ clearInterval(__gt); S.g=null; if(og!=="reload") S.gv=og; loadOnline(); render(); window.scrollTo(0,0); return; }
+  if(og==="gback"){ S.gv=null; S.gdata=null; render(); window.scrollTo(0,0); return; }
+  if(og==="savename"){ const v=((document.getElementById("gname")||{}).value||"").trim().replace(/\s+/g," ").slice(0,20); if(!v) return;
+    GP.nm=v; gsave(); pushXp(0); loadOnline(); render(); return; }
+  if(og==="dnew"||og==="djoin"){ let lvl,seed,join=null;
+    if(og==="djoin"){ const r=S.gdata&&S.gdata[0]; if(!r) return; lvl=r.lvl; seed=r.seed; join=S.dc; }
+    else { const dl=[]; LEVELS.forEach((lv,i)=>{ if(i>=6&&i<=34&&lv.u!=="X") dl.push(i); }); lvl=dl[Math.random()*dl.length|0]; seed=Math.random()*2e9|0; }
+    gStartDuel(lvl,seed,join); render(); window.scrollTo(0,0); gTimer(); if(S.g.qs[0].type==="listen") setTimeout(()=>speak(S.g.qs[0].c[0],"g"),300); return; }
   const G=S.g; if(!G) return;
+  if(og==="dshare"&&G.dcode){ const link=dLink(G.dcode), txt=NM.msg[L].replace("{s}",G.score+"/"+G.qs.length);
+    if(navigator.share){ navigator.share({text:txt,url:link}).catch(()=>{}); }
+    else { try{ navigator.clipboard.writeText(txt+link); b.textContent=NM.copied[L]; }catch(e){} } return; }
   if(d.ga!==undefined && G.pick===null){ clearInterval(__gt); const q=G.qs[G.pos]; G.pick=+d.ga; const ok=G.pick===q.ans; gBeep(ok);
     if(!ok){ G.hearts--; G.wrong++; } try{ speak(q.c[0],"g"); }catch(e){} render(); return; }
   if(d.gact==="say"){ speak(G.qs[G.pos].c[0],"g"); return; }
@@ -5813,7 +5914,7 @@ document.addEventListener("click",e=>{
     render(); window.scrollTo(0,0); gTimer(); if(!S.g.end && S.g.qs[S.g.pos].type==="listen") setTimeout(()=>speak(S.g.qs[S.g.pos].c[0],"g"),250); return; }
   if(d.gact==="next"){ const i=G.i+1; if(!(GP.done[G.i]>0)) return; if(!__ok && i>1){ S.g=null; __lockOpen=true; lockView(); return; } gStart(i); render(); window.scrollTo(0,0); gTimer(); return; }
   if(d.gact==="retry"){ gStart(G.i); render(); gTimer(); return; }
-  if(d.gact==="map"){ clearInterval(__gt); S.g=null; render(); window.scrollTo(0,0); return; }
+  if(d.gact==="map"){ clearInterval(__gt); const wasD=G.duel; S.g=null; if(wasD){ S.gv="duels"; loadOnline(); } render(); window.scrollTo(0,0); return; }
 },true);
 
 function stopSpeech(){ try{ const s=window.speechSynthesis; if(s && (s.speaking||s.pending)) s.cancel(); }catch(e){} }
@@ -5888,6 +5989,7 @@ document.addEventListener("click",e=>{
   render(); window.scrollTo(0,0);
 });
 
+(()=>{ const m=(location.hash||"").match(/d=([A-Za-z0-9]{6})/); if(m){ S.tab=3; S.gv="invite"; S.dc=m[1].toUpperCase(); try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){} loadOnline(); } })();
 (async()=>{ try{ if(document.referrer.indexOf("android-app://com.aidoochu.english")===0) localStorage.setItem("twa","1"); if(localStorage.getItem("twa")==="1"){ __ok=true; render(); return; } }catch(e){}
   let c=null; try{ c=localStorage.getItem("act"); }catch(e){} if(!c){ const m=document.cookie.match(/(?:^|; )act=([A-Za-z0-9_-]+)/); if(m) c=m[1]; } if(c && await checkCode(c)) __ok=true; render(); })();
 if("serviceWorker" in navigator && location.protocol==="https:"){ try{ navigator.serviceWorker.register("sw.js").catch(()=>{}); }catch(e){} }
