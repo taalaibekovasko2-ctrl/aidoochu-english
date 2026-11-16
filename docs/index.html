@@ -377,6 +377,13 @@ html,body{background:#f7f7f5;color:#111}
 .lgr{border-color:#E2E2DE}.lgr i{color:#c25e00}.lgr.me{background:#FFF1DC}
 .dvs,.dlink{background:#EFEFEC;color:#111}
 .gx{color:#111}
+.fundbar{display:block;width:100%;text-align:left;border:0;border-radius:18px;margin:12px 0 0;padding:14px 16px;background:linear-gradient(135deg,#1f7a4a,#14563a);color:#fff;font-family:inherit;box-shadow:var(--shadow)}
+.fundbar b{display:block;font-size:19px}.fundbar span{font-size:15px;opacity:.9}
+.fnote{color:#6b6b6b;font-size:15px;margin:0 0 12px}
+.fund{background:#fff;border-radius:22px;overflow:hidden;box-shadow:var(--shadow);margin:0 0 16px;border:2px solid #e2e2de}
+.fund img{width:100%;height:200px;object-fit:cover;display:block}.fund .fb{padding:16px}
+.fund h3{font-size:21px;margin:0 0 4px}.fund small{color:#6b6b6b;font-size:15px}.fund p{font-size:16px;line-height:1.45;margin:8px 0}
+.fg{font-weight:800;margin:6px 0 12px}.fgo{display:block;text-align:center;text-decoration:none;background:#1f9d55!important;border-color:#1f9d55!important;color:#fff!important}
 .inst{display:flex;align-items:center;gap:8px;background:#111;color:#fff;border-radius:18px;padding:12px 12px 12px 16px;margin:12px 0 0;font-weight:800;font-size:16px}
 .inst span{flex:1}.inst small{display:block;font-weight:600;font-size:14px;color:#ccc;margin-top:3px}
 .inst button{border:0;border-radius:12px;background:#ff9000;color:#000;font-weight:900;padding:10px 14px;font-family:inherit;font-size:15px}
@@ -5807,7 +5814,25 @@ const instBar=()=>{ if(STANDALONE) return ""; let hide=false; try{ hide=localSto
 document.addEventListener("click",e=>{ const b=e.target.closest("[data-in]"); if(!b) return; e.stopPropagation();
   if(b.dataset.in==="go"&&__bip){ __bip.prompt(); __bip.userChoice.finally(()=>{ __bip=null; render(); }); }
   if(b.dataset.in==="x"){ try{ localStorage.setItem("instx","1"); }catch(e){} render(); } },true);
-const demoBar = () => instBar() + (__ok ? "" : `<div class="demo"><span>${DM.t[L]}${PROMO?`<br>🎁 <b>${esc(PROMO)}</b> — ${PM.tap[L]}`:""}</span><button data-lk="open">${DM.b[L]}</button></div>`);
+// ===== Сборлор (жардам) =====
+// Жаңы сбор кошуу: {title, who, text, img (шилтеме же бош), url: GoFundMe шилтемеси, goal: максат $}
+const FUNDS=[];
+const FD={h:["🤝 Сборлор — жардам","🤝 Жиналым — көмек","🤝 Сборы — помощь","🤝 Fundraisers"],
+ sub:["Айдоочуларга жана үй-бүлөлөрүнө бирге жардам берели","Жүргізушілерге бірге көмектесейік","Поможем водителям и их семьям вместе","Let's help drivers and their families"],
+ give:["💚 Жардам берүү","💚 Көмектесу","💚 Помочь","💚 Donate"],share:["Бөлүшүү","Бөлісу","Поделиться","Share"],goal:["Максат","Мақсат","Цель","Goal"],
+ note:["Акча GoFundMe аркылуу түз алуучуга барат. Ким канча салганы GoFundMe барагында автоматтык көрүнөт.","Ақша GoFundMe арқылы тікелей алушыға барады.","Деньги идут напрямую получателю через GoFundMe. Кто сколько дал — видно на странице GoFundMe автоматически.","Money goes directly to the recipient via GoFundMe; donations are tracked there automatically."],
+ open:["Сборлорду көрүү","Жиналымдарды көру","Смотреть сборы","See fundraisers"]};
+const fundBar=()=> FUNDS.length?`<button class="fundbar" data-fd="open"><b>${FD.h[L]}</b><span>${FD.sub[L]} →</span></button>`:"";
+function viewFunds(){ return hero()+`<button class="gsec" data-fd="back" style="margin-top:14px">${NM.back[L]}</button>
+  <div class="h2">${FD.h[L]}</div><p class="fnote">${FD.note[L]}</p>`+FUNDS.map((f,i)=>`<div class="fund">${f.img?`<img src="${esc(f.img)}" alt="" loading="lazy">`:""}
+   <div class="fb"><h3>${esc(f.title)}</h3>${f.who?`<small>👤 ${esc(f.who)}</small>`:""}<p>${esc(f.text||"")}</p>${f.goal?`<div class="fg">🎯 ${FD.goal[L]}: $${Number(f.goal).toLocaleString("en-US")}</div>`:""}
+   <a class="main fgo" href="${esc(f.url)}" target="_blank" rel="noopener" data-fgo="${i}">${FD.give[L]}</a><button class="gsec" data-fd="share" data-i="${i}">📤 ${FD.share[L]}</button></div></div>`).join(""); }
+document.addEventListener("click",e=>{ const g=e.target.closest("[data-fgo]"); if(g){ try{ window.goatcounter&&goatcounter.count&&goatcounter.count({path:"fund-"+g.dataset.fgo,title:"Сбор басылды",event:true}); }catch(x){} return; }
+  const b=e.target.closest("[data-fd]"); if(!b) return; e.stopPropagation(); const k=b.dataset.fd;
+  if(k==="open"){ S.fund=true; stopSpeech(); render(); window.scrollTo(0,0); }
+  if(k==="back"){ S.fund=false; render(); window.scrollTo(0,0); }
+  if(k==="share"){ const f=FUNDS[+b.dataset.i]; const t=`🤝 ${f.title}\n${f.url}`; if(navigator.share) navigator.share({text:t}).catch(()=>{}); else copyText(t,b); } },true);
+const demoBar = () => fundBar() + instBar() + (__ok ? "" : `<div class="demo"><span>${DM.t[L]}${PROMO?`<br>🎁 <b>${esc(PROMO)}</b> — ${PM.tap[L]}`:""}</span><button data-lk="open">${DM.b[L]}</button></div>`);
 let __lockOpen=false;
 /* ===== ОЮН (уровендер) ===== */
 const GM={title:["Оюн","Ойын","Игра","Game"],lvl:["Уровень","Деңгей","Уровень","Level"],
@@ -6211,7 +6236,7 @@ function render(anim){
   document.title = UI.title[L];
   $("#nav").innerHTML = ["cards","chat","quiz","game"].map((ic,i)=>
     `<button class="${S.tab===i?"on":""}" data-tab="${i}">${icon(ic,22)}${UI.tabs[L][i]}</button>`).join("");
-  $("#app").innerHTML = [viewCards,viewTalk,viewSit,viewGame][S.tab]();
+  $("#app").innerHTML = S.fund ? viewFunds() : [viewCards,viewTalk,viewSit,viewGame][S.tab]();
   const c=$("#card"); if(c && anim) c.classList.add(anim>0?"in-l":"in-r");
   bindSwipe(); mark(); wsearch();
 }
@@ -6257,7 +6282,7 @@ document.addEventListener("click",e=>{
   if(d.act==="say"){ return speak(TOPICS[S.topic].cards[S.i][0], "card"); }
   if(d.act==="next"){ return move(1); }
   if(d.act==="prev"){ return move(-1); }
-  if(d.tab){ S.tab=+d.tab; S.topic=null; S.dialog=null; S.shop=false; S.cat=false; }
+  if(d.tab){ S.tab=+d.tab; S.topic=null; S.dialog=null; S.shop=false; S.cat=false; S.fund=false; }
   else if(d.topic){ S.topic=+d.topic; S.i=0; S.open=false; S.cat=!!TOPICS[S.topic].groups; S.grp=null; }
   else if(d.dialog){ S.dialog=+d.dialog; }
   else if(d.sitcat){ startRun(d.sitcat); }
@@ -6278,7 +6303,7 @@ document.addEventListener("click",e=>{
 (()=>{ const m=(location.hash||"").match(/d=([A-Za-z0-9]{6})/); if(m){ S.tab=3; S.gv="invite"; S.dc=m[1].toUpperCase(); try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){} loadOnline(); } })();
 (async()=>{ try{ if(document.referrer.indexOf("android-app://com.aidoochu.english")===0) localStorage.setItem("twa","1"); if(localStorage.getItem("twa")==="1"){ __ok=true; render(); return; } const po=localStorage.getItem("promoOk"); if(po&&PROMOS[po]){ __ok=true; render(); return; } }catch(e){}
   let c=null; try{ c=localStorage.getItem("act"); }catch(e){} if(!c){ const m=document.cookie.match(/(?:^|; )act=([A-Za-z0-9_-]+)/); if(m) c=m[1]; } if(c && await checkCode(c)) __ok=true; render(); })();
-const APP_VER="aidoochu-v27";
+const APP_VER="aidoochu-v28";
 function checkUpdate(){ if(location.protocol!=="https:") return; if((S.g&&!S.g.end)||(S.m&&!S.m.end)) return;
   fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(r=>r.ok?r.text():"").then(v=>{ v=(v||"").trim(); if(!v||v===APP_VER) return;
     let tried=""; try{ tried=sessionStorage.getItem("upd")||""; }catch(e){} if(tried===v) return; try{ sessionStorage.setItem("upd",v); }catch(e){}
