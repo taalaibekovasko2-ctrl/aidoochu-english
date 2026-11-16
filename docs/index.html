@@ -379,6 +379,14 @@ html,body{background:#f7f7f5;color:#111}
 .gx{color:#111}
 .fundbar{display:block;width:100%;text-align:left;border:0;border-radius:18px;margin:12px 0 0;padding:14px 16px;background:linear-gradient(135deg,#1f7a4a,#14563a);color:#fff;font-family:inherit;box-shadow:var(--shadow)}
 .fundbar b{display:block;font-size:19px}.fundbar span{font-size:15px;opacity:.9}
+.foodbar{display:block;width:100%;text-align:left;border:0;border-radius:18px;margin:12px 0 0;padding:14px 16px;background:linear-gradient(135deg,#c2410c,#9a3412);color:#fff;font-family:inherit;box-shadow:var(--shadow)}
+.foodbar b{display:block;font-size:19px}.foodbar span{font-size:15px;opacity:.92}
+.fst{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 4px}.fst button{border:2px solid #e2e2de;background:#fff;border-radius:999px;padding:8px 14px;font-weight:800;font-size:15px;font-family:inherit}
+.fcity{font-weight:900;font-size:19px;margin:18px 0 8px}.fcity span{background:#ff9000;color:#000;border-radius:999px;padding:1px 10px;font-size:14px;margin-left:4px}
+.food{background:#fff;border:2px solid #e2e2de;border-radius:18px;padding:14px;margin:0 0 10px}
+.food .ft{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.food .ft b{font-size:19px}.food .ft span{background:#fff1dc;color:#9a3412;font-weight:800;font-size:13px;border-radius:999px;padding:3px 10px}
+.food p{margin:6px 0;font-size:16px;line-height:1.4}.fbtn{display:flex;gap:8px;margin-top:10px}
+.fbtn a{flex:1;text-align:center;text-decoration:none;border-radius:12px;padding:11px;font-weight:800;font-size:16px;background:#111;color:#fff}.fbtn a+a{background:#1f9d55}
 .fnote{color:#6b6b6b;font-size:15px;margin:0 0 12px}
 .fund{background:#fff;border-radius:22px;overflow:hidden;box-shadow:var(--shadow);margin:0 0 16px;border:2px solid #e2e2de}
 .fund img{width:100%;height:200px;object-fit:cover;display:block}.fund .fb{padding:16px}
@@ -5820,6 +5828,36 @@ const instBar=()=>{ if(STANDALONE) return ""; let hide=false; try{ hide=localSto
 document.addEventListener("click",e=>{ const b=e.target.closest("[data-in]"); if(!b) return; e.stopPropagation();
   if(b.dataset.in==="go"&&__bip){ __bip.prompt(); __bip.userChoice.finally(()=>{ __bip=null; render(); }); }
   if(b.dataset.in==="x"){ try{ localStorage.setItem("instx","1"); }catch(e){} render(); } },true);
+// ===== Тамак-аш (СНГ кафе, ресторан, дүкөн) — кыргызча гана =====
+// Жаңы жер кошуу: {name, type:"кафе|ресторан|дүкөн|бакалея|нан", city:"Чикаго", cityEn:"Chicago", state:"IL", addr:"толук дарек", phone:"+1...", food:"лагман, плов, манты", hours:"10:00–22:00", note:""}
+const FOODS=[];
+const STATES={AL:"Алабама",AK:"Аляска",AZ:"Аризона",AR:"Арканзас",CA:"Калифорния",CO:"Колорадо",CT:"Коннектикут",DE:"Делавэр",FL:"Флорида",GA:"Джорджия",HI:"Гавайи",ID:"Айдахо",IL:"Иллинойс",IN:"Индиана",IA:"Айова",KS:"Канзас",KY:"Кентукки",LA:"Луизиана",ME:"Мэн",MD:"Мэриленд",MA:"Массачусетс",MI:"Мичиган",MN:"Миннесота",MS:"Миссисипи",MO:"Миссури",MT:"Монтана",NE:"Небраска",NV:"Невада",NH:"Нью-Гэмпшир",NJ:"Нью-Джерси",NM:"Нью-Мексико",NY:"Нью-Йорк",NC:"Түндүк Каролина",ND:"Түндүк Дакота",OH:"Огайо",OK:"Оклахома",OR:"Орегон",PA:"Пенсильвания",RI:"Род-Айленд",SC:"Түштүк Каролина",SD:"Түштүк Дакота",TN:"Теннесси",TX:"Техас",UT:"Юта",VT:"Вермонт",VA:"Вирджиния",WA:"Вашингтон",WV:"Батыш Вирджиния",WI:"Висконсин",WY:"Вайоминг",DC:"Вашингтон DC"};
+const TR={"а":"a","б":"b","в":"v","г":"g","д":"d","е":"e","ё":"e","ж":"zh","з":"z","и":"i","й":"y","к":"k","л":"l","м":"m","н":"n","ң":"n","о":"o","ө":"o","п":"p","р":"r","с":"s","т":"t","у":"u","ү":"u","ф":"f","х":"h","ц":"ts","ч":"ch","ш":"sh","щ":"sh","ъ":"","ы":"y","ь":"","э":"e","ю":"yu","я":"ya"};
+const fnorm=t=>String(t||"").toLowerCase().split("").map(c=>TR[c]!==undefined?TR[c]:c).join("").replace(/[^a-z0-9]/g,"").replace(/ch/g,"k").replace(/c/g,"k").replace(/q/g,"k").replace(/x/g,"ks").replace(/w/g,"v").replace(/y/g,"i").replace(/(.)\1+/g,"$1");
+const foodHay=f=>[f.name,f.city,f.cityEn,f.state,STATES[f.state],f.food,f.type,f.addr].map(fnorm).join("|");
+function foodFind(q){ const qs=String(q||"").trim().split(/[\s,]+/).filter(Boolean).map(fnorm).filter(Boolean); if(!qs.length) return FOODS.slice();
+  return FOODS.filter(f=>{ const h=foodHay(f); return qs.every(x=>h.includes(x)); }); }
+const fesc=t=>esc(t||"");
+function foodCards(list){
+  if(!list.length) return `<div class="fund"><div class="fb" style="text-align:center"><div style="font-size:46px">🍽️</div><h3>${FOODS.length?"Бул шаардан азырынча жер табылган жок":"Азырынча тизме бош"}</h3><p>Жакшы СНГ кафе же дүкөн билсеңиз, бизге жазыңыз — тизмеге кошобуз.</p>
+    <a class="wa" href="https://wa.me/${WA_NUM}?text=${encodeURIComponent("Салам! Тамак-аш тизмесине жер кошуу керек:")}" target="_blank" rel="noopener">💬 WhatsApp · ${WA_NAME}</a></div></div>`;
+  const by={}; list.forEach(f=>{ const k=(f.city||"")+", "+(f.state||""); (by[k]=by[k]||[]).push(f); });
+  return Object.keys(by).sort().map(k=>`<div class="fcity">📍 ${fesc(k)}${STATES[by[k][0].state]?` · ${STATES[by[k][0].state]}`:""} <span>${by[k].length}</span></div>`+by[k].map(f=>`<div class="food">
+    <div class="ft"><b>${fesc(f.name)}</b>${f.type?`<span>${fesc(f.type)}</span>`:""}</div>
+    ${f.food?`<p>🍲 ${fesc(f.food)}</p>`:""}${f.addr?`<p>🏠 ${fesc(f.addr)}</p>`:""}${f.hours?`<p>🕒 ${fesc(f.hours)}</p>`:""}${f.note?`<p>ℹ️ ${fesc(f.note)}</p>`:""}
+    <div class="fbtn">${f.addr?`<a href="https://maps.google.com/?q=${encodeURIComponent(f.name+" "+f.addr)}" target="_blank" rel="noopener">🗺️ Карта</a>`:""}${f.phone?`<a href="tel:${fesc(f.phone.replace(/[^0-9+]/g,""))}">📞 Чалуу</a>`:""}</div></div>`).join("")).join(""); }
+const foodBar=()=>`<button class="foodbar" data-fo="open"><b>🍲 СНГ тамак-аштар</b><span>Шаарыңызды жазыңыз — жакын кафе, дүкөндөр чыгат →</span></button>`;
+function viewFood(){ const st=[...new Set(FOODS.map(f=>f.state).filter(Boolean))].sort();
+  return hero()+`<button class="gsec" data-fo="back" style="margin-top:14px">← Артка</button>
+  <div class="h2">🍲 СНГ тамак-аштар</div><p class="fnote">Кыргыз, казак, өзбек, орус ашканалары жана дүкөндөрү. Шаардын же штаттын атын жазыңыз.</p>
+  <input class="wsearch" id="fq" placeholder="Мисалы: Чикаго, Нью-Йорк, лагман…" value="${fesc(S.fq||"")}" autocomplete="off">
+  ${st.length?`<div class="fst">${st.map(x=>`<button data-fs="${x}">${STATES[x]||x}</button>`).join("")}</div>`:""}
+  <div id="fres">${foodCards(foodFind(S.fq))}</div>`; }
+document.addEventListener("input",e=>{ if(e.target.id!=="fq") return; S.fq=e.target.value; const r=document.getElementById("fres"); if(r) r.innerHTML=foodCards(foodFind(S.fq)); });
+document.addEventListener("click",e=>{ const s2=e.target.closest("[data-fs]"); if(s2){ e.stopPropagation(); S.fq=STATES[s2.dataset.fs]||s2.dataset.fs; const i=document.getElementById("fq"); if(i) i.value=S.fq; document.getElementById("fres").innerHTML=foodCards(foodFind(S.fq)); return; }
+  const b=e.target.closest("[data-fo]"); if(!b) return; e.stopPropagation();
+  if(b.dataset.fo==="open"){ S.food=true; S.fund=false; stopSpeech(); render(); window.scrollTo(0,0); try{ window.goatcounter&&goatcounter.count&&goatcounter.count({path:"food-open",title:"Тамак-аш",event:true}); }catch(x){} }
+  if(b.dataset.fo==="back"){ S.food=false; render(); window.scrollTo(0,0); } },true);
 // ===== Сборлор (жардам) =====
 // Жаңы сбор кошуу: {title, who, text, img (шилтеме же бош), url: GoFundMe шилтемеси, goal: максат $}
 const FUNDS=[];
@@ -5849,7 +5887,7 @@ document.addEventListener("click",e=>{ const g=e.target.closest("[data-fgo]"); i
   if(k==="back"){ S.fund=false; render(); window.scrollTo(0,0); }
   if(k==="zcopy"){ const f=FUNDS[+b.dataset.i]; copyText(String(f.zelle).replace(/[^0-9a-zA-Z@._+-]/g,""),null); b.textContent="✓ "+FD.copied[L]; try{ window.goatcounter&&goatcounter.count&&goatcounter.count({path:"zelle-"+b.dataset.i,title:"Zelle көчүрүлдү",event:true}); }catch(x){} return; }
   if(k==="share"){ const f=FUNDS[+b.dataset.i]; const t=`🤝 ${f.title}`+(f.zelle?`\nZelle: ${f.zelle} (${f.zname||""})`:"")+(f.url?`\n${f.url}`:"")+`\n${location.origin+location.pathname}`; if(navigator.share) navigator.share({text:t}).catch(()=>{}); else copyText(t,b); } },true);
-const demoBar = () => fundBar() + instBar() + (__ok ? "" : `<div class="demo"><span>${DM.t[L]}${PROMO?`<br>🎁 <b>${esc(PROMO)}</b> — ${PM.tap[L]}`:""}</span><button data-lk="open">${DM.b[L]}</button></div>`);
+const demoBar = () => foodBar() + fundBar() + instBar() + (__ok ? "" : `<div class="demo"><span>${DM.t[L]}${PROMO?`<br>🎁 <b>${esc(PROMO)}</b> — ${PM.tap[L]}`:""}</span><button data-lk="open">${DM.b[L]}</button></div>`);
 let __lockOpen=false;
 /* ===== ОЮН (уровендер) ===== */
 const GM={title:["Оюн","Ойын","Игра","Game"],lvl:["Уровень","Деңгей","Уровень","Level"],
@@ -6253,7 +6291,7 @@ function render(anim){
   document.title = UI.title[L];
   $("#nav").innerHTML = ["cards","chat","quiz","game"].map((ic,i)=>
     `<button class="${S.tab===i?"on":""}" data-tab="${i}">${icon(ic,22)}${UI.tabs[L][i]}</button>`).join("");
-  $("#app").innerHTML = S.fund ? viewFunds() : [viewCards,viewTalk,viewSit,viewGame][S.tab]();
+  $("#app").innerHTML = S.food ? viewFood() : S.fund ? viewFunds() : [viewCards,viewTalk,viewSit,viewGame][S.tab]();
   const c=$("#card"); if(c && anim) c.classList.add(anim>0?"in-l":"in-r");
   bindSwipe(); mark(); wsearch();
 }
@@ -6299,7 +6337,7 @@ document.addEventListener("click",e=>{
   if(d.act==="say"){ return speak(TOPICS[S.topic].cards[S.i][0], "card"); }
   if(d.act==="next"){ return move(1); }
   if(d.act==="prev"){ return move(-1); }
-  if(d.tab){ S.tab=+d.tab; S.topic=null; S.dialog=null; S.shop=false; S.cat=false; S.fund=false; }
+  if(d.tab){ S.tab=+d.tab; S.topic=null; S.dialog=null; S.shop=false; S.cat=false; S.fund=false; S.food=false; }
   else if(d.topic){ S.topic=+d.topic; S.i=0; S.open=false; S.cat=!!TOPICS[S.topic].groups; S.grp=null; }
   else if(d.dialog){ S.dialog=+d.dialog; }
   else if(d.sitcat){ startRun(d.sitcat); }
@@ -6320,7 +6358,7 @@ document.addEventListener("click",e=>{
 (()=>{ const m=(location.hash||"").match(/d=([A-Za-z0-9]{6})/); if(m){ S.tab=3; S.gv="invite"; S.dc=m[1].toUpperCase(); try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){} loadOnline(); } })();
 (async()=>{ try{ if(document.referrer.indexOf("android-app://com.aidoochu.english")===0) localStorage.setItem("twa","1"); if(localStorage.getItem("twa")==="1"){ __ok=true; render(); return; } const po=localStorage.getItem("promoOk"); if(po&&PROMOS[po]){ __ok=true; render(); return; } }catch(e){}
   let c=null; try{ c=localStorage.getItem("act"); }catch(e){} if(!c){ const m=document.cookie.match(/(?:^|; )act=([A-Za-z0-9_-]+)/); if(m) c=m[1]; } if(c && await checkCode(c)) __ok=true; render(); })();
-const APP_VER="aidoochu-v31";
+const APP_VER="aidoochu-v32";
 function checkUpdate(){ if(location.protocol!=="https:") return; if((S.g&&!S.g.end)||(S.m&&!S.m.end)) return;
   fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(r=>r.ok?r.text():"").then(v=>{ v=(v||"").trim(); if(!v||v===APP_VER) return;
     let tried=""; try{ tried=sessionStorage.getItem("upd")||""; }catch(e){} if(tried===v) return; try{ sessionStorage.setItem("upd",v); }catch(e){}
