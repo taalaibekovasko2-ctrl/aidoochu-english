@@ -366,6 +366,10 @@ html,body{background:#f7f7f5;color:#111}
 .lgr{border-color:#E2E2DE}.lgr i{color:#c25e00}.lgr.me{background:#FFF1DC}
 .dvs,.dlink{background:#EFEFEC;color:#111}
 .gx{color:#111}
+.inst{display:flex;align-items:center;gap:8px;background:#111;color:#fff;border-radius:18px;padding:12px 12px 12px 16px;margin:12px 0 0;font-weight:800;font-size:16px}
+.inst span{flex:1}.inst small{display:block;font-weight:600;font-size:14px;color:#ccc;margin-top:3px}
+.inst button{border:0;border-radius:12px;background:#ff9000;color:#000;font-weight:900;padding:10px 14px;font-family:inherit;font-size:15px}
+.inst button.x{background:transparent;color:#999;padding:6px 8px}
 .promo{background:#fff1dc;border:2px dashed var(--or);border-radius:16px;padding:12px 14px;margin:6px 0 12px;font-size:17px;line-height:1.45}
 .promo .prow{margin-top:8px}.promo .err{margin:4px 0 0}
 .prow{display:flex;gap:8px;margin:4px 0 0}.prow input{flex:1;min-width:0;border:2px solid #cfcfca;border-radius:12px;padding:11px;font-size:16px;font-family:inherit;text-transform:uppercase}
@@ -5783,7 +5787,23 @@ const DM = {t:["🎁 Сынап көрүү: ар бөлүмдө 2 тема бе�
   wa:["WhatsApp аркылуу сатып алуу","WhatsApp арқылы сатып алу","Купить через WhatsApp","Buy via WhatsApp"],
   call:["Чалуу","Қоңырау шалу","Позвонить","Call"],
   msg:["Салам! «Айдоочунун англисчеси» колдонмосун сатып алгым келет. Менин ID:","Сәлем! «Айдоочунун англисчеси» қосымшасын сатып алғым келеді. Менің ID:","Здравствуйте! Хочу купить приложение «Айдоочунун англисчеси». Мой ID:","Hi! I want to buy the Trucker English app. My ID:"]};
-const demoBar = () => __ok ? "" : `<div class="demo"><span>${DM.t[L]}${PROMO?`<br>🎁 <b>${esc(PROMO)}</b> — ${PM.tap[L]}`:""}</span><button data-lk="open">${DM.b[L]}</button></div>`;
+let __bip=null;
+const STANDALONE=(()=>{ try{ return matchMedia("(display-mode: standalone)").matches||navigator.standalone===true; }catch(e){ return false; } })();
+const IS_IOS=/iPhone|iPad|iPod/.test(navigator.userAgent), IS_AND=/Android/i.test(navigator.userAgent);
+window.addEventListener("beforeinstallprompt",e=>{ e.preventDefault(); __bip=e; if(S.tab===0&&!S.g) render(); });
+window.addEventListener("appinstalled",()=>{ __bip=null; try{ localStorage.setItem("inst","1"); }catch(e){} render(); });
+const IN={t:["📲 Колдонмону телефонго орнотуңуз","📲 Қолданбаны телефонға орнатыңыз","📲 Установите приложение на телефон","📲 Install the app on your phone"],
+ b:["Орнотуу","Орнату","Установить","Install"],
+ ios:["Safari'де ылдыйдагы ⬆️ «Бөлүшүү» → «На экран Домой» басыңыз","Safari-де ⬆️ «Бөлісу» → «На экран Домой» басыңыз","В Safari нажмите ⬆️ «Поделиться» → «На экран Домой»","In Safari tap ⬆️ Share → Add to Home Screen"],
+ and:["Chrome'до ⋮ меню → «Установить приложение» же «Добавить на главный экран» басыңыз","Chrome-да ⋮ мәзір → «Установить приложение» басыңыз","В Chrome нажмите ⋮ → «Установить приложение»","In Chrome tap ⋮ → Install app"]};
+const instBar=()=>{ if(STANDALONE) return ""; let hide=false; try{ hide=localStorage.getItem("instx")==="1"||localStorage.getItem("inst")==="1"; }catch(e){} if(hide) return "";
+  if(__bip) return `<div class="inst"><span>${IN.t[L]}</span><button data-in="go">${IN.b[L]}</button><button class="x" data-in="x">✕</button></div>`;
+  if(IS_IOS||IS_AND) return `<div class="inst"><span>${IN.t[L]}<small>${(IS_IOS?IN.ios:IN.and)[L]}</small></span><button class="x" data-in="x">✕</button></div>`;
+  return ""; };
+document.addEventListener("click",e=>{ const b=e.target.closest("[data-in]"); if(!b) return; e.stopPropagation();
+  if(b.dataset.in==="go"&&__bip){ __bip.prompt(); __bip.userChoice.finally(()=>{ __bip=null; render(); }); }
+  if(b.dataset.in==="x"){ try{ localStorage.setItem("instx","1"); }catch(e){} render(); } },true);
+const demoBar = () => instBar() + (__ok ? "" : `<div class="demo"><span>${DM.t[L]}${PROMO?`<br>🎁 <b>${esc(PROMO)}</b> — ${PM.tap[L]}`:""}</span><button data-lk="open">${DM.b[L]}</button></div>`);
 let __lockOpen=false;
 /* ===== ОЮН (уровендер) ===== */
 const GM={title:["Оюн","Ойын","Игра","Game"],lvl:["Уровень","Деңгей","Уровень","Level"],
@@ -6254,7 +6274,7 @@ document.addEventListener("click",e=>{
 (()=>{ const m=(location.hash||"").match(/d=([A-Za-z0-9]{6})/); if(m){ S.tab=3; S.gv="invite"; S.dc=m[1].toUpperCase(); try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){} loadOnline(); } })();
 (async()=>{ try{ if(document.referrer.indexOf("android-app://com.aidoochu.english")===0) localStorage.setItem("twa","1"); if(localStorage.getItem("twa")==="1"){ __ok=true; render(); return; } const po=localStorage.getItem("promoOk"); if(po&&PROMOS[po]){ __ok=true; render(); return; } }catch(e){}
   let c=null; try{ c=localStorage.getItem("act"); }catch(e){} if(!c){ const m=document.cookie.match(/(?:^|; )act=([A-Za-z0-9_-]+)/); if(m) c=m[1]; } if(c && await checkCode(c)) __ok=true; render(); })();
-const APP_VER="aidoochu-v23";
+const APP_VER="aidoochu-v24";
 function checkUpdate(){ if(location.protocol!=="https:") return; if((S.g&&!S.g.end)||(S.m&&!S.m.end)) return;
   fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(r=>r.ok?r.text():"").then(v=>{ v=(v||"").trim(); if(!v||v===APP_VER) return;
     let tried=""; try{ tried=sessionStorage.getItem("upd")||""; }catch(e){} if(tried===v) return; try{ sessionStorage.setItem("upd",v); }catch(e){}
