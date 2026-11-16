@@ -71,7 +71,9 @@ svg{display:block}
 .gst{margin-top:10px;color:#e0a800;font-size:17px;letter-spacing:2px;min-height:18px}.gst small{color:var(--muted);font-size:11.5px;letter-spacing:0;font-weight:700}
 .gbar{display:flex;align-items:center;gap:12px;margin:14px 0}.gx{border:0;background:none;font-size:24px;color:#6b786f;font-family:inherit}
 .gprog{flex:1;height:16px;background:#e2e8e3;border-radius:99px;overflow:hidden}.gprog i{display:block;height:100%;background:linear-gradient(90deg,#58c27d,#2f6b45);border-radius:99px;transition:width .3s}
-.gh{font-size:18px;color:#d0342c}
+.gh{font-size:16px;letter-spacing:1px}
+.gtimer{height:8px;background:#e2e8e3;border-radius:99px;overflow:hidden;margin:-6px 0 12px}.gtimer i{display:block;height:100%;background:#3f8fd8;border-radius:99px}.gtimer.warn i{background:#d0342c}
+.gnode.boss{width:100px;height:100px;background:#e9d7a8;box-shadow:0 7px 0 #b89a4f}.gnode.boss.done{background:#f2b705;box-shadow:0 7px 0 #b88a00}
 .gq{background:var(--card);border-radius:24px;box-shadow:var(--shadow);padding:18px;text-align:center;margin-bottom:14px}
 .gqt{font-weight:800;color:var(--muted);font-size:15px;margin-bottom:12px}
 .gimg{width:100%;max-height:260px;object-fit:contain;border-radius:16px;background:#fff}
@@ -5683,49 +5685,74 @@ const GM={title:["Оюн","Ойын","Игра","Game"],lvl:["Уровень","�
  map:["Картага","Картаға","К карте","Back to map"],play:["Ойноо","Ойнау","Играть","Play"],
  units:{P:["Тетиктер","Бөлшектер","Запчасти","Truck parts"],S:["Жол белгилери","Жол белгілері","Дорожные знаки","Road signs"],
   W:["Айдоочунун сөздөрү","Жүргізуші сөздері","Слова водителя","Driver words"],D:["Күнүмдүк сөздөр","Күнделікті сөздер","Слова на каждый день","Everyday words"],
-  A:["Угуп тап","Тыңдап тап","Аудирование","Listening"]}};
-const GU_IC={P:"🔧",S:"🚦",W:"💬",D:"🍎",A:"🎧"};
+  A:["Угуп тап","Тыңдап тап","Аудирование","Listening"],X:["Чоң сынак","Үлкен сынақ","Большой экзамен","Big test"]},
+ time:["сек","сек","сек","sec"],timeup:["Убакыт бүттү ⏰","Уақыт бітті ⏰","Время вышло ⏰","Time's up ⏰"],
+ hard:["Кыйынчылык","Қиындық","Сложность","Difficulty"],need:["Мурунку уровенди өтүңүз","Алдыңғы деңгейді өтіңіз","Сначала пройдите предыдущий","Pass the previous level first"]};
+const GU_IC={P:"🔧",S:"🚦",W:"💬",D:"🍎",A:"🎧",X:"🏆"};
 const shuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]];}return a;};
+const GRP=new Map();
 const POOLS=(()=>{
-  const P=TOPICS.find(t=>t.parts).cards.filter(c=>c[5]);
-  const S=TOPICS.find(t=>t.signs).cards;
-  const W=[].concat(...TOPICS.filter(t=>!t.daily&&!t.parts&&!t.signs).map(t=>t.cards)).filter(c=>c[0].length<=34);
-  const D=[].concat(...TOPICS.filter(t=>t.daily).map(t=>t.cards)).filter(c=>c[0].length<=24&&c[5]&&!/[?!]/.test(c[0]));
+  const P=TOPICS.find(t=>t.parts).cards.filter(c=>c[5]); P.forEach(c=>GRP.set(c,"p"+c[7]));
+  const S=TOPICS.find(t=>t.signs).cards; S.forEach(c=>GRP.set(c,"s"+c[7]));
+  const W=[]; TOPICS.forEach((t,ti)=>{ if(t.daily||t.parts||t.signs) return; t.cards.forEach(c=>{ if(c[0].length<=34){ W.push(c); GRP.set(c,"w"+ti);} }); });
+  const D=[]; TOPICS.forEach((t,ti)=>{ if(!t.daily) return; t.cards.forEach(c=>{ if(c[0].length<=24&&c[5]&&!/[?!]/.test(c[0])){ D.push(c); GRP.set(c,"d"+ti);} }); });
   return {P,S,W,D,A:W.filter(c=>c[0].length<=26)};
 })();
 const LEVELS=(()=>{
   const chunk=(u,n,size)=>{const pool=POOLS[u],out=[];for(let i=0;i<n;i++){const it=pool.slice(i*size,i*size+size);if(it.length>=8)out.push({u,items:it});}return out;};
-  const P=chunk("P",11,12),S=chunk("S",8,12),W=chunk("W",14,12),D=chunk("D",14,12),A=chunk("A",8,12);
-  const L=[];let k=0;
-  while(P.length||S.length||W.length||D.length||A.length){
-    for(const arr of [W,P,D,S]) if(arr.length) L.push(arr.shift());
-    if(++k%1===0 && A.length && k>1) L.push(A.shift());
+  const src={W:chunk("W",10,10),P:chunk("P",10,10),D:chunk("D",12,12),S:chunk("S",9,10),A:chunk("A",7,9)};
+  const order=["W","P","D","S","A"]; const L=[]; let k=0, normal=0;
+  const boss=()=>{ const seen=[].concat(...L.filter(x=>x.u!=="X").map(x=>x.items)); L.push({u:"X",items:shuf(seen.slice(-70)).slice(0,40)}); };
+  while(order.some(u=>src[u].length)){
+    const u=order[k++%order.length]; if(!src[u].length) continue;
+    L.push(src[u].shift()); normal++; if(normal%5===0) boss();
   }
+  if(L[L.length-1].u!=="X") boss();
   return L;
 })();
+const NL=LEVELS.length;
+// кыйынчылык: 0 (оңой) → 1 (эң кыйын)
+const gDiff=i=> i/(NL-1);
+const gCfg=i=>{ const d=gDiff(i), boss=LEVELS[i].u==="X";
+  return { n: Math.round(10+6*d)+(boss?4:0), opts: d<.25?4:(d<.6?5:6), hearts: boss?(d<.5?2:1):(d<.4?3:(d<.75?2:1)),
+           time: i<6?0:Math.max(7,Math.round(16-10*d)-(boss?2:0)), close: d>=.2, reverse: d>=.35, listen: d>=.5 }; };
 let GP=(()=>{try{return JSON.parse(localStorage.getItem("game")||"null")||{done:{},xp:0,streak:0,day:""};}catch(e){return {done:{},xp:0,streak:0,day:""};}})();
 const gsave=()=>{try{localStorage.setItem("game",JSON.stringify(GP));}catch(e){}};
 const gUnlocked=i=> i===0 || (GP.done[i-1]>0);
 const trTxt=c=> L<3 ? c[2+L] : c[1];
 function gBeep(ok){ try{ const A=window.__ac||(window.__ac=new (window.AudioContext||window.webkitAudioContext)()); const t=A.currentTime;
   (ok?[660,880]:[300,220]).forEach((f,i)=>{const o=A.createOscillator(),g=A.createGain();o.type=ok?"sine":"triangle";o.frequency.value=f;g.gain.setValueAtTime(.0001,t+i*.09);g.gain.exponentialRampToValueAtTime(.18,t+i*.09+.02);g.gain.exponentialRampToValueAtTime(.0001,t+i*.09+.22);o.connect(g);g.connect(A.destination);o.start(t+i*.09);o.stop(t+i*.09+.25);}); }catch(e){} }
-function gMakeQ(lv){
-  const pool=POOLS[lv.u], items=shuf(lv.items).slice(0,10);
-  return items.map(c=>{
-    let type;
+function gMakeQ(i){
+  const lv=LEVELS[i], C=gCfg(i);
+  const pick=it=>{ const u = lv.u!=="X" ? lv.u : (POOLS.P.includes(it)?"P":POOLS.S.includes(it)?"S":POOLS.D.includes(it)?"D":"W"); return u; };
+  const items=[]; let base=shuf(lv.items); while(items.length<C.n) items.push(...base); 
+  return items.slice(0,C.n).map(c=>{
+    const u=pick(c); let type;
     if(lv.u==="A") type="listen";
-    else if(lv.u==="P") type=Math.random()<.6?"img":"tr";
-    else if(lv.u==="S") type=Math.random()<.6?"sign":"img";
-    else type=L<3?(Math.random()<.5?"tr":"en"):"en";
-    const others=shuf(pool.filter(x=>x!==c&&x[0]!==c[0])).slice(0,3);
-    const opts=shuf([c,...others]);
+    else if(u==="P") type=Math.random()<(C.reverse?.4:.65)?"img":(C.reverse&&L<3?"en":"tr");
+    else if(u==="S") type=L<3?"sign":"img";
+    else type=L<3?(Math.random()<(C.reverse?.6:.4)?"en":"tr"):"en";
+    if(C.listen && (u==="W"||u==="D") && Math.random()<.3) type="listen";
+    if(type==="en" && L>=3) type="img";
+    const pool=POOLS[u==="X"?"W":u];
+    let cand=pool.filter(x=>x!==c&&x[0]!==c[0]&&trTxt(x)!==trTxt(c));
+    if(C.close){ const same=cand.filter(x=>GRP.get(x)===GRP.get(c)); if(same.length>=C.opts-1) cand=same.concat(shuf(cand).slice(0,4)); }
     const label=x=> (type==="tr"||type==="sign") ? trTxt(x) : x[0];
+    const others=[]; const seenL=new Set([label(c)]);
+    for(const x of shuf(cand)){ const l=label(x); if(!seenL.has(l)){ seenL.add(l); others.push(x);} if(others.length>=C.opts-1) break; }
+    const opts=shuf([c,...others]);
     return {c,type,opts:opts.map(label),ans:opts.indexOf(c)};
   });
 }
-function gStart(i){ const lv=LEVELS[i]; S.g={i,qs:gMakeQ(lv),pos:0,pick:null,hearts:3,wrong:0,end:null}; }
+let __gt=null;
+function gTimer(){ clearInterval(__gt); const G=S.g; if(!G||G.end||G.pick!==null) return; const C=gCfg(G.i); if(!C.time) return;
+  G.left=C.time; const t0=Date.now();
+  __gt=setInterval(()=>{ const G2=S.g; if(!G2||G2!==G||G.pick!==null||G.end){ clearInterval(__gt); return; }
+    const left=Math.max(0,C.time-(Date.now()-t0)/1000); const bar=document.getElementById("gtime"); if(bar){ bar.style.width=(left/C.time*100)+"%"; bar.parentNode.classList.toggle("warn",left<4); }
+    if(left<=0){ clearInterval(__gt); G.pick=-1; G.timeout=true; G.hearts--; G.wrong++; gBeep(false); render(); } },100); }
+function gStart(i){ const C=gCfg(i); S.g={i,qs:gMakeQ(i),pos:0,pick:null,hearts:C.hearts,maxH:C.hearts,wrong:0,end:null,timeout:false}; }
 function gFinish(){ const G=S.g; if(G.hearts<=0){G.end="lose";return;}
-  const stars=G.wrong===0?3:G.wrong===1?2:1; G.end="win"; G.stars=stars;
+  const stars=G.wrong===0?3:(G.wrong<G.maxH-1||G.maxH===1?2:1); G.end="win"; G.stars=stars;
   GP.done[G.i]=Math.max(GP.done[G.i]||0,stars); GP.xp+=10+stars*5;
   const today=new Date().toDateString(), y=new Date(Date.now()-864e5).toDateString();
   GP.streak = GP.day===today?GP.streak:(GP.day===y?GP.streak+1:1); GP.day=today; gsave();
@@ -5737,14 +5764,14 @@ function viewGame(){
     const doneN=Object.keys(GP.done).filter(k=>GP.done[k]>0).length;
     let cur=LEVELS.findIndex((_,i)=>!(GP.done[i]>0)); if(cur<0) cur=LEVELS.length-1;
     let lastU=null;
-    const nodes=LEVELS.map((lv,i)=>{
+    const nodes=LEVELS.map((lv,i)=>{ const boss=lv.u==="X";
       const st=GP.done[i]||0, open=gUnlocked(i), locked=!open||(!__ok&&i>1), isCur=i===cur&&open;
       const off=[0,60,90,60,0,-60,-90,-60][i%8];
       const head = lv.u!==lastU ? "" : ""; lastU=lv.u;
       return `<div class="gnode-w" style="transform:translateX(${off}px)">
-        <button class="gnode ${st?"done":""} ${isCur?"cur":""} ${locked?"lk":""}" data-gl="${i}">
+        <button class="gnode ${boss?"boss":""} ${st?"done":""} ${isCur?"cur":""} ${locked?"lk":""}" data-gl="${i}">
           <span class="gi">${locked&&!st?"🔒":GU_IC[lv.u]}</span><span class="gn">${i+1}</span></button>
-        <div class="gst">${st?"★".repeat(st)+"☆".repeat(3-st):`<small>${esc(GM.units[lv.u][L])}</small>`}</div></div>`;
+        <div class="gst">${st?"★".repeat(st)+"☆".repeat(3-st):`<small>${esc(GM.units[lv.u][L])} · ${"❤️".repeat(gCfg(i).hearts)}${gCfg(i).time?" ⏱"+gCfg(i).time:""}</small>`}</div></div>`;
     }).join("");
     return hero() + demoBar() + `<div class="gtop"><div><b>🎮 ${GM.title[L]}</b><small>${GM.sub[L]}</small></div>
       <div class="gstats"><span>⭐ ${GP.xp} ${GM.xp[L]}</span><span>🔥 ${GP.streak} ${GM.days[L]}</span><span>🏁 ${doneN}/${LEVELS.length}</span></div></div>
@@ -5764,10 +5791,11 @@ function viewGame(){
     : (POOLS.D.includes(c) ? `<div class="gemo">${c[5]}</div>` : "")+`<div class="gword">${esc(q.type==="en"?trTxt(c):c[0])}</div>`;
   const qt = {img:GM.q_img,sign:GM.q_sign,tr:GM.q_tr,en:GM.q_en,listen:GM.q_listen}[q.type][L];
   const picked=G.pick!==null;
-  return `<div class="gbar"><button class="gx" data-gact="map">✕</button><div class="gprog"><i style="width:${(G.pos+(picked?1:0))/n*100}%"></i></div><b class="gh">❤️ ${G.hearts}</b></div>
-    <div class="gq"><div class="gqt">${qt}</div>${prompt}</div>
+  return `<div class="gbar"><button class="gx" data-gact="map">✕</button><div class="gprog"><i style="width:${(G.pos+(picked?1:0))/n*100}%"></i></div><b class="gh">${"❤️".repeat(Math.max(0,G.hearts))}${"🤍".repeat(Math.max(0,G.maxH-G.hearts))}</b></div>
+    ${gCfg(G.i).time&&!picked?`<div class="gtimer"><i id="gtime" style="width:100%"></i></div>`:""}
+    <div class="gq"><div class="gqt">${GM.lvl[L]} ${G.i+1} · ${qt}</div>${prompt}</div>
     <div class="gopts">${q.opts.map((o,k)=>`<button class="gopt ${picked?(k===q.ans?"ok":(k===G.pick?"no":"dim")):""}" data-ga="${k}">${esc(o)}</button>`).join("")}</div>
-    ${picked?`<div class="gfb ${G.pick===q.ans?"ok":"no"}"><b>${G.pick===q.ans?GM.ok[L]:GM.bad[L]+" "+esc(q.opts[q.ans])}</b>
+    ${picked?`<div class="gfb ${G.pick===q.ans?"ok":"no"}"><b>${G.pick===q.ans?GM.ok[L]:(G.timeout?GM.timeup[L]+" ":"")+GM.bad[L]+" "+esc(q.opts[q.ans])}</b>
       <div class="gfbw">${esc(c[0])} · <span>${esc(c[1]||"")}</span></div><button data-gact="cont">${GM.cont[L]}</button></div>`:""}`;
 }
 document.addEventListener("click",e=>{
@@ -5775,16 +5803,17 @@ document.addEventListener("click",e=>{
   const d=b.dataset;
   if(d.gl!==undefined){ const i=+d.gl;
     if(!__ok && i>1){ __lockOpen=true; __msg=""; lockView(); window.scrollTo(0,0); return; }
-    if(!gUnlocked(i)) return; gStart(i); render(); window.scrollTo(0,0); return; }
+    if(!gUnlocked(i)){ try{ b.animate([{transform:"translateX(-8px)"},{transform:"translateX(8px)"},{transform:"translateX(0)"}],{duration:300}); }catch(e){} return; }
+    gStart(i); render(); window.scrollTo(0,0); gTimer(); if(S.g.qs[0].type==="listen") setTimeout(()=>speak(S.g.qs[0].c[0],"g"),300); return; }
   const G=S.g; if(!G) return;
-  if(d.ga!==undefined && G.pick===null){ const q=G.qs[G.pos]; G.pick=+d.ga; const ok=G.pick===q.ans; gBeep(ok);
+  if(d.ga!==undefined && G.pick===null){ clearInterval(__gt); const q=G.qs[G.pos]; G.pick=+d.ga; const ok=G.pick===q.ans; gBeep(ok);
     if(!ok){ G.hearts--; G.wrong++; } try{ speak(q.c[0],"g"); }catch(e){} render(); return; }
   if(d.gact==="say"){ speak(G.qs[G.pos].c[0],"g"); return; }
-  if(d.gact==="cont"){ if(G.hearts<=0){ gFinish(); } else if(G.pos+1>=G.qs.length){ gFinish(); } else { G.pos++; G.pick=null; }
-    render(); window.scrollTo(0,0); if(!S.g.end && S.g.qs[S.g.pos].type==="listen") setTimeout(()=>speak(S.g.qs[S.g.pos].c[0],"g"),250); return; }
-  if(d.gact==="next"){ const i=G.i+1; if(!__ok && i>1){ S.g=null; __lockOpen=true; lockView(); return; } gStart(i); render(); window.scrollTo(0,0); return; }
-  if(d.gact==="retry"){ gStart(G.i); render(); return; }
-  if(d.gact==="map"){ S.g=null; render(); window.scrollTo(0,0); return; }
+  if(d.gact==="cont"){ if(G.hearts<=0){ gFinish(); } else if(G.pos+1>=G.qs.length){ gFinish(); } else { G.pos++; G.pick=null; G.timeout=false; }
+    render(); window.scrollTo(0,0); gTimer(); if(!S.g.end && S.g.qs[S.g.pos].type==="listen") setTimeout(()=>speak(S.g.qs[S.g.pos].c[0],"g"),250); return; }
+  if(d.gact==="next"){ const i=G.i+1; if(!(GP.done[G.i]>0)) return; if(!__ok && i>1){ S.g=null; __lockOpen=true; lockView(); return; } gStart(i); render(); window.scrollTo(0,0); gTimer(); return; }
+  if(d.gact==="retry"){ gStart(G.i); render(); gTimer(); return; }
+  if(d.gact==="map"){ clearInterval(__gt); S.g=null; render(); window.scrollTo(0,0); return; }
 },true);
 
 function stopSpeech(){ try{ const s=window.speechSynthesis; if(s && (s.speaking||s.pending)) s.cancel(); }catch(e){} }
