@@ -2,6 +2,17 @@
 <html lang="ky">
 <head>
 <meta charset="UTF-8">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://taalaibekovasko2-ctrl.github.io/aidoochu-english/">
+<meta property="og:title" content="Айдоочунун англисчеси — АКШдагы айдоочулар үчүн English">
+<meta property="og:description" content="Инспектор, тараза, склад, механик — керектүү англисче сөздөр жана сүйлөшүүлөр. Бекер сынап көрүңүз!">
+<meta property="og:image" content="https://taalaibekovasko2-ctrl.github.io/aidoochu-english/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta property="og:image:secure_url" content="https://taalaibekovasko2-ctrl.github.io/aidoochu-english/og.jpg">
+<meta property="og:image:type" content="image/jpeg">
+
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Айдоочунун англисчеси</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -406,13 +417,6 @@ html,body{background:#f7f7f5;color:#111}
 </style>
 <link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#f7f7f5">
 <script data-goatcounter="https://askat.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://taalaibekovasko2-ctrl.github.io/aidoochu-english/">
-<meta property="og:title" content="Айдоочунун англисчеси — АКШдагы айдоочулар үчүн English">
-<meta property="og:description" content="Инспектор, тараза, склад, механик — керектүү англисче сөздөр жана сүйлөшүүлөр. Бекер сынап көрүңүз!">
-<meta property="og:image" content="https://taalaibekovasko2-ctrl.github.io/aidoochu-english/og.jpg">
-<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
-<meta name="twitter:card" content="summary_large_image">
 <meta name="description" content="Инспектор, тараза, склад, механик — керектүү англисче сөздөр жана сүйлөшүүлөр. Бекер сынап көрүңүз!">
 </head>
 <body>
@@ -6274,7 +6278,7 @@ document.addEventListener("click",e=>{
 (()=>{ const m=(location.hash||"").match(/d=([A-Za-z0-9]{6})/); if(m){ S.tab=3; S.gv="invite"; S.dc=m[1].toUpperCase(); try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){} loadOnline(); } })();
 (async()=>{ try{ if(document.referrer.indexOf("android-app://com.aidoochu.english")===0) localStorage.setItem("twa","1"); if(localStorage.getItem("twa")==="1"){ __ok=true; render(); return; } const po=localStorage.getItem("promoOk"); if(po&&PROMOS[po]){ __ok=true; render(); return; } }catch(e){}
   let c=null; try{ c=localStorage.getItem("act"); }catch(e){} if(!c){ const m=document.cookie.match(/(?:^|; )act=([A-Za-z0-9_-]+)/); if(m) c=m[1]; } if(c && await checkCode(c)) __ok=true; render(); })();
-const APP_VER="aidoochu-v25";
+const APP_VER="aidoochu-v26";
 function checkUpdate(){ if(location.protocol!=="https:") return; if((S.g&&!S.g.end)||(S.m&&!S.m.end)) return;
   fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(r=>r.ok?r.text():"").then(v=>{ v=(v||"").trim(); if(!v||v===APP_VER) return;
     let tried=""; try{ tried=sessionStorage.getItem("upd")||""; }catch(e){} if(tried===v) return; try{ sessionStorage.setItem("upd",v); }catch(e){}
