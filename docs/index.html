@@ -5858,22 +5858,18 @@ function foodCards(list){
 const foodBar=()=>`<button class="foodbar" data-fo="open"><b>🍲 СНГ тамак-аштар</b><span>Шаарыңызды жазыңыз — жакын кафе, дүкөндөр чыгат →</span></button>`;
 function viewFood(){ if(!FOOD_ST) foodLoad(); const st=[...new Set(allFoods().map(f=>f.state).filter(Boolean))].sort();
   return hero()+`<button class="gsec" data-fo="back" style="margin-top:14px">← Артка</button>
-  <div class="h2">🍲 СНГ тамак-аштар</div><p class="fnote">Кыргыз, казак, өзбек, орус ашканалары жана дүкөндөрү. Шаардын же штаттын атын жазыңыз.</p>
-  <input class="wsearch" id="fq" placeholder="Мисалы: Чикаго, Нью-Йорк, лагман…" value="${fesc(S.fq||"")}" autocomplete="off">
+  <div class="h2">🍲 СНГ тамак-аштар</div><p class="fnote">АКШдагы СНГ кафелери жана дүкөндөрү. Шаарыңызды жазыңыз.</p>
+  <input class="wsearch" id="fq" placeholder="Шаар: Чикаго, Нью-Йорк…" value="${fesc(S.fq||"")}" autocomplete="off">
   ${st.length?`<div class="fst">${st.map(x=>`<button data-fs="${x}">${STATES[x]||x}</button>`).join("")}</div>`:""}
   ${S.fadm?foodForm():""}<div id="fres">${foodCards(foodFind(S.fq))}</div>
   <button class="fadm" data-fo="adm">${S.fadm?"🔓 Админден чыгуу":"✏️ Админ"}</button>`; }
 function foodForm(){ const opt=Object.keys(STATES).map(k=>`<option value="${k}">${k} — ${STATES[k]}</option>`).join("");
   return `<div class="fform"><h3>➕ Жаңы жер кошуу</h3>
-   <input id="ff_name" placeholder="Аты (мисалы: Бишкек кафе) *">
-   <select id="ff_type"><option>кафе</option><option>ресторан</option><option>дүкөн</option><option>бакалея</option><option>нан</option><option>фуд-трак</option></select>
-   <input id="ff_city" placeholder="Шаар (мисалы: Чикаго) *">
-   <select id="ff_state"><option value="">Штат *</option>${opt}</select>
-   <input id="ff_addr" placeholder="Дарек (англисче, картага керек)">
-   <input id="ff_phone" placeholder="Телефон" inputmode="tel">
-   <input id="ff_food" placeholder="Тамактар: лагман, плов, манты">
-   <input id="ff_hours" placeholder="Убактысы: 10:00–22:00">
-   <input id="ff_note" placeholder="Кошумча (halal, парковка бар…)">
+   <input id="ff_name" placeholder="Кафенин же дүкөндүн аты">
+   <input id="ff_city" placeholder="Шаар (мисалы: Чикаго)">
+   <select id="ff_state"><option value="">Штат</option>${opt}</select>
+   <input id="ff_addr" placeholder="Дарек">
+   <input id="ff_phone" placeholder="Телефон (болсо)" inputmode="tel">
    <button class="main" data-fo="add">Кошуу</button><p class="err" id="ff_err"></p></div>`; }
 document.addEventListener("input",e=>{ if(e.target.id!=="fq") return; S.fq=e.target.value; const r=document.getElementById("fres"); if(r) r.innerHTML=foodCards(foodFind(S.fq)); });
 document.addEventListener("click",e=>{ const s2=e.target.closest("[data-fs]"); if(s2){ e.stopPropagation(); S.fq=STATES[s2.dataset.fs]||s2.dataset.fs; const i=document.getElementById("fq"); if(i) i.value=S.fq; document.getElementById("fres").innerHTML=foodCards(foodFind(S.fq)); return; }
@@ -5884,10 +5880,10 @@ document.addEventListener("click",e=>{ const s2=e.target.closest("[data-fs]"); i
     const pin=prompt("Админ PIN:"); if(!pin) return;
     rpc("admin_ok",{p_pin:pin}).then(ok=>{ if(ok===true){ S.fadm=pin; try{ localStorage.setItem("fpin",pin); }catch(x){} render(); window.scrollTo(0,0); } else alert("PIN туура эмес"); }).catch(()=>alert("Интернет же сервер жок")); }
   if(b.dataset.fo==="add"){ const g=id=>((document.getElementById(id)||{}).value||"").trim(); const er=document.getElementById("ff_err");
-    const p={name:g("ff_name"),type:g("ff_type"),city:g("ff_city"),state:g("ff_state"),addr:g("ff_addr"),phone:g("ff_phone"),food:g("ff_food"),hours:g("ff_hours"),note:g("ff_note")};
+    const p={name:g("ff_name"),city:g("ff_city"),state:g("ff_state"),addr:g("ff_addr"),phone:g("ff_phone")};
     if(!p.name||!p.city||!p.state){ er.textContent="Аты, шаары жана штаты милдеттүү"; return; }
     b.disabled=true; er.textContent="⏳";
-    rpc("food_add",{p_pin:S.fadm,p}).then(()=>{ er.textContent=""; ["ff_name","ff_addr","ff_phone","ff_food","ff_hours","ff_note"].forEach(i=>{ const x=document.getElementById(i); if(x) x.value=""; }); b.disabled=false; S.fq=p.city; const q=document.getElementById("fq"); if(q) q.value=p.city; foodLoad(); alert("✅ Кошулду: "+p.name); })
+    rpc("food_add",{p_pin:S.fadm,p}).then(()=>{ er.textContent=""; ["ff_name","ff_addr","ff_phone"].forEach(i=>{ const x=document.getElementById(i); if(x) x.value=""; }); b.disabled=false; S.fq=p.city; const q=document.getElementById("fq"); if(q) q.value=p.city; foodLoad(); alert("✅ Кошулду: "+p.name); })
      .catch(()=>{ b.disabled=false; er.textContent="Кошулган жок. PIN же интернетти текшериңиз."; }); } },true);
 document.addEventListener("click",e=>{ const d=e.target.closest("[data-fdel]"); if(!d) return; e.stopPropagation(); e.preventDefault();
   if(!confirm("Бул жерди өчүрөсүзбү?")) return; rpc("food_del",{p_pin:S.fadm,p_id:+d.dataset.fdel}).then(()=>foodLoad()).catch(()=>alert("Өчкөн жок")); },true);
@@ -6392,7 +6388,7 @@ document.addEventListener("click",e=>{
 (()=>{ const m=(location.hash||"").match(/d=([A-Za-z0-9]{6})/); if(m){ S.tab=3; S.gv="invite"; S.dc=m[1].toUpperCase(); try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){} loadOnline(); } })();
 (async()=>{ try{ if(document.referrer.indexOf("android-app://com.aidoochu.english")===0) localStorage.setItem("twa","1"); if(localStorage.getItem("twa")==="1"){ __ok=true; render(); return; } const po=localStorage.getItem("promoOk"); if(po&&PROMOS[po]){ __ok=true; render(); return; } }catch(e){}
   let c=null; try{ c=localStorage.getItem("act"); }catch(e){} if(!c){ const m=document.cookie.match(/(?:^|; )act=([A-Za-z0-9_-]+)/); if(m) c=m[1]; } if(c && await checkCode(c)) __ok=true; render(); })();
-const APP_VER="aidoochu-v33";
+const APP_VER="aidoochu-v34";
 function checkUpdate(){ if(location.protocol!=="https:") return; if((S.g&&!S.g.end)||(S.m&&!S.m.end)) return;
   fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(r=>r.ok?r.text():"").then(v=>{ v=(v||"").trim(); if(!v||v===APP_VER) return;
     let tried=""; try{ tried=sessionStorage.getItem("upd")||""; }catch(e){} if(tried===v) return; try{ sessionStorage.setItem("upd",v); }catch(e){}
