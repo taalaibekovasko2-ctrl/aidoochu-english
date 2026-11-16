@@ -367,7 +367,7 @@ html,body{background:#f7f7f5;color:#111}
 .dvs,.dlink{background:#EFEFEC;color:#111}
 .gx{color:#111}
 .promo{background:#fff1dc;border:2px dashed var(--or);border-radius:16px;padding:12px 14px;margin:6px 0 12px;font-size:17px;line-height:1.45}
-.promo s{color:#888}.promo .pz{font-size:24px;color:#c25e00}
+.promo .prow{margin-top:8px}.promo .err{margin:4px 0 0}
 .prow{display:flex;gap:8px;margin:4px 0 0}.prow input{flex:1;min-width:0;border:2px solid #cfcfca;border-radius:12px;padding:11px;font-size:16px;font-family:inherit;text-transform:uppercase}
 .prow button{border:0;border-radius:12px;background:#111;color:#fff;font-weight:800;padding:0 16px;font-family:inherit;font-size:15px}
 .hook{background:#fff1dc;border:2px solid var(--or);border-radius:18px;padding:14px 16px;margin:14px 0 0;font-weight:800;font-size:17px;line-height:1.4;color:#111}
@@ -5753,7 +5753,8 @@ document.addEventListener("click",async e=>{ const b=e.target.closest("[data-lk]
   if(k==="open"){ __lockOpen=true; __msg=""; stopSpeech(); lockView(); window.scrollTo(0,0); return; }
   if(k==="back"){ __lockOpen=false; __hook=false; render(); window.scrollTo(0,0); return; }
   if(k==="promo"){ const v=((document.getElementById("pcode")||{}).value||"").trim().toUpperCase();
-    if(PROMOS[v]){ PROMO=v; try{ localStorage.setItem("promo",v); }catch(e){} try{ window.goatcounter&&goatcounter.count&&goatcounter.count({path:"promo-"+v,title:"Промокод",event:true}); }catch(e){} lockView(); }
+    if(PROMOS[v]){ PROMO=v; try{ localStorage.setItem("promo",v); localStorage.setItem("promoOk",v); }catch(e){} try{ window.goatcounter&&goatcounter.count&&goatcounter.count({path:"promo-ok-"+v,title:"Промокод менен ачылды",event:true}); }catch(e){}
+      __ok=true; __lockOpen=false; __hook=false; render(); window.scrollTo(0,0); return; }
     else { const pe=document.getElementById("perr"); if(pe) pe.textContent=PM.bad[L]; } return; }
   if(k==="copy") copyText(id,b);
   if(k==="share"){ const t=`${UI.title[0]} — ID: ${id}`; if(navigator.share) navigator.share({text:t}).catch(()=>{}); else copyText(t,b); }
@@ -5762,16 +5763,16 @@ document.addEventListener("click",async e=>{ const b=e.target.closest("[data-lk]
     else { __msg=LK.bad[L]; lockView(); $("#acode").value=c; } }
 },true);
 const PRICE=30;
-const PROMOS={ERNIST:{name:"Эрнист",off:10}};
+const PROMOS={ERNIST:{name:"Эрнист"}};
 const PM={has:["Промокод бар болсо:","Промокод болса:","Есть промокод?","Have a promo code?"],use:["Колдонуу","Қолдану","Применить","Apply"],
- bad:["Мындай промокод жок","Мұндай промокод жоқ","Нет такого промокода","No such promo code"],
+ tap:["промокод менен ачыңыз 👉","промокодпен ашыңыз 👉","откройте по промокоду 👉","unlock with promo 👉"],bad:["Мындай промокод жок","Мұндай промокод жоқ","Нет такого промокода","No such promo code"],
  from:["промокоду","промокоды","промокод от","promo code from"],price:["Баасы","Бағасы","Цена","Price"]};
 let PROMO=null;
 (()=>{ try{ const q=new URLSearchParams(location.search).get("promo"); const k=(q||"").trim().toUpperCase();
   if(k&&PROMOS[k]){ localStorage.setItem("promo",k); try{ window.goatcounter&&goatcounter.count&&setTimeout(()=>goatcounter.count({path:"promo-"+k,title:"Промокод",event:true}),1500);}catch(e){} }
   const sv=localStorage.getItem("promo"); if(sv&&PROMOS[sv]) PROMO=sv; }catch(e){} })();
-function promoBox(i){ if(PROMO){ const p=PROMOS[PROMO]; const who=L===2?`${PM.from[i]} ${p.name}`:L===3?`${PM.from[i]} ${p.name}`:`${p.name} ${PM.from[i]}`;
-    return `<div class="promo">🎁 <b>${esc(PROMO)}</b> — ${esc(who)}<br>${PM.price[i]}: <s>$${PRICE}</s> <b class="pz">$${PRICE-p.off}</b></div>`; }
+function promoBox(i){
+  return `<div class="promo"><b>🎁 ${PM.has[i]}</b><div class="prow"><input id="pcode" value="${PROMO?esc(PROMO):""}" placeholder="ERNIST" autocapitalize="characters" autocomplete="off" spellcheck="false"><button data-lk="promo">${PM.use[i]}</button></div><p class="err" id="perr"></p></div>`;
   return `<div class="prow"><input id="pcode" placeholder="${PM.has[i]}" autocapitalize="characters" autocomplete="off" spellcheck="false"><button data-lk="promo">${PM.use[i]}</button></div><p class="err" id="perr"></p>`; }
 const WA_NUM = "18722881102", WA_NAME = "Аскат", CALL_NUM = "+17473249540", CALL_NAME = "Рамис";
 const FREE_T = new Set([...TOPICS.map((t,i)=>[t,i]).filter(x=>!x[0].daily).slice(0,2).map(x=>x[1]), ...TOPICS.map((t,i)=>[t,i]).filter(x=>x[0].daily).slice(0,2).map(x=>x[1])]);
@@ -5782,7 +5783,7 @@ const DM = {t:["🎁 Сынап көрүү: ар бөлүмдө 2 тема бе�
   wa:["WhatsApp аркылуу сатып алуу","WhatsApp арқылы сатып алу","Купить через WhatsApp","Buy via WhatsApp"],
   call:["Чалуу","Қоңырау шалу","Позвонить","Call"],
   msg:["Салам! «Айдоочунун англисчеси» колдонмосун сатып алгым келет. Менин ID:","Сәлем! «Айдоочунун англисчеси» қосымшасын сатып алғым келеді. Менің ID:","Здравствуйте! Хочу купить приложение «Айдоочунун англисчеси». Мой ID:","Hi! I want to buy the Trucker English app. My ID:"]};
-const demoBar = () => __ok ? "" : `<div class="demo"><span>${DM.t[L]}${PROMO?`<br>🎁 <b>${esc(PROMO)}</b>: <s>$${PRICE}</s> <b>$${PRICE-PROMOS[PROMO].off}</b>`:""}</span><button data-lk="open">${DM.b[L]}</button></div>`;
+const demoBar = () => __ok ? "" : `<div class="demo"><span>${DM.t[L]}${PROMO?`<br>🎁 <b>${esc(PROMO)}</b> — ${PM.tap[L]}`:""}</span><button data-lk="open">${DM.b[L]}</button></div>`;
 let __lockOpen=false;
 /* ===== ОЮН (уровендер) ===== */
 const GM={title:["Оюн","Ойын","Игра","Game"],lvl:["Уровень","Деңгей","Уровень","Level"],
@@ -6251,9 +6252,9 @@ document.addEventListener("click",e=>{
 });
 
 (()=>{ const m=(location.hash||"").match(/d=([A-Za-z0-9]{6})/); if(m){ S.tab=3; S.gv="invite"; S.dc=m[1].toUpperCase(); try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){} loadOnline(); } })();
-(async()=>{ try{ if(document.referrer.indexOf("android-app://com.aidoochu.english")===0) localStorage.setItem("twa","1"); if(localStorage.getItem("twa")==="1"){ __ok=true; render(); return; } }catch(e){}
+(async()=>{ try{ if(document.referrer.indexOf("android-app://com.aidoochu.english")===0) localStorage.setItem("twa","1"); if(localStorage.getItem("twa")==="1"){ __ok=true; render(); return; } const po=localStorage.getItem("promoOk"); if(po&&PROMOS[po]){ __ok=true; render(); return; } }catch(e){}
   let c=null; try{ c=localStorage.getItem("act"); }catch(e){} if(!c){ const m=document.cookie.match(/(?:^|; )act=([A-Za-z0-9_-]+)/); if(m) c=m[1]; } if(c && await checkCode(c)) __ok=true; render(); })();
-const APP_VER="aidoochu-v22";
+const APP_VER="aidoochu-v23";
 function checkUpdate(){ if(location.protocol!=="https:") return; if((S.g&&!S.g.end)||(S.m&&!S.m.end)) return;
   fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(r=>r.ok?r.text():"").then(v=>{ v=(v||"").trim(); if(!v||v===APP_VER) return;
     let tried=""; try{ tried=sessionStorage.getItem("upd")||""; }catch(e){} if(tried===v) return; try{ sessionStorage.setItem("upd",v); }catch(e){}
