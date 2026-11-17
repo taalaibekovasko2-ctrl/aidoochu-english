@@ -5571,7 +5571,7 @@ function viewCards(){
         <div class="art" style="display:grid;place-items:center;font-size:64px;line-height:1;background:linear-gradient(135deg,#e6f4ec,#c9e8d6)">🤝</div><b>${FD.h[L].replace("🤝 ","").split(" —")[0]}</b><em>${L<3?"Fundraisers":""}</em><small>${FD.open[L]}</small>
       </button>
       <button class="tile" style="animation-delay:280ms;${tint(TOPICS.length+2)}" data-rp="open">
-        <div class="art" style="display:grid;place-items:center;font-size:64px;line-height:1;background:linear-gradient(135deg,#fff1e0,#ffd8a8)">🔧</div><b>Уста-шоп</b><em>${L<3?"Truck repair":""}</em><small>СНГ уста-шоптору · ${REPS.length} жер</small>
+        <div class="art"><img src="img/cng-shop.jpg" alt="СНГ Truck Shop" loading="lazy" style="object-fit:cover"></div><b>Уста-шоп</b><em>${L<3?"Truck repair":""}</em><small>СНГ уста-шоптору · ${REPS.length} жер</small>
       </button></div>`;
   }
   const t=TOPICS[S.topic], c=t.cards[S.i], n=t.cards.length;
@@ -5936,7 +5936,7 @@ function repCards(list){
     <div class="fbtn">${/\d{3,}/.test(f.addr)?`<a href="https://maps.google.com/?q=${encodeURIComponent(f.name+" "+f.addr)}" target="_blank" rel="noopener">🗺️ Карта</a>`:""}${f.phone?`<a href="tel:${f.phone}">📞 Чалуу</a>`:`<a href="https://www.google.com/search?q=${encodeURIComponent(f.name+" "+f.addr)}" target="_blank" rel="noopener">🔎 Номерин издөө</a>`}</div></div>`).join("")).join(""); }
 function viewRep(){ const st=[...new Set(REPS.map(f=>f.state))].sort();
   return hero()+`<button class="gsec" data-rp="back" style="margin-top:14px">← Артка</button>
-  <div class="h2">🔧 Уста-шоп</div><p class="fnote">АКШдагы СНГ уста-шоптору — кыргызча, орусча сүйлөшөсүз. Шаарыңызды жазыңыз. Барардан мурун чалып тактап алыңыз.</p>
+  <img src="img/cng-shop.jpg" alt="СНГ Truck Shop" style="width:100%;border-radius:18px;margin-top:12px;display:block"><div class="h2">🔧 Уста-шоп</div><p class="fnote">АКШдагы СНГ уста-шоптору — кыргызча, орусча сүйлөшөсүз. Шаарыңызды жазыңыз. Барардан мурун чалып тактап алыңыз.</p>
   <input class="wsearch" id="rq" placeholder="Шаар: Чикаго, Шарлотт…" value="${fesc(S.rq||"")}" autocomplete="off">
   <div class="fst">${st.map(x=>`<button data-rs="${x}">${STATES[x]||x}</button>`).join("")}</div>
   <div id="rres">${repCards(repFind(S.rq))}</div>
@@ -6417,7 +6417,7 @@ document.addEventListener("click",e=>{
 (()=>{ const m=(location.hash||"").match(/d=([A-Za-z0-9]{6})/); if(m){ S.tab=3; S.gv="invite"; S.dc=m[1].toUpperCase(); try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){} loadOnline(); } })();
 (async()=>{ try{ if(document.referrer.indexOf("android-app://com.aidoochu.english")===0) localStorage.setItem("twa","1"); if(localStorage.getItem("twa")==="1"){ __ok=true; render(); return; } const po=localStorage.getItem("promoOk"); if(po&&PROMOS[po]){ __ok=true; render(); return; } }catch(e){}
   let c=null; try{ c=localStorage.getItem("act"); }catch(e){} if(!c){ const m=document.cookie.match(/(?:^|; )act=([A-Za-z0-9_-]+)/); if(m) c=m[1]; } if(c && await checkCode(c)) __ok=true; render(); })();
-const APP_VER="aidoochu-v55";
+const APP_VER="aidoochu-v56";
 function checkUpdate(){ if(location.protocol!=="https:") return; if((S.g&&!S.g.end)||(S.m&&!S.m.end)) return;
   fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(r=>r.ok?r.text():"").then(v=>{ v=(v||"").trim(); if(!v||v===APP_VER) return;
     let tried=""; try{ tried=sessionStorage.getItem("upd")||""; }catch(e){} if(tried===v) return; try{ sessionStorage.setItem("upd",v); }catch(e){}
