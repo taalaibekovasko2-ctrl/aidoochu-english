@@ -67,6 +67,11 @@ h2{font-size:20px;font-weight:900;margin-bottom:12px;display:flex;align-items:ce
 .znum{display:flex;align-items:center;justify-content:space-between;background:#fff;border-radius:14px;padding:12px 14px;margin-top:10px;font-weight:900;font-size:18px}
 .cp{border:0;background:#6d1ed4;color:#fff;border-radius:10px;padding:9px 12px;font-weight:800;font-size:14px}
 .p{background:#6d1ed4;color:#fff}
+.ln{flex-wrap:wrap}.ln .cm{flex-basis:100%;border:0;border-bottom:1px dashed #ddd;border-radius:0;padding:6px 0;margin:6px 0 0;font-size:14px;color:#555}
+.re{display:none;margin:14px 18px 0;padding:14px;border-radius:18px;background:#fff4e6;border:1px solid #ffd9a8;align-items:center;gap:12px}
+.re.on{display:flex}.re div{flex:1;min-width:0}.re b{display:block;font-size:15px}.re small{display:block;color:#6f6f6f;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.re button{border:0;background:#ff8a00;color:#fff;font-weight:900;border-radius:12px;padding:11px 13px;font-size:14px;font-family:inherit}
+.closed{color:#d33 !important}
 footer{text-align:center;color:var(--mut);font-size:13px;padding:26px 18px 10px;line-height:1.6}
 footer a{color:var(--acc2);font-weight:800;text-decoration:none}
 </style></head><body>
@@ -78,6 +83,7 @@ footer a{color:var(--acc2);font-weight:800;text-decoration:none}
   <div class="info"><span class="open" data-t="open"></span><span>📍 Nampa / Boise, ID</span><span>🚚 <i data-t="deliv"></i></span></div>
   <div class="acts"><a class="call" href="tel:+18188215017">📞 <i data-t="call"></i></a><a class="wa" href="https://wa.me/18188215017">💬 WhatsApp</a></div>
 </div>
+<div class="re" id="re"><div><b>🔁 <span data-t="rt"></span></b><small id="rel"></small></div><button id="reb" data-t="rb"></button></div>
 <nav class="cats" id="cats"></nav>
 <main id="menu"></main>
 <div style="padding:22px 18px 0"><button class="btn" id="cmpOpen" style="background:#f4f4f4;color:#141414;border:1px solid #e6e6e6">📝 <span data-t="cmp"></span></button></div>
@@ -100,9 +106,12 @@ footer a{color:var(--acc2);font-weight:800;text-decoration:none}
 <button class="btn g" id="csend">🔒 <span data-t="csend"></span></button>
 </div></div>
 <script>
-var L=0,cart={};
+var L=0,cart={},note={};
+function ls(k,v){try{if(v===undefined)return JSON.parse(localStorage.getItem("ak_"+k));localStorage.setItem("ak_"+k,JSON.stringify(v))}catch(x){return null}}
+var HRS=[8,23];
+function isOpen(){try{var h=+new Intl.DateTimeFormat("en-US",{hour:"numeric",hour12:false,timeZone:"America/Boise"}).format(new Date())%24;return h>=HRS[0]&&h<HRS[1]}catch(x){return true}}
 var T={sample:["ҮЛГҮ","ОБРАЗЕЦ","SAMPLE"],sub:["100% халал · үй тамагы · жеткирүү $1/миля", "100% халяль · домашняя еда · доставка $1/миля", "100% halal · homemade · delivery $1/mile"],
-open:["● 24/7", "● 24/7", "● 24/7"],deliv:["Жеткирүү бар", "Есть доставка", "Delivery"],
+open:["",""," "],op:["● Азыр ачык · 08:00–23:00","● Сейчас открыто · 08:00–23:00","● Open now · 8am–11pm"],cl:["● Жабык · эртең 08:00дө ачылат","● Закрыто · откроется в 08:00","● Closed · opens at 8am"],rt:["Мурунку заказ","Прошлый заказ","Last order"],rb:["Кайра","Повторить","Reorder"],cmph:["+ комментарий (мис. пиязсыз)","+ комментарий (напр. без лука)","+ note (e.g. no onion)"],deliv:["Жеткирүү бар", "Есть доставка", "Delivery"],
 call:["Чалуу","Позвонить","Call"],order:["WhatsApp'тан заказ","Заказать в WhatsApp","Order on WhatsApp"],
 foot:["Ашыңыз таттуу болсун! 🤲 Сайтты жасаган:","Приятного аппетита! 🤲 Сайт сделал:","Enjoy your meal! 🤲 Website by:"],
 hi:["Саламатсызбы! Заказ берейин:","Здравствуйте! Хочу заказать:","Hello! I'd like to order:"],yo:["Сиздин заказ","Ваш заказ","Your order"],send:["Заказды WhatsApp'ка жиберүү","Отправить заказ в WhatsApp","Send order on WhatsApp"],nm:["Атыңыз","Ваше имя","Your name"],ad:["Дарек же трак-стоп (милдеттүү эмес)","Адрес или трак-стоп (необязательно)","Address or truck stop (optional)"],zt:["Онлайн төлөсөңүз болот:","Можно оплатить онлайн:","You can pay online:"],copy:["Көчүрүү","Копировать","Copy"],copied:["Көчүрүлдү ✓","Скопировано ✓","Copied ✓"],z1:["Номерди көчүрүңүз","Скопируйте номер","Copy the number"],z2:["Банк тиркемеңизди ачып, Zelle'ге жалпы сумманы жибериңиз","Откройте приложение банка и отправьте сумму через Zelle","Open your bank app and send the total via Zelle"],z3:["Заказды WhatsApp'ка жиберип, төлөмдүн скриншотун тиркеңиз","Отправьте заказ в WhatsApp и прикрепите скриншот оплаты","Send the order on WhatsApp and attach the payment screenshot"],pay:["Төлөм: Zelle +1 (818) 821-5017 — чекти тиркейм 🧾","Оплата: Zelle +1 (818) 821-5017 — прикреплю чек 🧾","Payment: Zelle +1 (818) 821-5017 — receipt attached 🧾"],chk:["Чек жиберүү","Отправить чек","Send receipt"],paid:["Zelle аркылуу төлөдүм. Чектин скриншотун тиркеп жатам 🧾","Оплатил(а) через Zelle. Прикрепляю скриншот чека 🧾","I paid via Zelle. Attaching the receipt screenshot 🧾"],cmp:["Жалоба же сунуш","Жалоба или предложение","Complaint or suggestion"],cmpn:["Жазганыңызды башка эч ким көрбөйт — түз ээсинин WhatsApp'ына жеке барат.","Ваше сообщение никто не увидит — оно уйдёт лично владельцу в WhatsApp.","No one else will see this — it goes privately to the owner's WhatsApp."],cph:["Эмне жакпай калды же эмнени жакшыртсак болот?","Что не понравилось или что улучшить?","What went wrong or what can we improve?"],csend:["Жеке жиберүү","Отправить лично","Send privately"],ctitle:["📝 ЖАЛОБА / СУНУШ","📝 ЖАЛОБА / ПРЕДЛОЖЕНИЕ","📝 COMPLAINT / SUGGESTION"],who:["Аты","Имя","Name"],where:["Дарек","Адрес","Address"],sum:["Жалпы","Итого","Total"],pop:["ХИТ","ХИТ","HIT"]};
@@ -118,7 +127,10 @@ function render(){
   (q?'<div class="q"><button data-m="'+i[0]+'">−</button><span>'+q+'</span><button data-p="'+i[0]+'">+</button></div>':'<button class="add" data-p="'+i[0]+'">+</button>')+'</div></div></div>'}).join("")+'</section>'}).join("");
  bar();
 }
-function bar(){var n=0,s=0;for(var k in cart){n+=cart[k];s+=cart[k]*IT[k][6]}$("#cnt").textContent=n;$("#tot").textContent="$"+s;$("#bar").classList.toggle("on",n>0)}
+function extra(){var o=document.querySelector(".open");if(o){o.textContent=(isOpen()?T.op:T.cl)[L];o.classList.toggle("closed",!isOpen())}
+ var lo=ls("last");if(lo&&lo.c&&Object.keys(lo.c).some(function(k){return IT[k]})){$("#re").classList.add("on");$("#rel").textContent=Object.keys(lo.c).filter(function(k){return IT[k]}).map(function(k){return IT[k][4][L]+" ×"+lo.c[k]}).join(", ")}}
+function bar(){extra();var n=0,s=0;for(var k in cart){n+=cart[k];s+=cart[k]*IT[k][6]}$("#cnt").textContent=n;$("#tot").textContent="$"+s;$("#bar").classList.toggle("on",n>0)}
+document.addEventListener("input",function(e){if(e.target.classList.contains("cm"))note[e.target.dataset.k]=e.target.value.trim()});
 document.addEventListener("click",function(e){
  var b=e.target.closest("button");if(!b)return;
  if(b.dataset.l!==undefined){L=+b.dataset.l;document.querySelectorAll(".lang button").forEach(function(x){x.classList.toggle("on",x===b)});render();return}
@@ -126,17 +138,18 @@ document.addEventListener("click",function(e){
  if(b.dataset.p){cart[b.dataset.p]=(cart[b.dataset.p]||0)+1;render();return}
  if(b.dataset.m){cart[b.dataset.m]--;if(!cart[b.dataset.m])delete cart[b.dataset.m];render();return}
  if(b.id==="bar"){openSheet();return}
- if(b.id==="cmpOpen"){document.querySelectorAll("#sh2 [data-ph]").forEach(function(e){e.placeholder=T[e.dataset.ph][L]});$("#ctx").placeholder=T.cph[L];$("#sh2").classList.add("on");return}
+ if(b.id==="cmpOpen"){document.querySelectorAll("#sh2 [data-ph]").forEach(function(e){e.placeholder=T[e.dataset.ph][L]});$("#ctx").placeholder=T.cph[L];if(!$("#cnm").value)$("#cnm").value=ls("nm")||"";$("#sh2").classList.add("on");return}
+ if(b.id==="reb"){var lo=ls("last");if(lo){cart={};note=lo.n||{};for(var k in lo.c)if(IT[k])cart[k]=lo.c[k];render();openSheet()}return}
  if(b.id==="cx2"){$("#sh2").classList.remove("on");return}
  if(b.id==="csend"){var t=$("#ctx").value.trim();if(!t){$("#ctx").focus();return}var n=$("#cnm").value.trim();location.href="https://wa.me/18188215017?text="+encodeURIComponent((T.ctitle[L]+"\n\n"+t+(n?"\n\n"+T.who[L]+": "+n:"")).toUpperCase());return}
  if(b.id==="cx"){$("#sh").classList.remove("on");return}
- if(b.id==="send"){location.href="https://wa.me/18188215017?text="+encodeURIComponent(msg());return}
+ if(b.id==="send"){ls("last",{c:cart,n:note});ls("nm",$("#nm").value.trim());ls("ad",$("#ad").value.trim());location.href="https://wa.me/18188215017?text="+encodeURIComponent(msg());return}
  if(b.id==="cp"){try{navigator.clipboard.writeText("+18188215017")}catch(x){}b.textContent=T.copied[L];return}
 });
 function total(){var s=0;for(var k in cart)s+=cart[k]*IT[k][6];return s}
-function msg(){var m=T.hi[L]+"\n";for(var k in cart)m+="• "+IT[k][4][L]+" × "+cart[k]+" = $"+cart[k]*IT[k][6]+"\n";m+="\n"+T.sum[L]+": $"+total()+"\n";var n=$("#nm").value.trim(),a=$("#ad").value.trim();if(n)m+="\n"+T.who[L]+": "+n;if(a)m+="\n"+T.where[L]+": "+a;m+="\n\n"+T.pay[L];return m.toUpperCase()}
-function openSheet(){$("#lines").innerHTML=Object.keys(cart).map(function(k){return '<div class="ln"><span>'+IT[k][4][L]+' <i>× '+cart[k]+'</i></span><b>$'+cart[k]*IT[k][6]+'</b></div>'}).join("");$("#tot2").textContent="$"+total();
- document.querySelectorAll("[data-ph]").forEach(function(e){e.placeholder=T[e.dataset.ph][L]});$("#cp").textContent=T.copy[L];$("#sh").classList.add("on")}
+function msg(){var m=T.hi[L]+"\n";for(var k in cart){m+="• "+IT[k][4][L]+" × "+cart[k]+" = $"+cart[k]*IT[k][6]+"\n";if(note[k])m+="   ↳ "+note[k]+"\n"}m+="\n"+T.sum[L]+": $"+total()+"\n";var n=$("#nm").value.trim(),a=$("#ad").value.trim();if(n)m+="\n"+T.who[L]+": "+n;if(a)m+="\n"+T.where[L]+": "+a;m+="\n\n"+T.pay[L];return m.toUpperCase()}
+function openSheet(){$("#lines").innerHTML=Object.keys(cart).map(function(k){return '<div class="ln"><span>'+IT[k][4][L]+' <i>× '+cart[k]+'</i></span><b>$'+cart[k]*IT[k][6]+'</b><input class="cm" data-k="'+k+'" value="'+(note[k]||"").replace(/"/g,"&quot;")+'" placeholder="'+T.cmph[L]+'"></div>'}).join("");$("#tot2").textContent="$"+total();
+ document.querySelectorAll("[data-ph]").forEach(function(e){e.placeholder=T[e.dataset.ph][L]});$("#cp").textContent=T.copy[L];if(!$("#nm").value)$("#nm").value=ls("nm")||"";if(!$("#ad").value)$("#ad").value=ls("ad")||"";$("#sh").classList.add("on")}
 $("#sh").addEventListener("click",function(e){if(e.target.id==="sh")this.classList.remove("on")});$("#sh2").addEventListener("click",function(e){if(e.target.id==="sh2")this.classList.remove("on")});
 render();
 </script>
