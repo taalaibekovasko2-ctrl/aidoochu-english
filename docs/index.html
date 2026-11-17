@@ -5566,6 +5566,9 @@ function viewCards(){
       </button>`).join("")}
       <button class="tile" style="animation-delay:210ms;${tint(TOPICS.length)}" data-act="shop">
         <div class="art">${pic(SHOP)}</div><b>${UI.shop[L]}</b><em>${L<3?esc(SHOP.en):""}</em><small>${UI.shopSub[L]}</small>
+      </button>
+      <button class="tile" style="animation-delay:245ms;${tint(TOPICS.length+1)}" data-fd="open">
+        <div class="art" style="display:grid;place-items:center;font-size:64px;line-height:1;background:linear-gradient(135deg,#e6f4ec,#c9e8d6)">🤝</div><b>${FD.h[L].replace("🤝 ","").split(" —")[0]}</b><em>${L<3?"Fundraisers":""}</em><small>${FD.open[L]}</small>
       </button></div>`;
   }
   const t=TOPICS[S.topic], c=t.cards[S.i], n=t.cards.length;
@@ -5917,7 +5920,7 @@ document.addEventListener("click",e=>{ const g=e.target.closest("[data-fgo]"); i
   if(k==="back"){ S.fund=false; render(); window.scrollTo(0,0); }
   if(k==="zcopy"){ const f=FUNDS[+b.dataset.i]; copyText(String(f.zelle).replace(/[^0-9a-zA-Z@._+-]/g,""),null); b.textContent="✓ "+FD.copied[L]; try{ window.goatcounter&&goatcounter.count&&goatcounter.count({path:"zelle-"+b.dataset.i,title:"Zelle көчүрүлдү",event:true}); }catch(x){} return; }
   if(k==="share"){ const f=FUNDS[+b.dataset.i]; const t=`🤝 ${f.title}`+(f.zelle?`\nZelle: ${f.zelle} (${f.zname||""})`:"")+(f.url?`\n${f.url}`:"")+`\n${location.origin+location.pathname}`; if(navigator.share) navigator.share({text:t}).catch(()=>{}); else copyText(t,b); } },true);
-const demoBar = () => foodBar() + fundBar() + instBar() + (__ok ? "" : `<div class="demo"><span>${DM.t[L]}${PROMO?`<br>🎁 <b>${esc(PROMO)}</b> — ${PM.tap[L]}`:""}</span><button data-lk="open">${DM.b[L]}</button></div>`);
+const demoBar = () => foodBar() + instBar() + (__ok ? "" : `<div class="demo"><span>${DM.t[L]}${PROMO?`<br>🎁 <b>${esc(PROMO)}</b> — ${PM.tap[L]}`:""}</span><button data-lk="open">${DM.b[L]}</button></div>`);
 let __lockOpen=false;
 /* ===== ОЮН (уровендер) ===== */
 const GM={title:["Оюн","Ойын","Игра","Game"],lvl:["Уровень","Деңгей","Уровень","Level"],
@@ -6388,7 +6391,7 @@ document.addEventListener("click",e=>{
 (()=>{ const m=(location.hash||"").match(/d=([A-Za-z0-9]{6})/); if(m){ S.tab=3; S.gv="invite"; S.dc=m[1].toUpperCase(); try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){} loadOnline(); } })();
 (async()=>{ try{ if(document.referrer.indexOf("android-app://com.aidoochu.english")===0) localStorage.setItem("twa","1"); if(localStorage.getItem("twa")==="1"){ __ok=true; render(); return; } const po=localStorage.getItem("promoOk"); if(po&&PROMOS[po]){ __ok=true; render(); return; } }catch(e){}
   let c=null; try{ c=localStorage.getItem("act"); }catch(e){} if(!c){ const m=document.cookie.match(/(?:^|; )act=([A-Za-z0-9_-]+)/); if(m) c=m[1]; } if(c && await checkCode(c)) __ok=true; render(); })();
-const APP_VER="aidoochu-v47";
+const APP_VER="aidoochu-v48";
 function checkUpdate(){ if(location.protocol!=="https:") return; if((S.g&&!S.g.end)||(S.m&&!S.m.end)) return;
   fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(r=>r.ok?r.text():"").then(v=>{ v=(v||"").trim(); if(!v||v===APP_VER) return;
     let tried=""; try{ tried=sessionStorage.getItem("upd")||""; }catch(e){} if(tried===v) return; try{ sessionStorage.setItem("upd",v); }catch(e){}
