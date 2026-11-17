@@ -5763,10 +5763,10 @@ const b64u=s=>{ s=s.replace(/[^A-Za-z0-9_\-]/g,"").replace(/-/g,"+").replace(/_/
 async function checkCode(code){ try{ const k=await crypto.subtle.importKey("jwk",PUB,{name:"ECDSA",namedCurve:"P-256"},false,["verify"]);
   return await crypto.subtle.verify({name:"ECDSA",hash:"SHA-256"},k,b64u(code),new TextEncoder().encode("AE1:"+devId())); }catch(e){ return false; } }
 let __ok=false, __msg="", __hook=false;
-const HOOK=["🔥 Азаматсыз! 3 уровенди өттүңүз. Калган {n} уровень, ALGA лигасы, дуэль жана 5 мини-оюн толук версияда. Улантуу үчүн толук ачыңыз 👇",
- "🔥 Жарайсыз! 3 деңгейден өттіңіз. Қалған {n} деңгей, ALGA лигасы, дуэль және 5 мини-ойын толық нұсқада. Жалғастыру үшін толық ашыңыз 👇",
- "🔥 Отлично! Вы прошли 3 уровня. Ещё {n} уровней, лига ALGA, дуэли и 5 мини-игр — в полной версии. Откройте, чтобы продолжить 👇",
- "🔥 Great job! You passed 3 levels. {n} more levels, ALGA league, duels and 5 mini games are in the full version. Unlock to continue 👇"];
+const HOOK=["🔥 Азаматсыз! 3 уровенди өттүңүз. Калган {n} уровень, Айдоочулар лигасы, дуэль жана 5 мини-оюн толук версияда. Улантуу үчүн толук ачыңыз 👇",
+ "🔥 Жарайсыз! 3 деңгейден өттіңіз. Қалған {n} деңгей, Жүргізушілер лигасы, дуэль және 5 мини-ойын толық нұсқада. Жалғастыру үшін толық ашыңыз 👇",
+ "🔥 Отлично! Вы прошли 3 уровня. Ещё {n} уровней, Лига водителей, дуэли и 5 мини-игр — в полной версии. Откройте, чтобы продолжить 👇",
+ "🔥 Great job! You passed 3 levels. {n} more levels, Drivers League, duels and 5 mini games are in the full version. Unlock to continue 👇"];
 function lockView(){
   $("#nav").style.display="none";
   const i=L, id=devId();
@@ -5964,7 +5964,7 @@ const GM={title:["Оюн","Ойын","Игра","Game"],lvl:["Уровень","�
   A:["Угуп тап","Тыңдап тап","Аудирование","Listening"],X:["Чоң сынак","Үлкен сынақ","Большой экзамен","Big test"]},
  time:["сек","сек","сек","sec"],timeup:["Убакыт бүттү ⏰","Уақыт бітті ⏰","Время вышло ⏰","Time's up ⏰"],
  hard:["Кыйынчылык","Қиындық","Сложность","Difficulty"],need:["Мурунку уровенди өтүңүз","Алдыңғы деңгейді өтіңіз","Сначала пройдите предыдущий","Pass the previous level first"]};
-const NM={league:["ALGA лигасы","ALGA лигасы","Лига ALGA","ALGA League"],duel:["Дуэль","Дуэль","Дуэль","Duel"],
+const NM={league:["Айдоочулар лигасы","Жүргізушілер лигасы","Лига водителей","Drivers League"],duel:["Дуэль","Дуэль","Дуэль","Duel"],
  week:["Бул жуманын рейтинги","Осы аптаның рейтингі","Рейтинг недели","This week's ranking"],
  weekSub:["Ар бир өткөн уровень XP берет. Дүйшөмбүдө жаңы жума башталат.","Әр өткен деңгей XP береді. Дүйсенбіде жаңа апта басталады.","Каждый пройденный уровень даёт XP. Новая неделя — с понедельника.","Every level gives XP. A new week starts on Monday."],
  empty:["Азырынча эч ким жок — биринчи болуңуз!","Әзірге ешкім жоқ — бірінші болыңыз!","Пока никого — будьте первым!","Nobody yet — be the first!"],
@@ -6416,7 +6416,7 @@ document.addEventListener("click",e=>{
 (()=>{ const m=(location.hash||"").match(/d=([A-Za-z0-9]{6})/); if(m){ S.tab=3; S.gv="invite"; S.dc=m[1].toUpperCase(); try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){} loadOnline(); } })();
 (async()=>{ try{ if(document.referrer.indexOf("android-app://com.aidoochu.english")===0) localStorage.setItem("twa","1"); if(localStorage.getItem("twa")==="1"){ __ok=true; render(); return; } const po=localStorage.getItem("promoOk"); if(po&&PROMOS[po]){ __ok=true; render(); return; } }catch(e){}
   let c=null; try{ c=localStorage.getItem("act"); }catch(e){} if(!c){ const m=document.cookie.match(/(?:^|; )act=([A-Za-z0-9_-]+)/); if(m) c=m[1]; } if(c && await checkCode(c)) __ok=true; render(); })();
-const APP_VER="aidoochu-v70";
+const APP_VER="aidoochu-v71";
 function checkUpdate(){ if(location.protocol!=="https:") return; if((S.g&&!S.g.end)||(S.m&&!S.m.end)) return;
   fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(r=>r.ok?r.text():"").then(v=>{ v=(v||"").trim(); if(!v||v===APP_VER) return;
     let tried=""; try{ tried=sessionStorage.getItem("upd")||""; }catch(e){} if(tried===v) return; try{ sessionStorage.setItem("upd",v); }catch(e){}
