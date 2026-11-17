@@ -141,7 +141,7 @@ document.addEventListener("click",function(e){
  if(b.id==="cmpOpen"){document.querySelectorAll("#sh2 [data-ph]").forEach(function(e){e.placeholder=T[e.dataset.ph][L]});$("#ctx").placeholder=T.cph[L];if(!$("#cnm").value)$("#cnm").value=ls("nm")||"";$("#sh2").classList.add("on");return}
  if(b.id==="reb"){var lo=ls("last");if(lo){cart={};note=lo.n||{};for(var k in lo.c)if(IT[k])cart[k]=lo.c[k];render();openSheet()}return}
  if(b.id==="cx2"){$("#sh2").classList.remove("on");return}
- if(b.id==="csend"){var t=$("#ctx").value.trim();if(!t){$("#ctx").focus();return}var n=$("#cnm").value.trim();location.href="https://wa.me/18188215017?text="+encodeURIComponent((T.ctitle[L]+"\n\n"+t+(n?"\n\n"+T.who[L]+": "+n:"")).toUpperCase());return}
+ if(b.id==="csend"){var t=$("#ctx").value.trim();if(!t){$("#ctx").focus();return}var n=$("#cnm").value.trim();var u="https://wa.me/18188215017?text="+encodeURIComponent((T.ctitle[L]+"\n\n"+t+(n?"\n\n"+T.who[L]+": "+n:"")).toUpperCase());$("#ctx").value="";$("#sh2").classList.remove("on");location.href=u;return}
  if(b.id==="cx"){$("#sh").classList.remove("on");return}
  if(b.id==="send"){ls("last",{c:cart,n:note});ls("nm",$("#nm").value.trim());ls("ad",$("#ad").value.trim());location.href="https://wa.me/18188215017?text="+encodeURIComponent(msg());return}
  if(b.id==="cp"){try{navigator.clipboard.writeText("+18188215017")}catch(x){}b.textContent=T.copied[L];return}
