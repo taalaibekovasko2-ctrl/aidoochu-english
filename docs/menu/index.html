@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ky"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Ала-Тоо Кафе — онлайн меню</title>
+<meta property="og:title" content="Ала-Тоо Кафе — онлайн меню (демо)">
+<meta property="og:description" content="Менюну көрүп, WhatsApp аркылуу заказ бериңиз. Сайт жасаган: SAYT USTA">
+<meta name="theme-color" content="#1a120c">
+<style>
+:root{--bg:#140e0a;--card:#211812;--card2:#2a1f17;--line:#3a2b20;--tx:#f6efe6;--mut:#b9a796;--acc:#ff9000;--acc2:#ffb347;--ok:#25d366}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--tx);padding-bottom:110px}
+.hero{position:relative;padding:22px 18px 20px;background:radial-gradient(120% 90% at 80% 0%,#5a2a0c 0,#2a170b 45%,var(--bg) 80%);overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-40px;width:240px;height:240px;border-radius:50%;border:2px dashed rgba(255,179,71,.18)}
+.top{display:flex;justify-content:space-between;align-items:center}
+.demo{font-size:11px;font-weight:800;letter-spacing:1px;background:rgba(255,144,0,.15);color:var(--acc2);padding:5px 10px;border-radius:99px}
+.lang{display:flex;background:rgba(0,0,0,.35);border-radius:99px;padding:3px}
+.lang button{border:0;background:none;color:var(--mut);font-weight:800;font-size:12px;padding:6px 10px;border-radius:99px}
+.lang button.on{background:var(--acc);color:#111}
+.logo{width:64px;height:64px;border-radius:20px;background:linear-gradient(135deg,var(--acc),#ff5e00);display:grid;place-items:center;font-size:34px;margin:22px 0 12px;box-shadow:0 10px 30px rgba(255,120,0,.35)}
+h1{font-size:30px;font-weight:900;letter-spacing:-.5px}
+.sub{color:var(--mut);margin-top:6px;font-size:15px}
+.info{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.info span{font-size:13px;background:rgba(255,255,255,.07);padding:7px 11px;border-radius:12px}
+.open{color:#7be39b}
+.acts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.acts a{display:flex;align-items:center;justify-content:center;gap:8px;padding:13px;border-radius:14px;font-weight:800;text-decoration:none;font-size:15px}
+.call{background:#fff;color:#111}.wa{background:var(--ok);color:#06210f}
+.cats{position:sticky;top:0;z-index:5;display:flex;gap:8px;overflow-x:auto;padding:12px 18px;background:rgba(20,14,10,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);scrollbar-width:none}
+.cats::-webkit-scrollbar{display:none}
+.cats button{flex:none;border:1px solid var(--line);background:var(--card);color:var(--tx);font-weight:700;font-size:14px;padding:9px 14px;border-radius:99px}
+.cats button.on{background:var(--acc);color:#111;border-color:var(--acc)}
+section{padding:18px 18px 4px}
+h2{font-size:20px;font-weight:900;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.it{display:flex;gap:14px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:12px;margin-bottom:10px}
+.pic{flex:none;width:84px;height:84px;border-radius:18px;display:grid;place-items:center;font-size:46px;position:relative;overflow:hidden}
+.pic:after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 30% 25%,rgba(255,255,255,.35),transparent 55%)}
+.tx{flex:1;min-width:0}
+.tx b{font-size:16px;display:block}
+.tx p{color:var(--mut);font-size:13px;line-height:1.35;margin-top:3px}
+.row{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+.pr{font-weight:900;font-size:17px;color:var(--acc2)}
+.tag{font-size:10px;font-weight:800;background:#3b1d0b;color:var(--acc2);padding:3px 7px;border-radius:6px;margin-left:6px;vertical-align:2px}
+.add{border:0;width:38px;height:38px;border-radius:12px;background:var(--acc);color:#111;font-size:22px;font-weight:900}
+.q{display:flex;align-items:center;gap:8px}
+.q button{border:0;width:32px;height:32px;border-radius:10px;background:var(--card2);color:var(--tx);font-size:18px;font-weight:900}
+.q span{min-width:16px;text-align:center;font-weight:900}
+.bar{position:fixed;left:12px;right:12px;bottom:max(12px,env(safe-area-inset-bottom));z-index:9;display:none;align-items:center;gap:12px;background:var(--ok);color:#06210f;border:0;border-radius:18px;padding:15px 18px;font-weight:900;font-size:16px;box-shadow:0 12px 40px rgba(0,0,0,.5);text-align:left;width:auto}
+.bar.on{display:flex}
+.bar .n{background:#06210f;color:var(--ok);min-width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-size:14px}
+.bar .t{margin-left:auto}
+footer{text-align:center;color:var(--mut);font-size:13px;padding:26px 18px 10px;line-height:1.6}
+footer a{color:var(--acc2);font-weight:800;text-decoration:none}
+</style></head><body>
+<div class="hero">
+  <div class="top"><span class="demo">DEMO</span><div class="lang"><button data-l="0" class="on">KG</button><button data-l="1">RU</button><button data-l="2">EN</button></div></div>
+  <div class="logo">🍲</div>
+  <h1>Ала-Тоо Кафе</h1>
+  <p class="sub" data-t="sub"></p>
+  <div class="info"><span class="open" data-t="open"></span><span>📍 Chicago, IL</span><span>🚚 <i data-t="deliv"></i></span></div>
+  <div class="acts"><a class="call" href="tel:+15555550123">📞 <i data-t="call"></i></a><a class="wa" href="https://wa.me/15555550123">💬 WhatsApp</a></div>
+</div>
+<nav class="cats" id="cats"></nav>
+<main id="menu"></main>
+<footer><span data-t="foot"></span><br>💻 <a href="https://instagram.com/sayt_usta">SAYT USTA</a> · @sayt_usta</footer>
+<button class="bar" id="bar"><span class="n" id="cnt">0</span><span data-t="order"></span><span class="t" id="tot">$0</span></button>
+<script>
+var L=0,cart={};
+var T={sub:["Үй тамагы · халал · тракисттерге жеткирүү","Домашняя кухня · халяль · доставка дальнобойщикам","Homemade · halal · delivery to truck stops"],
+open:["● Азыр ачык · 08:00–23:00","● Открыто · 08:00–23:00","● Open now · 8am–11pm"],deliv:["Жеткирүү бар","Есть доставка","Delivery"],
+call:["Чалуу","Позвонить","Call"],order:["WhatsApp'тан заказ","Заказать в WhatsApp","Order on WhatsApp"],
+foot:["Бул демо меню. Сиздин кафеңизге да ушундай сайт жасайбыз 👇","Это демо-меню. Сделаем такой сайт и для вашего кафе 👇","Demo menu. We can build one for your cafe too 👇"],
+hi:["Саламатсызбы! Заказ берейин:","Здравствуйте! Хочу заказать:","Hello! I'd like to order:"],sum:["Жалпы","Итого","Total"],pop:["ХИТ","ХИТ","HIT"]};
+var C=[
+{id:"hot",e:"🔥",n:["Ысык тамактар","Горячие блюда","Main dishes"],it:[
+ ["plov","🍛","#c46a1c","#7a3a0c",["Палоо","Плов","Plov"],["Кой эти, сабиз, нокот","Баранина, морковь, нут","Lamb, carrot, chickpeas"],15,1],
+ ["manty","🥟","#d9b48a","#8a6236",["Манты","Манты","Manti"],["5 даана, каймак менен","5 шт, со сметаной","5 pcs with sour cream"],16,1],
+ ["lagman","🍜","#c94a2c","#6e1e10",["Боосо лагман","Боосо лагман","Fried lagman"],["Колго созулган кесме","Тянутая лапша","Hand-pulled noodles"],15,0],
+ ["kuurdak","🥘","#8a5a34","#3e2412",["Куурдак","Куурдак","Kuurdak"],["Эт, картөшкө, пияз","Мясо, картофель, лук","Meat, potato, onion"],16,0],
+ ["besh","🍲","#b07a3a","#5a3a14",["Бешбармак","Бешбармак","Beshbarmak"],["Жылкы эти, кесме","Конина, лапша","Horse meat, noodles"],20,0]]},
+{id:"soup",e:"🥣",n:["Шорполор","Супы","Soups"],it:[
+ ["shorpo","🍲","#d08a3a","#7a4a12",["Шорпо","Шорпо","Shorpo"],["Кой эт, картөшкө","Баранина, картофель","Lamb & potato soup"],12,0],
+ ["borsh","🥣","#b3263a","#5a0e1a",["Борщ","Борщ","Borscht"],["Каймак менен","Со сметаной","With sour cream"],12,0]]},
+{id:"bake",e:"🥐",n:["Самса жана нан","Самса и хлеб","Samsa & bread"],it:[
+ ["samsa","🥟","#e0a34a","#8a5a14",["Тандыр самса","Тандырная самса","Tandoor samsa"],["Эт менен, ысык","С мясом, горячая","Meat, hot"],5,1],
+ ["non","🫓","#d9a35a","#7a5220",["Тандыр нан","Лепёшка","Tandoor bread"],["Жаңы бышкан","Свежая","Fresh baked"],4,0],
+ ["boorsok","🍩","#e8b04a","#9a6a10",["Боорсок (1 кг)","Баурсаки (1 кг)","Boorsok (1 kg)"],["Майрамдык","Праздничные","Festive fried dough"],15,0]]},
+{id:"salad",e:"🥗",n:["Салаттар","Салаты","Salads"],it:[
+ ["achuchuk","🥗","#3aa04a","#145a20",["Ачык-чучук","Ачичук","Achichuk"],["Помидор, пияз","Помидоры, лук","Tomato & onion"],5,0],
+ ["morkov","🥕","#ff8a1e","#9a3a00",["Морковча","Морковча","Korean carrot"],["Ачуу","Острая","Spicy"],6,0]]},
+{id:"drink",e:"🥤",n:["Суусундуктар","Напитки","Drinks"],it:[
+ ["ayran","🥛","#e8e4da","#9a948a",["Айран","Айран","Ayran"],["Үйдө жасалган","Домашний","Homemade"],5,0],
+ ["kompot","🍹","#c0304a","#5a1020",["Компот (1 л)","Компот (1 л)","Kompot (1 L)"],["Кургак жемиш","Сухофрукты","Dried fruit"],6,0],
+ ["chai","🍵","#4a8a3a","#1a4a14",["Чай","Чай","Tea"],["Кара же көк","Чёрный или зелёный","Black or green"],3,0]]}];
+var IT={};C.forEach(function(c){c.it.forEach(function(i){IT[i[0]]=i})});
+function $(s){return document.querySelector(s)}
+function render(){
+ document.querySelectorAll("[data-t]").forEach(function(e){e.textContent=T[e.dataset.t][L]});
+ $("#cats").innerHTML=C.map(function(c,i){return '<button data-c="'+c.id+'"'+(i?'':' class="on"')+'>'+c.e+' '+c.n[L]+'</button>'}).join("");
+ $("#menu").innerHTML=C.map(function(c){return '<section id="s-'+c.id+'"><h2>'+c.e+' '+c.n[L]+'</h2>'+c.it.map(function(i){
+  var q=cart[i[0]]||0;
+  return '<div class="it"><div class="pic" style="background:linear-gradient(135deg,'+i[2]+','+i[3]+')">'+i[1]+'</div><div class="tx"><b>'+i[4][L]+(i[7]?'<span class="tag">'+T.pop[L]+'</span>':'')+'</b><p>'+i[5][L]+'</p><div class="row"><span class="pr">$'+i[6]+'</span>'+
+  (q?'<div class="q"><button data-m="'+i[0]+'">−</button><span>'+q+'</span><button data-p="'+i[0]+'">+</button></div>':'<button class="add" data-p="'+i[0]+'">+</button>')+'</div></div></div>'}).join("")+'</section>'}).join("");
+ bar();
+}
+function bar(){var n=0,s=0;for(var k in cart){n+=cart[k];s+=cart[k]*IT[k][6]}$("#cnt").textContent=n;$("#tot").textContent="$"+s;$("#bar").classList.toggle("on",n>0)}
+document.addEventListener("click",function(e){
+ var b=e.target.closest("button");if(!b)return;
+ if(b.dataset.l!==undefined){L=+b.dataset.l;document.querySelectorAll(".lang button").forEach(function(x){x.classList.toggle("on",x===b)});render();return}
+ if(b.dataset.c){document.querySelectorAll(".cats button").forEach(function(x){x.classList.toggle("on",x===b)});var s=document.getElementById("s-"+b.dataset.c);window.scrollTo({top:s.offsetTop-60,behavior:"smooth"});return}
+ if(b.dataset.p){cart[b.dataset.p]=(cart[b.dataset.p]||0)+1;render();return}
+ if(b.dataset.m){cart[b.dataset.m]--;if(!cart[b.dataset.m])delete cart[b.dataset.m];render();return}
+ if(b.id==="bar"){var m=T.hi[L]+"\n",s=0;for(var k in cart){m+="• "+IT[k][4][L]+" × "+cart[k]+" = $"+cart[k]*IT[k][6]+"\n";s+=cart[k]*IT[k][6]}m+=T.sum[L]+": $"+s;location.href="https://wa.me/15555550123?text="+encodeURIComponent(m)}
+});
+render();
+</script>
+</body></html>
