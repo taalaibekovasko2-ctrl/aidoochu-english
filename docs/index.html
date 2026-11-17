@@ -5567,7 +5567,7 @@ function viewCards(){
       <button class="tile" style="animation-delay:210ms;${tint(TOPICS.length)}" data-act="shop">
         <div class="art">${pic(SHOP)}</div><b>${UI.shop[L]}</b><em>${L<3?esc(SHOP.en):""}</em><small>${UI.shopSub[L]}</small>
       </button>
-      <button class="tile" style="animation-delay:280ms;${tint(TOPICS.length+2)}" data-rp="open">${lockB(false)}
+      <button class="tile" style="animation-delay:280ms;${tint(TOPICS.length+2)}" data-rp="open">
         <div class="art"><img src="img/cng-shop.jpg" alt="СНГ Truck Shop" loading="lazy" style="object-fit:cover"></div><b>Уста-шоп</b><em>${L<3?"Truck repair":""}</em><small>СНГ уста-шоптору · ${REPS.length} жер</small>
       </button></div>`;
   }
@@ -5943,7 +5943,7 @@ function viewRep(){ const st=[...new Set(REPS.map(f=>f.state))].sort();
 document.addEventListener("input",e=>{ if(e.target.id!=="rq") return; S.rq=e.target.value; const r=document.getElementById("rres"); if(r) r.innerHTML=repCards(repFind(S.rq)); });
 document.addEventListener("click",e=>{ const q2=e.target.closest("[data-rq]"); if(q2){ e.stopPropagation(); const i=document.getElementById("rq"); const cur=(i&&i.value||"").trim(); const add=q2.dataset.rq.split("/")[0]; S.rq=(cur.split(/\s+/).some(w=>w.toLowerCase()===add.toLowerCase())?cur:(cur+" "+add).trim()); if(i) i.value=S.rq; document.getElementById("rres").innerHTML=repCards(repFind(S.rq)); return; } const s2=e.target.closest("[data-rs]"); if(s2){ e.stopPropagation(); S.rq=STATES[s2.dataset.rs]||s2.dataset.rs; const i=document.getElementById("rq"); if(i) i.value=S.rq; document.getElementById("rres").innerHTML=repCards(repFind(S.rq)); return; }
   const b=e.target.closest("[data-rp]"); if(!b) return; e.stopPropagation();
-  if(b.dataset.rp==="open"){ if(!__ok){ __lockOpen=true; __msg=""; lockView(); window.scrollTo(0,0); return; } S.rep=true; S.fund=false; S.food=false; stopSpeech(); render(); window.scrollTo(0,0); try{ window.goatcounter&&goatcounter.count&&goatcounter.count({path:"rep-open",title:"Уста-шоп",event:true}); }catch(x){} }
+  if(b.dataset.rp==="open"){ S.rep=true; S.fund=false; S.food=false; stopSpeech(); render(); window.scrollTo(0,0); try{ window.goatcounter&&goatcounter.count&&goatcounter.count({path:"rep-open",title:"Уста-шоп",event:true}); }catch(x){} }
   if(b.dataset.rp==="back"){ S.rep=false; render(); window.scrollTo(0,0); } },true);
 const demoBar = () => foodBar() + instBar() + (__ok ? "" : `<div class="demo"><span>${DM.t[L]}${PROMO?`<br>🎁 <b>${esc(PROMO)}</b> — ${PM.tap[L]}`:""}</span><button data-lk="open">${DM.b[L]}</button></div>`);
 let __lockOpen=false;
@@ -6416,7 +6416,7 @@ document.addEventListener("click",e=>{
 (()=>{ const m=(location.hash||"").match(/d=([A-Za-z0-9]{6})/); if(m){ S.tab=3; S.gv="invite"; S.dc=m[1].toUpperCase(); try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){} loadOnline(); } })();
 (async()=>{ try{ if(document.referrer.indexOf("android-app://com.aidoochu.english")===0) localStorage.setItem("twa","1"); if(localStorage.getItem("twa")==="1"){ __ok=true; render(); return; } const po=localStorage.getItem("promoOk"); if(po&&PROMOS[po]){ __ok=true; render(); return; } }catch(e){}
   let c=null; try{ c=localStorage.getItem("act"); }catch(e){} if(!c){ const m=document.cookie.match(/(?:^|; )act=([A-Za-z0-9_-]+)/); if(m) c=m[1]; } if(c && await checkCode(c)) __ok=true; render(); })();
-const APP_VER="aidoochu-v73";
+const APP_VER="aidoochu-v74";
 function checkUpdate(){ if(location.protocol!=="https:") return; if((S.g&&!S.g.end)||(S.m&&!S.m.end)) return;
   fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(r=>r.ok?r.text():"").then(v=>{ v=(v||"").trim(); if(!v||v===APP_VER) return;
     let tried=""; try{ tried=sessionStorage.getItem("upd")||""; }catch(e){} if(tried===v) return; try{ sessionStorage.setItem("upd",v); }catch(e){}
