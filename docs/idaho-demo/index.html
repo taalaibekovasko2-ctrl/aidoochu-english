@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="ky"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="robots" content="noindex"><title>Idaho Halal Kitchen — онлайн меню</title>
-<meta property="og:title" content="Idaho Halal Kitchen — онлайн меню">
+<meta name="robots" content="noindex"><title>NOMAD Central Asian Cuisine — онлайн меню</title>
+<meta property="og:title" content="NOMAD Central Asian Cuisine — онлайн меню">
 <meta property="og:description" content="Менюну көрүп, WhatsApp аркылуу заказ бериңиз. Сайт жасаган: SAYT USTA">
 <meta name="theme-color" content="#ffffff">
 <style>
@@ -78,9 +78,9 @@ footer a{color:var(--acc2);font-weight:800;text-decoration:none}
 <div class="hero">
   <div class="top"><span class="demo">DEMO</span><div class="lang"><button data-l="0" class="on">KG</button><button data-l="1">RU</button><button data-l="2">EN</button></div></div>
   <div class="logo" style="background:#f1e1c8;overflow:hidden;padding:0;width:104px;height:104px;border-radius:26px"><img src="img/logo.jpg" alt="logo" style="width:100%;height:100%;object-fit:cover;display:block"></div>
-  <h1>Idaho Halal Kitchen</h1>
+  <h1>NOMAD<span style="display:block;font-size:17px;font-weight:700;color:#8a5a34;letter-spacing:1px;margin-top:2px">CENTRAL ASIAN CUISINE</span></h1>
   <p class="sub" data-t="sub"></p>
-  <div class="info"><span class="open" data-t="open"></span><span>📍 Nampa / Boise, ID</span><span>🚚 <i data-t="deliv"></i></span></div>
+  <div class="info"><span class="open" data-t="open"></span><span>📍 Los Angeles, CA</span><span>🚚 <i data-t="deliv"></i></span></div>
   <div class="acts"><a class="call" href="tel:+18188215017">📞 <i data-t="call"></i></a><a class="wa" href="https://wa.me/18188215017">💬 WhatsApp</a></div>
 </div>
 <div class="re" id="re"><div><b>🔁 <span data-t="rt"></span></b><small id="rel"></small></div><button id="reb" data-t="rb"></button></div>
@@ -109,8 +109,8 @@ footer a{color:var(--acc2);font-weight:800;text-decoration:none}
 var L=0,cart={},note={};
 function ls(k,v){try{if(v===undefined)return JSON.parse(localStorage.getItem("ak_"+k));localStorage.setItem("ak_"+k,JSON.stringify(v))}catch(x){return null}}
 var HRS=[8,23];
-function isOpen(){try{var h=+new Intl.DateTimeFormat("en-US",{hour:"numeric",hour12:false,timeZone:"America/Boise"}).format(new Date())%24;return h>=HRS[0]&&h<HRS[1]}catch(x){return true}}
-var T={sample:["ҮЛГҮ","ОБРАЗЕЦ","SAMPLE"],sub:["100% халал · үй тамагы · жеткирүү $1/миля", "100% халяль · домашняя еда · доставка $1/миля", "100% halal · homemade · delivery $1/mile"],
+function isOpen(){try{var h=+new Intl.DateTimeFormat("en-US",{hour:"numeric",hour12:false,timeZone:"America/Los_Angeles"}).format(new Date())%24;return h>=HRS[0]&&h<HRS[1]}catch(x){return true}}
+var T={sample:["ҮЛГҮ","ОБРАЗЕЦ","SAMPLE"],sub:["Борбор Азия ашканасы · 100% халал · жеткирүү бар", "Среднеазиатская кухня · 100% халяль · доставка", "Central Asian cuisine · 100% halal · delivery"],
 open:["",""," "],op:["● Азыр ачык · 08:00–23:00","● Сейчас открыто · 08:00–23:00","● Open now · 8am–11pm"],cl:["● Жабык · эртең 08:00дө ачылат","● Закрыто · откроется в 08:00","● Closed · opens at 8am"],rt:["Мурунку заказ","Прошлый заказ","Last order"],rb:["Кайра","Повторить","Reorder"],cmph:["+ Комментарий","+ Комментарий","+ Comment"],deliv:["Жеткирүү бар", "Есть доставка", "Delivery"],
 call:["Чалуу","Позвонить","Call"],order:["WhatsApp'тан заказ","Заказать в WhatsApp","Order on WhatsApp"],
 foot:["Ашыңыз таттуу болсун! 🤲 Сайтты жасаган:","Приятного аппетита! 🤲 Сайт сделал:","Enjoy your meal! 🤲 Website by:"],

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ky"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex"><title>NOMAD Central Asian Cuisine — онлайн меню</title>
+<meta property="og:title" content="NOMAD Central Asian Cuisine — онлайн меню">
+<meta property="og:description" content="Менюну көрүп, WhatsApp аркылуу заказ бериңиз. Сайт жасаган: SAYT USTA">
+<meta name="theme-color" content="#ffffff">
+<style>
+:root{--bg:#ffffff;--card:#ffffff;--card2:#f2f2f2;--line:#ececec;--tx:#141414;--mut:#6f6f6f;--acc:#ff8a00;--acc2:#e07800;--ok:#25d366}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--tx);padding-bottom:110px}
+.hero{position:relative;padding:22px 18px 20px;background:linear-gradient(180deg,#fff4e6 0,#ffffff 85%);overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-40px;width:240px;height:240px;border-radius:50%;border:2px dashed rgba(255,138,0,.18);pointer-events:none}
+.top{display:flex;justify-content:space-between;align-items:center}
+.demo{font-size:11px;font-weight:800;letter-spacing:1px;background:rgba(255,144,0,.15);color:var(--acc2);padding:5px 10px;border-radius:99px}
+.lang{display:flex;background:#f1f1f1;border-radius:99px;padding:3px}
+.lang button{border:0;background:none;color:var(--mut);font-weight:800;font-size:12px;padding:6px 10px;border-radius:99px}
+.lang button.on{background:var(--acc);color:#111}
+.logo{width:64px;height:64px;border-radius:20px;background:linear-gradient(135deg,var(--acc),#ff5e00);display:grid;place-items:center;font-size:34px;margin:22px 0 12px;box-shadow:0 10px 30px rgba(255,120,0,.35)}
+h1{font-size:30px;font-weight:900;letter-spacing:-.5px}
+.sub{color:var(--mut);margin-top:6px;font-size:15px}
+.info{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.info span{font-size:13px;background:#f4f4f4;padding:7px 11px;border-radius:12px}
+.open{color:#14943c}
+.acts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.acts a{display:flex;align-items:center;justify-content:center;gap:8px;padding:13px;border-radius:14px;font-weight:800;text-decoration:none;font-size:15px}
+.call{background:#141414;color:#fff}.wa{background:var(--ok);color:#06210f}
+.cats{position:sticky;top:0;z-index:5;display:flex;gap:8px;overflow-x:auto;padding:12px 18px;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);scrollbar-width:none}
+.cats::-webkit-scrollbar{display:none}
+.cats button{flex:none;border:1px solid var(--line);background:var(--card);color:var(--tx);font-weight:700;font-size:14px;padding:9px 14px;border-radius:99px}
+.cats button.on{background:var(--acc);color:#111;border-color:var(--acc)}
+section{padding:18px 18px 4px}
+h2{font-size:20px;font-weight:900;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.it{display:flex;gap:14px;align-items:center;background:var(--card);border:1px solid var(--line);box-shadow:0 4px 16px rgba(0,0,0,.05);border-radius:20px;padding:12px;margin-bottom:10px}
+.pic{flex:none;width:84px;height:84px;border-radius:18px;display:grid;place-items:center;font-size:46px;position:relative;overflow:hidden}
+.pic:after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 30% 25%,rgba(255,255,255,.35),transparent 55%)}
+.pic.ph{width:96px;height:96px;background:#f2f2f2}.pic.ph:after{display:none}.pic.ph img{width:100%;height:100%;object-fit:cover;display:block}
+.tx{flex:1;min-width:0}
+.tx b{font-size:16px;display:block}
+.tx p{color:var(--mut);font-size:13px;line-height:1.35;margin-top:3px}
+.row{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+.pr{font-weight:900;font-size:17px;color:var(--acc2)}
+.tag{font-size:10px;font-weight:800;background:#fff0dc;color:var(--acc2);padding:3px 7px;border-radius:6px;margin-left:6px;vertical-align:2px}
+.add{border:0;width:38px;height:38px;border-radius:12px;background:var(--acc);color:#111;font-size:22px;font-weight:900}
+.q{display:flex;align-items:center;gap:8px}
+.q button{border:0;width:32px;height:32px;border-radius:10px;background:var(--card2);color:var(--tx);font-size:18px;font-weight:900}
+.q span{min-width:16px;text-align:center;font-weight:900}
+.bar{position:fixed;left:12px;right:12px;bottom:max(12px,env(safe-area-inset-bottom));z-index:9;display:none;align-items:center;gap:12px;background:var(--ok);color:#06210f;border:0;border-radius:18px;padding:15px 18px;font-weight:900;font-size:16px;box-shadow:0 12px 40px rgba(0,0,0,.5);text-align:left;width:auto}
+.bar.on{display:flex}
+.bar .n{background:#06210f;color:var(--ok);min-width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-size:14px}
+.bar .t{margin-left:auto}
+.sh{position:fixed;inset:0;z-index:20;display:none;background:rgba(0,0,0,.45)}
+.sh.on{display:block}
+.pane{text-transform:uppercase;position:absolute;left:0;right:0;bottom:0;max-height:92vh;overflow:auto;background:#fff;color:#141414;border-radius:24px 24px 0 0;padding:18px 18px calc(24px + env(safe-area-inset-bottom))}
+.pane h3{font-size:22px;font-weight:900;display:flex;justify-content:space-between;align-items:center}
+.x{border:0;background:#f1f1f1;width:36px;height:36px;border-radius:12px;font-size:18px}
+.ln{display:flex;justify-content:space-between;gap:10px;padding:12px 14px;margin-top:10px;background:#f6f6f6;border-radius:16px;font-size:15px;border-left:4px solid #ff8a00}
+.ln i{font-style:normal;color:#6f6f6f}
+.tl{display:flex;justify-content:space-between;font-weight:900;font-size:20px;padding:14px 0 6px}
+.pane button{text-transform:uppercase}
+.pane input{text-transform:uppercase;width:100%;border:1px solid #e3e3e3;border-radius:14px;padding:13px 14px;font-size:16px;margin-top:10px;font-family:inherit}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;border:0;border-radius:16px;padding:15px;font-weight:900;font-size:16px;margin-top:12px;font-family:inherit}
+.g{background:#25d366;color:#06210f}
+.zel{margin-top:18px;border-radius:20px;background:#f6f0ff;border:1px solid #e4d6ff;padding:16px}
+.zel b{font-size:18px;color:#6d1ed4}
+.zel ol{margin:10px 0 0 20px;font-size:14px;line-height:1.6;color:#333}
+.znum{display:flex;align-items:center;justify-content:space-between;background:#fff;border-radius:14px;padding:12px 14px;margin-top:10px;font-weight:900;font-size:18px}
+.cp{border:0;background:#6d1ed4;color:#fff;border-radius:10px;padding:9px 12px;font-weight:800;font-size:14px}
+.p{background:#6d1ed4;color:#fff}
+.ln{flex-wrap:wrap}.ln .cm{flex-basis:100%;border:1px solid #e6e6e6;background:#fff;border-radius:10px;padding:9px 11px;margin:8px 0 0;font-size:14px;color:#333}
+.re{display:none;margin:14px 18px 0;padding:14px;border-radius:18px;background:#fff4e6;border:1px solid #ffd9a8;align-items:center;gap:12px}
+.re.on{display:flex}.re div{flex:1;min-width:0}.re b{display:block;font-size:15px}.re small{display:block;color:#6f6f6f;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.re button{border:0;background:#ff8a00;color:#fff;font-weight:900;border-radius:12px;padding:11px 13px;font-size:14px;font-family:inherit}
+.closed{color:#d33 !important}
+footer{text-align:center;color:var(--mut);font-size:13px;padding:26px 18px 10px;line-height:1.6}
+footer a{color:var(--acc2);font-weight:800;text-decoration:none}
+</style></head><body>
+<div class="hero">
+  <div class="top"><span class="demo">DEMO</span><div class="lang"><button data-l="0" class="on">KG</button><button data-l="1">RU</button><button data-l="2">EN</button></div></div>
+  <div class="logo" style="background:#f1e1c8;overflow:hidden;padding:0;width:104px;height:104px;border-radius:26px"><img src="img/logo.jpg" alt="logo" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+  <h1>NOMAD<span style="display:block;font-size:17px;font-weight:700;color:#8a5a34;letter-spacing:1px;margin-top:2px">CENTRAL ASIAN CUISINE</span></h1>
+  <p class="sub" data-t="sub"></p>
+  <div class="info"><span class="open" data-t="open"></span><span>📍 Los Angeles, CA</span><span>🚚 <i data-t="deliv"></i></span></div>
+  <div class="acts"><a class="call" href="tel:+18188215017">📞 <i data-t="call"></i></a><a class="wa" href="https://wa.me/18188215017">💬 WhatsApp</a></div>
+</div>
+<div class="re" id="re"><div><b>🔁 <span data-t="rt"></span></b><small id="rel"></small></div><button id="reb" data-t="rb"></button></div>
+<nav class="cats" id="cats"></nav>
+<main id="menu"></main>
+<div style="padding:22px 18px 0"><button class="btn" id="cmpOpen" style="background:#f4f4f4;color:#141414;border:1px solid #e6e6e6">📝 <span data-t="cmp"></span></button></div>
+<footer><span data-t="foot"></span><br>💻 <a href="https://instagram.com/sayt_usta">SAYT USTA</a> · @sayt_usta</footer>
+<button class="bar" id="bar"><span class="n" id="cnt">0</span><span data-t="order"></span><span class="t" id="tot">$0</span></button>
+<div class="sh" id="sh"><div class="pane">
+<h3><span data-t="yo"></span><button class="x" id="cx">✕</button></h3>
+<div id="lines"></div><div class="tl"><span data-t="sum"></span><span id="tot2"></span></div>
+<input id="nm" data-ph="nm"><input id="ad" data-ph="ad">
+<div class="zel"><b>💳 Zelle</b><div style="font-size:14px;color:#555;margin-top:4px" data-t="zt"></div>
+<div class="znum"><span>+1 (818) 821-5017</span><button class="cp" id="cp" data-t="copy"></button></div>
+<ol><li data-t="z1"></li><li data-t="z2"></li><li data-t="z3"></li></ol></div>
+<button class="btn g" id="send">💬 <span data-t="send"></span></button>
+</div></div>
+<div class="sh" id="sh2"><div class="pane">
+<h3><span data-t="cmp"></span><button class="x" id="cx2">✕</button></h3>
+<p style="font-size:14px;color:#6f6f6f;margin-top:8px;text-transform:none" data-t="cmpn"></p>
+<input id="cnm" data-ph="nm">
+<textarea id="ctx" rows="5" style="width:100%;border:1px solid #e3e3e3;border-radius:14px;padding:13px 14px;font-size:16px;margin-top:10px;font-family:inherit;text-transform:uppercase"></textarea>
+<button class="btn g" id="csend">🔒 <span data-t="csend"></span></button>
+</div></div>
+<script>
+var L=0,cart={},note={};
+function ls(k,v){try{if(v===undefined)return JSON.parse(localStorage.getItem("ak_"+k));localStorage.setItem("ak_"+k,JSON.stringify(v))}catch(x){return null}}
+var HRS=[8,23];
+function isOpen(){try{var h=+new Intl.DateTimeFormat("en-US",{hour:"numeric",hour12:false,timeZone:"America/Los_Angeles"}).format(new Date())%24;return h>=HRS[0]&&h<HRS[1]}catch(x){return true}}
+var T={sample:["ҮЛГҮ","ОБРАЗЕЦ","SAMPLE"],sub:["Борбор Азия ашканасы · 100% халал · жеткирүү бар", "Среднеазиатская кухня · 100% халяль · доставка", "Central Asian cuisine · 100% halal · delivery"],
+open:["",""," "],op:["● Азыр ачык · 08:00–23:00","● Сейчас открыто · 08:00–23:00","● Open now · 8am–11pm"],cl:["● Жабык · эртең 08:00дө ачылат","● Закрыто · откроется в 08:00","● Closed · opens at 8am"],rt:["Мурунку заказ","Прошлый заказ","Last order"],rb:["Кайра","Повторить","Reorder"],cmph:["+ Комментарий","+ Комментарий","+ Comment"],deliv:["Жеткирүү бар", "Есть доставка", "Delivery"],
+call:["Чалуу","Позвонить","Call"],order:["WhatsApp'тан заказ","Заказать в WhatsApp","Order on WhatsApp"],
+foot:["Ашыңыз таттуу болсун! 🤲 Сайтты жасаган:","Приятного аппетита! 🤲 Сайт сделал:","Enjoy your meal! 🤲 Website by:"],
+hi:["Саламатсызбы! Заказ берейин:","Здравствуйте! Хочу заказать:","Hello! I'd like to order:"],yo:["Сиздин заказ","Ваш заказ","Your order"],send:["Заказды WhatsApp'ка жиберүү","Отправить заказ в WhatsApp","Send order on WhatsApp"],nm:["Атыңыз","Ваше имя","Your name"],ad:["Дарек же трак-стоп (милдеттүү эмес)","Адрес или трак-стоп (необязательно)","Address or truck stop (optional)"],zt:["Онлайн төлөсөңүз болот:","Можно оплатить онлайн:","You can pay online:"],copy:["Көчүрүү","Копировать","Copy"],copied:["Көчүрүлдү ✓","Скопировано ✓","Copied ✓"],z1:["Номерди көчүрүңүз","Скопируйте номер","Copy the number"],z2:["Банк тиркемеңизди ачып, Zelle'ге жалпы сумманы жибериңиз","Откройте приложение банка и отправьте сумму через Zelle","Open your bank app and send the total via Zelle"],z3:["Заказды WhatsApp'ка жиберип, төлөмдүн скриншотун тиркеңиз","Отправьте заказ в WhatsApp и прикрепите скриншот оплаты","Send the order on WhatsApp and attach the payment screenshot"],pay:["Төлөм: Zelle +1 (818) 821-5017 — чекти тиркейм 🧾","Оплата: Zelle +1 (818) 821-5017 — прикреплю чек 🧾","Payment: Zelle +1 (818) 821-5017 — receipt attached 🧾"],chk:["Чек жиберүү","Отправить чек","Send receipt"],paid:["Zelle аркылуу төлөдүм. Чектин скриншотун тиркеп жатам 🧾","Оплатил(а) через Zelle. Прикрепляю скриншот чека 🧾","I paid via Zelle. Attaching the receipt screenshot 🧾"],cmp:["Жалоба же сунуш","Жалоба или предложение","Complaint or suggestion"],cmpn:["Жазганыңызды башка эч ким көрбөйт — түз ээсинин WhatsApp'ына жеке барат.","Ваше сообщение никто не увидит — оно уйдёт лично владельцу в WhatsApp.","No one else will see this — it goes privately to the owner's WhatsApp."],cph:["Эмне жакпай калды же эмнени жакшыртсак болот?","Что не понравилось или что улучшить?","What went wrong or what can we improve?"],csend:["Жеке жиберүү","Отправить лично","Send privately"],ctitle:["📝 ЖАЛОБА / СУНУШ","📝 ЖАЛОБА / ПРЕДЛОЖЕНИЕ","📝 COMPLAINT / SUGGESTION"],who:["Аты","Имя","Name"],where:["Дарек","Адрес","Address"],sum:["Жалпы","Итого","Total"],pop:["ХИТ","ХИТ","HIT"]};
+var C=[{"id": "bf", "e": "🍳", "n": ["Таңкы тамак", "Завтрак", "Breakfast"], "it": [["i1", "🥛", "#e8e4da", "#9a948a", ["Творог", "Творог", "Cottage cheese"], ["", "", ""], 13, 0, "img/tvarog.jpg"], ["i2", "🍚", "#e8e0cc", "#8a8270", ["Буудай ботко", "Пшеничная каша", "Wheat porridge"], ["", "", ""], 10, 0, "img/shirguruch.jpg"], ["i3", "🍳", "#f0c040", "#9a7010", ["Жумуртка (3 даана)", "Яичница (3 яйца)", "Eggs (3)"], ["", "", ""], 6, 0, "img/tuxum.jpg"]]}, {"id": "hot", "e": "🔥", "n": ["Негизги (эң аз 2 порция)", "Основные (мин. 2 порции)", "Mains (min 2)"], "it": [["i4", "🍛", "#c46a1c", "#7a3a0c", ["Палоо", "Плов", "Plov"], ["", "", ""], 20, 1, "img/plov.jpg"], ["i5", "🍲", "#d08a3a", "#7a4a12", ["Шорпо", "Шурпа", "Shurpa"], ["", "", ""], 16, 0, "img/shorva.jpg"], ["i6", "🥘", "#8a5a34", "#3e2412", ["Димлама", "Дымляма", "Dimlama"], ["", "", ""], 16, 0, "img/dimlama.jpg"], ["i7", "🍽️", "#b08060", "#5a3a24", ["Бифштекс", "Бифштекс", "Beef steak"], ["", "", ""], 18, 0, "img/bifshteks.jpg"], ["i8", "🍢", "#a8502a", "#4a1e0c", ["Кебаб", "Кебаб", "Kebab"], ["", "", ""], 20, 1, "img/kabob.jpg"], ["i9", "🥘", "#8a5a34", "#3e2412", ["Голубцы", "Голубцы", "Stuffed peppers"], ["", "", ""], 16, 0, "img/galupsi.jpg"], ["i10", "🍜", "#c94a2c", "#6e1e10", ["Макарон", "Макароны", "Pasta"], ["", "", ""], 16, 0, "img/makaron.jpg"]]}, {"id": "bake", "e": "🥐", "n": ["Нан жана самса", "Выпечка", "Bakery"], "it": [["i11", "🥟", "#e0a34a", "#8a5a14", ["Самса", "Самса", "Samsa"], ["", "", ""], 5, 0, "img/somsa.jpg"], ["i12", "🫓", "#d9a35a", "#7a5220", ["Нан", "Лепёшка", "Bread"], ["", "", ""], 5, 0, "img/non.jpg"]]}, {"id": "salad", "e": "🥗", "n": ["Салаттар", "Салаты", "Salads"], "it": [["i13", "🥛", "#e8e4da", "#9a948a", ["Айран", "Айран", "Ayran"], ["", "", ""], 6, 0, "img/ayron.jpg"], ["i14", "🥗", "#3aa04a", "#145a20", ["Жашылча салат", "Свежий салат", "Fresh salad"], ["", "", ""], 6, 0, "img/sveji.jpg"], ["i15", "🫙", "#7a9a4a", "#3a4a1a", ["Туздалган (банка)", "Соленья (банка)", "Pickles (jar)"], ["", "", ""], 12, 0, "img/salyoni.jpg"], ["i16", "🫙", "#7a9a4a", "#3a4a1a", ["Ачыган капуста", "Квашеная капуста", "Sauerkraut"], ["", "", ""], 3, 0, "img/kapusta.jpg"]]}];
+var IT={};C.forEach(function(c){c.it.forEach(function(i){IT[i[0]]=i})});
+function $(s){return document.querySelector(s)}
+function render(){
+ document.querySelectorAll("[data-t]").forEach(function(e){e.textContent=T[e.dataset.t][L]});
+ $("#cats").innerHTML=C.map(function(c,i){return '<button data-c="'+c.id+'"'+(i?'':' class="on"')+'>'+c.e+' '+c.n[L]+'</button>'}).join("");
+ $("#menu").innerHTML=C.map(function(c){return '<section id="s-'+c.id+'"><h2>'+c.e+' '+c.n[L]+'</h2>'+c.it.map(function(i){
+  var q=cart[i[0]]||0;
+  return '<div class="it">'+(i[8]?'<div class="pic ph"><img src="'+i[8]+'" alt="" loading="lazy"></div>':'<div class="pic" style="background:linear-gradient(135deg,'+i[2]+','+i[3]+')">'+i[1]+'</div>')+'<div class="tx"><b>'+i[4][L]+(i[7]?'<span class="tag">'+T.pop[L]+'</span>':'')+'</b>'+(i[5][L]?'<p>'+i[5][L]+'</p>':'')+'<div class="row"><span class="pr">$'+i[6]+'</span>'+
+  (q?'<div class="q"><button data-m="'+i[0]+'">−</button><span>'+q+'</span><button data-p="'+i[0]+'">+</button></div>':'<button class="add" data-p="'+i[0]+'">+</button>')+'</div></div></div>'}).join("")+'</section>'}).join("");
+ bar();
+}
+function extra(){var o=document.querySelector(".open");if(o){o.textContent=(isOpen()?T.op:T.cl)[L];o.classList.toggle("closed",!isOpen())}
+ var lo=ls("last");if(lo&&lo.c&&Object.keys(lo.c).some(function(k){return IT[k]})){$("#re").classList.add("on");$("#rel").textContent=Object.keys(lo.c).filter(function(k){return IT[k]}).map(function(k){return IT[k][4][L]+" ×"+lo.c[k]}).join(", ")}}
+function bar(){extra();var n=0,s=0;for(var k in cart){n+=cart[k];s+=cart[k]*IT[k][6]}$("#cnt").textContent=n;$("#tot").textContent="$"+s;$("#bar").classList.toggle("on",n>0)}
+document.addEventListener("input",function(e){if(e.target.classList.contains("cm"))note[e.target.dataset.k]=e.target.value.trim()});
+document.addEventListener("click",function(e){
+ var b=e.target.closest("button");if(!b)return;
+ if(b.dataset.l!==undefined){L=+b.dataset.l;document.querySelectorAll(".lang button").forEach(function(x){x.classList.toggle("on",x===b)});render();return}
+ if(b.dataset.c){document.querySelectorAll(".cats button").forEach(function(x){x.classList.toggle("on",x===b)});var s=document.getElementById("s-"+b.dataset.c);window.scrollTo({top:s.offsetTop-60,behavior:"smooth"});return}
+ if(b.dataset.p){cart[b.dataset.p]=(cart[b.dataset.p]||0)+1;render();return}
+ if(b.dataset.m){cart[b.dataset.m]--;if(!cart[b.dataset.m])delete cart[b.dataset.m];render();return}
+ if(b.id==="bar"){openSheet();return}
+ if(b.id==="cmpOpen"){document.querySelectorAll("#sh2 [data-ph]").forEach(function(e){e.placeholder=T[e.dataset.ph][L]});$("#ctx").placeholder=T.cph[L];if(!$("#cnm").value)$("#cnm").value=ls("nm")||"";$("#sh2").classList.add("on");return}
+ if(b.id==="reb"){var lo=ls("last");if(lo){cart={};note=lo.n||{};for(var k in lo.c)if(IT[k])cart[k]=lo.c[k];render();openSheet()}return}
+ if(b.id==="cx2"){$("#sh2").classList.remove("on");return}
+ if(b.id==="csend"){var t=$("#ctx").value.trim();if(!t){$("#ctx").focus();return}var n=$("#cnm").value.trim();var u="https://wa.me/18188215017?text="+encodeURIComponent((T.ctitle[L]+"\n\n"+t+(n?"\n\n"+T.who[L]+": "+n:"")).toUpperCase());$("#ctx").value="";$("#sh2").classList.remove("on");location.href=u;return}
+ if(b.id==="cx"){$("#sh").classList.remove("on");return}
+ if(b.id==="send"){ls("last",{c:cart,n:note});ls("nm",$("#nm").value.trim());ls("ad",$("#ad").value.trim());location.href="https://wa.me/18188215017?text="+encodeURIComponent(msg());return}
+ if(b.id==="cp"){try{navigator.clipboard.writeText("+18188215017")}catch(x){}b.textContent=T.copied[L];return}
+});
+function total(){var s=0;for(var k in cart)s+=cart[k]*IT[k][6];return s}
+function msg(){var m=T.hi[L]+"\n";for(var k in cart){m+="• "+IT[k][4][L]+" × "+cart[k]+" = $"+cart[k]*IT[k][6]+"\n";if(note[k])m+="   ↳ "+note[k]+"\n"}m+="\n"+T.sum[L]+": $"+total()+"\n";var n=$("#nm").value.trim(),a=$("#ad").value.trim();if(n)m+="\n"+T.who[L]+": "+n;if(a)m+="\n"+T.where[L]+": "+a;m+="\n\n"+T.pay[L];return m.toUpperCase()}
+function openSheet(){$("#lines").innerHTML=Object.keys(cart).map(function(k){return '<div class="ln"><span>'+IT[k][4][L]+' <i>× '+cart[k]+'</i></span><b>$'+cart[k]*IT[k][6]+'</b><input class="cm" data-k="'+k+'" value="'+(note[k]||"").replace(/"/g,"&quot;")+'" placeholder="'+T.cmph[L]+'"></div>'}).join("");$("#tot2").textContent="$"+total();
+ document.querySelectorAll("[data-ph]").forEach(function(e){e.placeholder=T[e.dataset.ph][L]});$("#cp").textContent=T.copy[L];if(!$("#nm").value)$("#nm").value=ls("nm")||"";if(!$("#ad").value)$("#ad").value=ls("ad")||"";$("#sh").classList.add("on")}
+$("#sh").addEventListener("click",function(e){if(e.target.id==="sh")this.classList.remove("on")});$("#sh2").addEventListener("click",function(e){if(e.target.id==="sh2")this.classList.remove("on")});
+render();
+</script>
+</body></html>
