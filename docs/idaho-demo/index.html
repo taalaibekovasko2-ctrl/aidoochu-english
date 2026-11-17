@@ -49,6 +49,23 @@ h2{font-size:20px;font-weight:900;margin-bottom:12px;display:flex;align-items:ce
 .bar.on{display:flex}
 .bar .n{background:#06210f;color:var(--ok);min-width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-size:14px}
 .bar .t{margin-left:auto}
+.sh{position:fixed;inset:0;z-index:20;display:none;background:rgba(0,0,0,.45)}
+.sh.on{display:block}
+.pane{position:absolute;left:0;right:0;bottom:0;max-height:92vh;overflow:auto;background:#fff;color:#141414;border-radius:24px 24px 0 0;padding:18px 18px calc(24px + env(safe-area-inset-bottom))}
+.pane h3{font-size:22px;font-weight:900;display:flex;justify-content:space-between;align-items:center}
+.x{border:0;background:#f1f1f1;width:36px;height:36px;border-radius:12px;font-size:18px}
+.ln{display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid #eee;font-size:15px}
+.ln i{font-style:normal;color:#6f6f6f}
+.tl{display:flex;justify-content:space-between;font-weight:900;font-size:20px;padding:14px 0 6px}
+.pane input{width:100%;border:1px solid #e3e3e3;border-radius:14px;padding:13px 14px;font-size:16px;margin-top:10px;font-family:inherit}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;border:0;border-radius:16px;padding:15px;font-weight:900;font-size:16px;margin-top:12px;font-family:inherit}
+.g{background:#25d366;color:#06210f}
+.zel{margin-top:18px;border-radius:20px;background:#f6f0ff;border:1px solid #e4d6ff;padding:16px}
+.zel b{font-size:18px;color:#6d1ed4}
+.zel ol{margin:10px 0 0 20px;font-size:14px;line-height:1.6;color:#333}
+.znum{display:flex;align-items:center;justify-content:space-between;background:#fff;border-radius:14px;padding:12px 14px;margin-top:10px;font-weight:900;font-size:18px}
+.cp{border:0;background:#6d1ed4;color:#fff;border-radius:10px;padding:9px 12px;font-weight:800;font-size:14px}
+.p{background:#6d1ed4;color:#fff}
 footer{text-align:center;color:var(--mut);font-size:13px;padding:26px 18px 10px;line-height:1.6}
 footer a{color:var(--acc2);font-weight:800;text-decoration:none}
 </style></head><body>
@@ -64,13 +81,23 @@ footer a{color:var(--acc2);font-weight:800;text-decoration:none}
 <main id="menu"></main>
 <footer><span data-t="foot"></span><br>💻 <a href="https://instagram.com/sayt_usta">SAYT USTA</a> · @sayt_usta</footer>
 <button class="bar" id="bar"><span class="n" id="cnt">0</span><span data-t="order"></span><span class="t" id="tot">$0</span></button>
+<div class="sh" id="sh"><div class="pane">
+<h3><span data-t="yo"></span><button class="x" id="cx">✕</button></h3>
+<div id="lines"></div><div class="tl"><span data-t="sum"></span><span id="tot2"></span></div>
+<input id="nm" data-ph="nm"><input id="ad" data-ph="ad">
+<button class="btn g" id="send">💬 <span data-t="send"></span></button>
+<div class="zel"><b>💳 Zelle</b><div style="font-size:14px;color:#555;margin-top:4px" data-t="zt"></div>
+<div class="znum"><span>+1 (818) 821-5017</span><button class="cp" id="cp" data-t="copy"></button></div>
+<ol><li data-t="z1"></li><li data-t="z2"></li><li data-t="z3"></li></ol>
+<button class="btn p" id="chk">🧾 <span data-t="chk"></span></button></div>
+</div></div>
 <script>
 var L=0,cart={};
 var T={sample:["ҮЛГҮ","ОБРАЗЕЦ","SAMPLE"],sub:["100% халал · үй тамагы · жеткирүү $1/миля", "100% халяль · домашняя еда · доставка $1/миля", "100% halal · homemade · delivery $1/mile"],
 open:["● 24/7", "● 24/7", "● 24/7"],deliv:["Жеткирүү бар", "Есть доставка", "Delivery"],
 call:["Чалуу","Позвонить","Call"],order:["WhatsApp'тан заказ","Заказать в WhatsApp","Order on WhatsApp"],
 foot:["Ашыңыз таттуу болсун! 🤲 Сайтты жасаган:","Приятного аппетита! 🤲 Сайт сделал:","Enjoy your meal! 🤲 Website by:"],
-hi:["Саламатсызбы! Заказ берейин:","Здравствуйте! Хочу заказать:","Hello! I'd like to order:"],sum:["Жалпы","Итого","Total"],pop:["ХИТ","ХИТ","HIT"]};
+hi:["Саламатсызбы! Заказ берейин:","Здравствуйте! Хочу заказать:","Hello! I'd like to order:"],yo:["Сиздин заказ","Ваш заказ","Your order"],send:["Заказды WhatsApp'ка жиберүү","Отправить заказ в WhatsApp","Send order on WhatsApp"],nm:["Атыңыз","Ваше имя","Your name"],ad:["Дарек же трак-стоп (милдеттүү эмес)","Адрес или трак-стоп (необязательно)","Address or truck stop (optional)"],zt:["Онлайн төлөсөңүз болот:","Можно оплатить онлайн:","You can pay online:"],copy:["Көчүрүү","Копировать","Copy"],copied:["Көчүрүлдү ✓","Скопировано ✓","Copied ✓"],z1:["Номерди көчүрүңүз","Скопируйте номер","Copy the number"],z2:["Банк тиркемеңизди ачып, Zelle'ге жалпы сумманы жибериңиз","Откройте приложение банка и отправьте сумму через Zelle","Open your bank app and send the total via Zelle"],z3:["Төлөмдүн скриншотун «Чек жиберүү» аркылуу жибериңиз","Отправьте скриншот оплаты через «Отправить чек»","Send the payment screenshot via “Send receipt”"],chk:["Чек жиберүү","Отправить чек","Send receipt"],paid:["Zelle аркылуу төлөдүм. Чектин скриншотун тиркеп жатам 🧾","Оплатил(а) через Zelle. Прикрепляю скриншот чека 🧾","I paid via Zelle. Attaching the receipt screenshot 🧾"],who:["Аты","Имя","Name"],where:["Дарек","Адрес","Address"],sum:["Жалпы","Итого","Total"],pop:["ХИТ","ХИТ","HIT"]};
 var C=[{"id": "bf", "e": "🍳", "n": ["Таңкы тамак", "Завтрак", "Breakfast"], "it": [["i1", "🥛", "#e8e4da", "#9a948a", ["Творог", "Творог", "Cottage cheese"], ["", "", ""], 13, 0, "img/tvarog.jpg"], ["i2", "🍚", "#e8e0cc", "#8a8270", ["Буудай ботко", "Пшеничная каша", "Wheat porridge"], ["", "", ""], 10, 0, "img/shirguruch.jpg"], ["i3", "🍳", "#f0c040", "#9a7010", ["Жумуртка (3 даана)", "Яичница (3 яйца)", "Eggs (3)"], ["", "", ""], 6, 0, "img/tuxum.jpg"]]}, {"id": "hot", "e": "🔥", "n": ["Негизги (эң аз 2 порция)", "Основные (мин. 2 порции)", "Mains (min 2)"], "it": [["i4", "🍛", "#c46a1c", "#7a3a0c", ["Палоо", "Плов", "Plov"], ["", "", ""], 20, 1, "img/plov.jpg"], ["i5", "🍲", "#d08a3a", "#7a4a12", ["Шорпо", "Шурпа", "Shurpa"], ["", "", ""], 16, 0, "img/shorva.jpg"], ["i6", "🥘", "#8a5a34", "#3e2412", ["Димлама", "Дымляма", "Dimlama"], ["", "", ""], 16, 0, "img/dimlama.jpg"], ["i7", "🍽️", "#b08060", "#5a3a24", ["Бифштекс", "Бифштекс", "Beef steak"], ["", "", ""], 18, 0, "img/bifshteks.jpg"], ["i8", "🍢", "#a8502a", "#4a1e0c", ["Кебаб", "Кебаб", "Kebab"], ["", "", ""], 20, 1, "img/kabob.jpg"], ["i9", "🥘", "#8a5a34", "#3e2412", ["Голубцы", "Голубцы", "Stuffed peppers"], ["", "", ""], 16, 0, "img/galupsi.jpg"], ["i10", "🍜", "#c94a2c", "#6e1e10", ["Макарон", "Макароны", "Pasta"], ["", "", ""], 16, 0, "img/makaron.jpg"]]}, {"id": "bake", "e": "🥐", "n": ["Нан жана самса", "Выпечка", "Bakery"], "it": [["i11", "🥟", "#e0a34a", "#8a5a14", ["Самса", "Самса", "Samsa"], ["", "", ""], 5, 0, "img/somsa.jpg"], ["i12", "🫓", "#d9a35a", "#7a5220", ["Нан", "Лепёшка", "Bread"], ["", "", ""], 5, 0, "img/non.jpg"]]}, {"id": "salad", "e": "🥗", "n": ["Салаттар", "Салаты", "Salads"], "it": [["i13", "🥛", "#e8e4da", "#9a948a", ["Айран", "Айран", "Ayran"], ["", "", ""], 6, 0, "img/ayron.jpg"], ["i14", "🥗", "#3aa04a", "#145a20", ["Жашылча салат", "Свежий салат", "Fresh salad"], ["", "", ""], 6, 0, "img/sveji.jpg"], ["i15", "🫙", "#7a9a4a", "#3a4a1a", ["Туздалган (банка)", "Соленья (банка)", "Pickles (jar)"], ["", "", ""], 12, 0, "img/salyoni.jpg"], ["i16", "🫙", "#7a9a4a", "#3a4a1a", ["Ачыган капуста", "Квашеная капуста", "Sauerkraut"], ["", "", ""], 3, 0, "img/kapusta.jpg"]]}];
 var IT={};C.forEach(function(c){c.it.forEach(function(i){IT[i[0]]=i})});
 function $(s){return document.querySelector(s)}
@@ -90,8 +117,17 @@ document.addEventListener("click",function(e){
  if(b.dataset.c){document.querySelectorAll(".cats button").forEach(function(x){x.classList.toggle("on",x===b)});var s=document.getElementById("s-"+b.dataset.c);window.scrollTo({top:s.offsetTop-60,behavior:"smooth"});return}
  if(b.dataset.p){cart[b.dataset.p]=(cart[b.dataset.p]||0)+1;render();return}
  if(b.dataset.m){cart[b.dataset.m]--;if(!cart[b.dataset.m])delete cart[b.dataset.m];render();return}
- if(b.id==="bar"){var m=T.hi[L]+"\n",s=0;for(var k in cart){m+="• "+IT[k][4][L]+" × "+cart[k]+" = $"+cart[k]*IT[k][6]+"\n";s+=cart[k]*IT[k][6]}m+=T.sum[L]+": $"+s;location.href="https://wa.me/18188215017?text="+encodeURIComponent(m)}
+ if(b.id==="bar"){openSheet();return}
+ if(b.id==="cx"){$("#sh").classList.remove("on");return}
+ if(b.id==="send"){location.href="https://wa.me/18188215017?text="+encodeURIComponent(msg());return}
+ if(b.id==="cp"){try{navigator.clipboard.writeText("+18188215017")}catch(x){}b.textContent=T.copied[L];return}
+ if(b.id==="chk"){location.href="https://wa.me/18188215017?text="+encodeURIComponent(T.paid[L]+"\n\n"+msg());return}
 });
+function total(){var s=0;for(var k in cart)s+=cart[k]*IT[k][6];return s}
+function msg(){var m=T.hi[L]+"\n";for(var k in cart)m+="• "+IT[k][4][L]+" × "+cart[k]+" = $"+cart[k]*IT[k][6]+"\n";m+=T.sum[L]+": $"+total();var n=$("#nm").value.trim(),a=$("#ad").value.trim();if(n)m+="\n"+T.who[L]+": "+n;if(a)m+="\n"+T.where[L]+": "+a;return m}
+function openSheet(){$("#lines").innerHTML=Object.keys(cart).map(function(k){return '<div class="ln"><span>'+IT[k][4][L]+' <i>× '+cart[k]+'</i></span><b>$'+cart[k]*IT[k][6]+'</b></div>'}).join("");$("#tot2").textContent="$"+total();
+ document.querySelectorAll("[data-ph]").forEach(function(e){e.placeholder=T[e.dataset.ph][L]});$("#cp").textContent=T.copy[L];$("#sh").classList.add("on")}
+$("#sh").addEventListener("click",function(e){if(e.target.id==="sh")this.classList.remove("on")});
 render();
 </script>
 </body></html>
