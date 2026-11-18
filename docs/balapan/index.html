@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ky"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>Балапан — сүрөттүү сөздүк</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#ffb703">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:"Nunito",Inter,system-ui,-apple-system,sans-serif;background:#fff8e7;color:#2b2d42;min-height:100vh;overflow-x:hidden}
+button{font-family:inherit;cursor:pointer;border:0}
+.top{background:linear-gradient(135deg,#ffb703,#fb8500);color:#fff;padding:18px 18px 26px;border-radius:0 0 34px 34px;position:relative;overflow:hidden}
+.top:after{content:"";position:absolute;right:-40px;top:-40px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.15)}
+.row{display:flex;justify-content:space-between;align-items:center;position:relative;z-index:1}
+.logo{font-size:28px;font-weight:900;display:flex;align-items:center;gap:8px}
+.stars{background:#fff;color:#fb8500;font-weight:900;padding:8px 14px;border-radius:99px;font-size:18px}
+.top p{position:relative;z-index:1;margin-top:6px;font-size:16px;opacity:.95;font-weight:700}
+.back{background:rgba(255,255,255,.25);color:#fff;font-weight:900;font-size:16px;padding:9px 14px;border-radius:14px}
+.wrap{padding:16px}
+.games{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
+.game{border-radius:24px;padding:16px;color:#fff;text-align:left;font-weight:900;font-size:17px;box-shadow:0 6px 0 rgba(0,0,0,.12)}
+.game i{font-style:normal;font-size:36px;display:block;margin-bottom:6px}
+h2{font-size:20px;font-weight:900;margin:6px 4px 12px}
+.cats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.cat{border-radius:26px;padding:16px 10px;text-align:center;font-weight:900;font-size:17px;color:#2b2d42;box-shadow:0 6px 0 rgba(0,0,0,.08)}
+.cat i{font-style:normal;font-size:52px;display:block;margin-bottom:4px}
+.cat small{display:block;font-size:12.5px;opacity:.6;margin-top:2px}
+.card{background:#fff;border-radius:34px;padding:26px 18px 22px;text-align:center;box-shadow:0 10px 0 rgba(0,0,0,.06);position:relative}
+.big{font-size:150px;line-height:1.1;display:block;animation:pop .45s cubic-bezier(.2,1.6,.4,1)}
+@keyframes pop{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
+.word{font-size:46px;font-weight:900;margin-top:10px;letter-spacing:1px}
+.word b{color:#e63946}
+.syl{display:flex;justify-content:center;gap:8px;margin-top:10px;flex-wrap:wrap}
+.syl span{background:#fff1d0;color:#fb8500;font-weight:900;font-size:22px;padding:6px 14px;border-radius:14px}
+.ru{margin-top:10px;color:#8d99ae;font-size:15px;font-weight:700}
+.say{margin-top:16px;background:#3a86ff;color:#fff;font-size:20px;font-weight:900;padding:14px 26px;border-radius:20px;box-shadow:0 5px 0 #2563eb}
+.nav{display:flex;gap:12px;margin-top:16px}
+.nav button{flex:1;background:#fff;font-size:30px;padding:14px;border-radius:22px;box-shadow:0 6px 0 rgba(0,0,0,.08);font-weight:900}
+.cnt{text-align:center;color:#8d99ae;font-weight:800;margin-top:12px}
+.abc{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.abc button{background:#fff;border-radius:20px;padding:12px 4px;font-size:30px;font-weight:900;box-shadow:0 5px 0 rgba(0,0,0,.07)}
+.abc small{display:block;font-size:22px}
+.q{font-size:22px;font-weight:900;text-align:center;margin-bottom:6px}
+.opts{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}
+.opts button{background:#fff;border-radius:26px;padding:16px 6px;font-size:62px;box-shadow:0 6px 0 rgba(0,0,0,.08)}
+.opts.w button{font-size:22px;font-weight:900;padding:22px 6px}
+.opts button.ok{background:#d8f8d8;animation:pop .4s}.opts button.no{background:#ffdede;animation:shake .4s}
+@keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.prog{height:14px;background:#ffe8b8;border-radius:99px;overflow:hidden;margin-bottom:16px}.prog span{display:block;height:100%;background:linear-gradient(90deg,#06d6a0,#3a86ff);transition:.4s}
+.win{text-align:center;padding:30px 16px}.win .e{font-size:110px;animation:pop .6s}.win h2{font-size:30px;margin-top:10px}.win p{font-size:18px;color:#8d99ae;font-weight:800;margin-top:6px}
+.btn{display:block;width:100%;background:#06d6a0;color:#fff;font-size:20px;font-weight:900;padding:16px;border-radius:22px;margin-top:16px;box-shadow:0 6px 0 #04a77d}
+.btn.o{background:#ffb703;box-shadow:0 6px 0 #d99700}
+.conf{position:fixed;top:-20px;font-size:26px;pointer-events:none;animation:fall 1.6s linear forwards;z-index:9}
+@keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
+.par{margin-top:22px;background:#fff;border-radius:22px;padding:14px 16px;font-size:14px;color:#6c757d;line-height:1.5;box-shadow:0 5px 0 rgba(0,0,0,.05)}
+</style></head><body>
+<div id="app"></div>
+<script>
+var CATS=[
+{id:"an",n:"Жаныбарлар",e:"🐻",c:"#ffd6a5",w:[["🐕","ит","собака"],["🐈","мышык","кошка"],["🐎","ат","лошадь"],["🐄","уй","корова"],["🐑","кой","овца"],["🐐","эчки","коза"],["🐔","тоок","курица"],["🐇","коён","заяц"],["🐻","аюу","медведь"],["🐺","карышкыр","волк"],["🦊","түлкү","лиса"],["🐘","пил","слон"],["🦁","арстан","лев"],["🐟","балык","рыба"],["🦅","бүркүт","беркут"]]},
+{id:"fr",n:"Жемиш, жашылча",e:"🍎",c:"#caffbf",w:[["🍎","алма","яблоко"],["🍐","алмурут","груша"],["🍇","жүзүм","виноград"],["🍉","дарбыз","арбуз"],["🍌","банан","банан"],["🍊","апельсин","апельсин"],["🍋","лимон","лимон"],["🍒","алча","вишня"],["🥕","сабиз","морковь"],["🍅","помидор","помидор"],["🥒","бадыраң","огурец"],["🥔","картошка","картофель"]]},
+{id:"co",n:"Түстөр",e:"🎨",c:"#ffc6ff",w:[["🔴","кызыл","красный"],["🔵","көк","синий"],["🟢","жашыл","зелёный"],["🟡","сары","жёлтый"],["⚪","ак","белый"],["⚫","кара","чёрный"],["🟤","күрөң","коричневый"]]},
+{id:"nu",n:"Сандар",e:"🔢",c:"#bde0fe",w:[["1️⃣","бир","один"],["2️⃣","эки","два"],["3️⃣","үч","три"],["4️⃣","төрт","четыре"],["5️⃣","беш","пять"],["6️⃣","алты","шесть"],["7️⃣","жети","семь"],["8️⃣","сегиз","восемь"],["9️⃣","тогуз","девять"],["🔟","он","десять"]]},
+{id:"sc",n:"Мектеп",e:"🎒",c:"#a0c4ff",w:[["📖","китеп","книга"],["✏️","калем","карандаш"],["🎒","сумка","рюкзак"],["📓","дептер","тетрадь"],["👩‍🏫","мугалим","учитель"],["✂️","кайчы","ножницы"],["📏","сызгыч","линейка"],["🏫","мектеп","школа"],["🌍","жер шары","глобус"]]},
+{id:"fa",n:"Үй-бүлө",e:"👨‍👩‍👧",c:"#fdffb6",w:[["👩","апа","мама"],["👨","ата","папа"],["👵","чоң апа","бабушка"],["👴","чоң ата","дедушка"],["👦","уул","сын"],["👧","кыз","дочь"],["👶","бөбөк","малыш"],["🏠","үй","дом"]]},
+{id:"na",n:"Табият",e:"🌳",c:"#9bf6ff",w:[["☀️","күн","солнце"],["🌙","ай","луна"],["⭐","жылдыз","звезда"],["☁️","булут","облако"],["🌧️","жамгыр","дождь"],["❄️","кар","снег"],["🏔️","тоо","гора"],["🌸","гүл","цветок"],["🌳","дарак","дерево"],["💧","суу","вода"]]}];
+var ABC=[["А","🍎","алма"],["Б","🐟","балык"],["В","🚃","вагон"],["Г","🌸","гүл"],["Д","🌳","дарак"],["Е","🦝","енот"],["Ё","🎄","ёлка"],["Ж","⭐","жылдыз"],["З","🦓","зебра"],["И","🐕","ит"],["Й","🥛","йогурт"],["К","🐑","кой"],["Л","🍋","лимон"],["М","🐈","мышык"],["Н","🍞","нан"],["Ң","🌅","таң"],["О","🧸","оюнчук"],["Ө","🦆","өрдөк"],["П","🐘","пил"],["Р","🚀","ракета"],["С","🥕","сабиз"],["Т","🏔️","тоо"],["У","🐄","уй"],["Ү","🏠","үй"],["Ф","⚽","футбол"],["Х","🐹","хомяк"],["Ц","🎪","цирк"],["Ч","🐦","чымчык"],["Ш","🎈","шар"],["Щ","🪥","щётка"],["Ъ","🔤","ажыратуу белгиси"],["Ы","🎵","ыр"],["Ь","🔤","жумшартуу белгиси"],["Э","🫏","эшек"],["Ю","🪀","юла"],["Я","📦","ящик"]];
+var COLS=["#ff595e","#ffca3a","#8ac926","#1982c4","#6a4c93","#ff924c","#06d6a0"];
+var S={v:"home"},app=document.getElementById("app");
+function ls(k,v){try{if(v===undefined)return JSON.parse(localStorage.getItem("bp_"+k));localStorage.setItem("bp_"+k,JSON.stringify(v))}catch(e){return null}}
+var stars=ls("stars")||0;
+function V(c){return "аеёиоөуүыэюяАЕЁИОӨУҮЫЭЮЯ".indexOf(c)>=0}
+function syl(w){if(w.indexOf(" ")>=0)return w.split(" ");var v=[];for(var i=0;i<w.length;i++)if(V(w[i]))v.push(i);if(v.length<2)return [w];var cut=[];for(var k=1;k<v.length;k++){var n=v[k]-v[k-1]-1;cut.push(n<=1?v[k]-n:v[k]-1)}var out=[],p=0;cut.forEach(function(c){out.push(w.slice(p,c));p=c});out.push(w.slice(p));return out}
+function say(t){try{var u=new SpeechSynthesisUtterance(t),vs=speechSynthesis.getVoices();var v=vs.find(function(x){return /^ky/i.test(x.lang)})||vs.find(function(x){return /^kk/i.test(x.lang)})||vs.find(function(x){return /^ru/i.test(x.lang)});if(v){u.voice=v;u.lang=v.lang}u.rate=.8;speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}}
+function conf(){for(var i=0;i<18;i++){var d=document.createElement("div");d.className="conf";d.textContent=["⭐","🎉","🌟","🎈","✨"][i%5];d.style.left=Math.random()*100+"vw";d.style.animationDelay=Math.random()*.5+"s";document.body.appendChild(d);setTimeout(function(x){return function(){x.remove()}}(d),2300)}}
+function hd(title,sub,back){return '<div class="top"><div class="row">'+(back?'<button class="back" data-go="home">‹ Артка</button>':'<div class="logo">🐥 Балапан</div>')+'<div class="stars">⭐ '+stars+'</div></div>'+(title?'<p style="font-size:22px;font-weight:900;margin-top:12px">'+title+'</p>':'')+(sub?'<p>'+sub+'</p>':'')+'</div>'}
+function home(){app.innerHTML=hd("","Сүрөттөр менен сөз үйрөнөбүз! 👋")+'<div class="wrap">'+
+ '<div class="games"><button class="game" style="background:#3a86ff" data-go="g1"><i>👀</i>Сүрөттү тап</button><button class="game" style="background:#8338ec" data-go="g2"><i>📖</i>Сөздү оку</button><button class="game" style="background:#06d6a0;grid-column:span 2" data-go="abc"><i>🔤</i>Алиппе — 36 тамга</button></div>'+
+ '<h2>Сөздүк</h2><div class="cats">'+CATS.map(function(c,i){return '<button class="cat" style="background:'+c.c+'" data-cat="'+i+'"><i>'+c.e+'</i>'+c.n+'<small>'+c.w.length+' сөз</small></button>'}).join("")+'</div>'+
+ '<div class="par">👨‍👩‍👧 <b>Ата-энелерге:</b> балаңыз менен бирге көрүңүз. Сөздү үн чыгарып окуп, муундарга бөлүп айтыңыз. Ар бир туура жооп үчүн жылдызча берилет ⭐</div></div>'}
+function card(){var c=CATS[S.c],w=c.w[S.i],sy=syl(w[1]);
+ app.innerHTML=hd(c.e+" "+c.n,"",1)+'<div class="wrap"><div class="card"><span class="big" key="'+S.i+'">'+w[0]+'</span><div class="word"><b>'+w[1][0].toUpperCase()+'</b>'+w[1].slice(1)+'</div>'+(sy.length>1?'<div class="syl">'+sy.map(function(x){return '<span>'+x+'</span>'}).join('<span style="background:none;color:#ccc">-</span>')+'</div>':'')+'<div class="ru">'+w[2]+'</div><button class="say" data-say="'+w[1]+'">🔊 Ук</button></div>'+
+ '<div class="nav"><button data-nv="-1">⬅️</button><button data-nv="1">➡️</button></div><div class="cnt">'+(S.i+1)+' / '+c.w.length+'</div></div>'}
+function abc(){app.innerHTML=hd("🔤 Алиппе","Тамганы бас — сүрөтүн көр",1)+'<div class="wrap"><div class="abc">'+ABC.map(function(a,i){return '<button data-ab="'+i+'" style="color:'+COLS[i%COLS.length]+'">'+a[0]+'<small>'+a[1]+'</small></button>'}).join("")+'</div></div>'}
+function letter(){var a=ABC[S.i],w=a[2],k=w.toUpperCase().indexOf(a[0]);
+ app.innerHTML=hd("🔤 Алиппе","",1)+'<div class="wrap"><div class="card"><div style="font-size:120px;font-weight:900;line-height:1;color:'+COLS[S.i%COLS.length]+'">'+a[0]+' '+a[0].toLowerCase()+'</div><span class="big" style="font-size:110px">'+a[1]+'</span><div class="word" style="font-size:36px">'+(k>=0?w.slice(0,k)+'<b>'+w[k]+'</b>'+w.slice(k+1):w)+'</div><button class="say" data-say="'+a[0]+'. '+w+'">🔊 Ук</button></div>'+
+ '<div class="nav"><button data-ln="-1">⬅️</button><button data-ln="1">➡️</button></div><div class="cnt">'+(S.i+1)+' / 36</div></div>'}
+function allW(){var a=[];CATS.forEach(function(c){c.w.forEach(function(w){a.push(w)})});return a}
+function shuf(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t}return a}
+function newGame(t){var W=shuf(allW()).slice(0,8);S={v:"game",t:t,qs:W.map(function(w){var o=shuf(allW().filter(function(x){return x!==w&&x[0]!==w[0]})).slice(0,2);return {w:w,o:shuf([w].concat(o))}}),i:0,ok:0,done:false};render();if(t=="g1")setTimeout(function(){say(S.qs[0].w[1])},400)}
+function game(){var q=S.qs[S.i],g1=S.t=="g1";
+ app.innerHTML=hd(g1?"👀 Сүрөттү тап":"📖 Сөздү оку","",1)+'<div class="wrap"><div class="prog"><span style="width:'+(S.i/S.qs.length*100)+'%"></span></div><div class="card">'+
+ (g1?'<div class="q">Кайсынысы?</div><div class="word" style="font-size:44px">'+q.w[1]+'</div><button class="say" data-say="'+q.w[1]+'">🔊 Ук</button>':'<div class="q">Бул эмне?</div><span class="big" style="font-size:120px">'+q.w[0]+'</span>')+
+ '</div><div class="opts'+(g1?'':' w')+'">'+q.o.map(function(o,k){return '<button data-op="'+k+'">'+(g1?o[0]:o[1])+'</button>'}).join("")+'</div></div>'}
+function win(){var p=S.ok;app.innerHTML=hd("","",1)+'<div class="wrap"><div class="card win"><div class="e">'+(p>=7?"🏆":p>=4?"🌟":"💪")+'</div><h2>'+(p>=7?"Азаматсың!":p>=4?"Абдан жакшы!":"Дагы аракет кыл!")+'</h2><p>'+p+' / '+S.qs.length+' туура · +'+p+' ⭐</p><button class="btn" data-go="'+S.t+'">🔁 Дагы ойнойм</button><button class="btn o" data-go="home">🏠 Башкы бет</button></div></div>';if(p>=4)conf()}
+function render(){window.scrollTo(0,0);S.v=="home"?home():S.v=="card"?card():S.v=="abc"?abc():S.v=="letter"?letter():S.v=="game"?game():win()}
+document.addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;var d=b.dataset;
+ if(d.go){if(d.go=="g1"||d.go=="g2"){newGame(d.go);return}S={v:d.go};render();return}
+ if(d.cat){S={v:"card",c:+d.cat,i:0};render();say(CATS[S.c].w[0][1]);return}
+ if(d.nv){var n=CATS[S.c].w.length;S.i=(S.i+ +d.nv+n)%n;render();say(CATS[S.c].w[S.i][1]);return}
+ if(d.ab){S={v:"letter",i:+d.ab};render();say(ABC[S.i][0]+". "+ABC[S.i][2]);return}
+ if(d.ln){S.i=(S.i+ +d.ln+36)%36;render();say(ABC[S.i][0]+". "+ABC[S.i][2]);return}
+ if(d.say){say(d.say);return}
+ if(d.op!==undefined&&!S.lock){var q=S.qs[S.i],ok=q.o[+d.op]===q.w;b.classList.add(ok?"ok":"no");if(!ok){S.miss=1;return}S.lock=1;S.ok+=(S.miss?0:1);stars+=(S.miss?0:1);ls("stars",stars);say(q.w[1]);
+  setTimeout(function(){S.lock=0;S.miss=0;S.i++;if(S.i>=S.qs.length){S.v="win";render()}else{render();if(S.t=="g1")setTimeout(function(){say(S.qs[S.i].w[1])},300)}},900);return}
+});
+render();
+</script></body></html>
