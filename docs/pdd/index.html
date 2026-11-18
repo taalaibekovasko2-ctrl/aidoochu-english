@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ky"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ПДД КР — экзаменге даярдануу</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0f3d91">
+<style>
+:root{--b:#0f3d91;--b2:#1f6fff;--ok:#16a34a;--bad:#dc2626;--bg:#f3f6fb;--tx:#0f172a;--mut:#64748b}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh}
+.top{background:linear-gradient(135deg,var(--b),var(--b2));color:#fff;padding:18px 18px 22px;border-radius:0 0 26px 26px}
+.row{display:flex;justify-content:space-between;align-items:center}
+.lang{display:flex;background:rgba(255,255,255,.15);border-radius:99px;padding:3px}
+.lang button{border:0;background:none;color:#fff;font-weight:800;font-size:12px;padding:6px 11px;border-radius:99px}
+.lang button.on{background:#fff;color:var(--b)}
+.demo{font-size:11px;font-weight:800;background:#ffd84d;color:#3a2a00;padding:4px 9px;border-radius:99px}
+h1{font-size:26px;font-weight:900;margin-top:16px}
+.sub{opacity:.85;font-size:14px;margin-top:4px}
+.rd{margin-top:16px;background:rgba(255,255,255,.14);border-radius:18px;padding:14px;display:flex;gap:14px;align-items:center}
+.ring{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:17px}
+.rd b{font-size:15px}.rd small{display:block;opacity:.85;font-size:12.5px;margin-top:3px}
+.wrap{padding:16px}
+.card{background:#fff;border-radius:20px;padding:16px;margin-bottom:12px;box-shadow:0 4px 18px rgba(15,23,42,.06)}
+.big{display:flex;align-items:center;gap:14px;width:100%;border:0;text-align:left;font-family:inherit}
+.big i{font-style:normal;font-size:26px;width:52px;height:52px;border-radius:16px;display:grid;place-items:center;flex:none}
+.big b{font-size:16px;display:block}.big small{color:var(--mut);font-size:13px}
+.big.ex i{background:#e0ebff}.big.mi i{background:#ffe4e4}.big.tp i{background:#e3f8ea}
+h3{font-size:15px;margin:6px 4px 10px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px}
+.tp-l{display:flex;justify-content:space-between;align-items:center;padding:12px 4px;border-bottom:1px solid #eef1f6;font-size:15px;width:100%;background:none;border-left:0;border-right:0;border-top:0;font-family:inherit;text-align:left}
+.bar{height:6px;background:#eef1f6;border-radius:9px;margin-top:6px;overflow:hidden;width:120px}.bar span{display:block;height:100%;background:var(--b2)}
+.qh{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.tm{font-weight:900;font-variant-numeric:tabular-nums;background:#e0ebff;color:var(--b);padding:6px 12px;border-radius:99px}
+.dots{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:14px}.dots span{width:13px;height:6px;border-radius:9px;background:#dbe2ee}.dots .c{background:var(--ok)}.dots .w{background:var(--bad)}.dots .n{background:var(--b2)}
+.qq{font-size:18px;font-weight:800;line-height:1.35}
+.img{display:flex;justify-content:center;margin:14px 0 4px}
+.opt{display:block;width:100%;text-align:left;border:2px solid #e3e8f1;background:#fff;border-radius:16px;padding:14px;margin-top:10px;font-size:15.5px;font-family:inherit;line-height:1.35}
+.opt:disabled{color:var(--tx);opacity:1}
+.opt.ok{border-color:var(--ok);background:#ecfdf3}.opt.bad{border-color:var(--bad);background:#fef2f2}
+.xp{margin-top:14px;background:#f1f5ff;border-radius:16px;padding:14px;font-size:14.5px;line-height:1.5;display:none}
+.xp.on{display:block}.xp b{display:block;margin-bottom:4px}
+.snd{border:0;background:var(--b);color:#fff;border-radius:10px;padding:7px 11px;font-weight:800;font-size:13px;margin-top:10px;font-family:inherit}
+.btn{display:block;width:100%;border:0;border-radius:16px;padding:16px;font-weight:900;font-size:16px;margin-top:14px;font-family:inherit;background:var(--b);color:#fff}
+.btn.g{background:#eef2f8;color:var(--tx)}
+.res{text-align:center;padding:26px 16px}.res .em{font-size:64px}.res h2{font-size:26px;margin-top:8px}.res p{color:var(--mut);margin-top:6px}
+.res .sc{font-size:44px;font-weight:900;margin-top:14px}
+.back{border:0;background:none;color:#fff;font-size:15px;font-weight:700;font-family:inherit}
+.note{font-size:12px;color:var(--mut);text-align:center;padding:10px 20px 30px;line-height:1.5}
+</style></head><body>
+<div id="app"></div>
+<script src="q.js"></script>
+<script>
+var L=+(ls("lang")||0),S={v:"home"},app=document.getElementById("app");
+function ls(k,v){try{if(v===undefined)return JSON.parse(localStorage.getItem("pdd_"+k));localStorage.setItem("pdd_"+k,JSON.stringify(v))}catch(e){return null}}
+var T={title:["ПДД КР","ПДД КР"],sub:["Унаадагы экзаменге даярдануу","Подготовка к экзамену в «Унаа»"],
+ready:["Даярдыгыңыз","Ваша готовность"],readyS:["Акыркы экзамендердин жыйынтыгы боюнча","По результатам последних экзаменов"],
+ex:["Экзамен","Экзамен"],exS:["20 суроо · 25 мүнөт · 2 ката","20 вопросов · 25 минут · 2 ошибки"],
+mi:["Каталарым","Мои ошибки"],miS:["Ката кеткен суроолорду кайталоо","Повторить вопросы с ошибками"],
+tp:["Темалар боюнча","По темам"],q:["Суроо","Вопрос"],next:["Кийинки","Далее"],fin:["Аяктоо","Завершить"],
+right:["Туура!","Верно!"],wrong:["Туура эмес","Неверно"],why:["Түшүндүрмө","Пояснение"],listen:["🔊 Угуу","🔊 Слушать"],
+pass:["Куттуктайбыз! Тапшырдыңыз","Поздравляем! Сдано"],fail:["Тапшыра алган жоксуз","Не сдано"],
+passS:["Унаада да ушундай болот!","В «Унаа» будет так же!"],failS:["Каталарыңызды кайталап, кайра аракет кылыңыз","Повторите ошибки и попробуйте снова"],
+home:["Башкы бет","На главную"],again:["Кайра экзамен","Снова экзамен"],none:["Каталар жок 👏","Ошибок нет 👏"],
+note:["DEMO: суроолор үлгү катары жазылган, расмий Унаа базасы эмес.","DEMO: вопросы-примеры, не официальная база «Унаа»."],
+cnt:["суроо","вопр."],back:["‹ Артка","‹ Назад"]};
+function t(k){return T[k][L]}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var x=a[i];a[i]=a[j];a[j]=x}return a}
+function stats(){return ls("st")||{}}
+function readiness(){var h=ls("hist")||[];if(!h.length)return 0;var l=h.slice(-5);return Math.round(l.reduce(function(s,x){return s+x},0)/l.length*100)}
+function home(){
+  var r=readiness(),mis=(ls("mis")||[]).length,st=stats(),col=r>=90?"#16a34a":r>=60?"#f59e0b":"#ffffff";
+  var tops=Object.keys(TOP).map(function(k){var qs=Q.filter(function(q){return q.t==k}),ok=qs.filter(function(q){return st[Q.indexOf(q)]==1}).length,p=Math.round(ok/qs.length*100);
+    return '<button class="tp-l" data-tp="'+k+'"><span>'+TOP[k][L]+'<div class="bar"><span style="width:'+p+'%"></span></div></span><small style="color:#64748b">'+qs.length+' '+t("cnt")+' ›</small></button>'}).join("");
+  app.innerHTML='<div class="top"><div class="row"><span class="demo">DEMO</span><div class="lang"><button data-l="0" class="'+(L?"":"on")+'">KG</button><button data-l="1" class="'+(L?"on":"")+'">RU</button></div></div>'+
+  '<h1>🚗 '+t("title")+'</h1><div class="sub">'+t("sub")+'</div>'+
+  '<div class="rd"><div class="ring" style="background:conic-gradient('+col+' '+r*3.6+'deg,rgba(255,255,255,.2) 0)"><div style="width:50px;height:50px;border-radius:50%;background:#1a52c0;display:grid;place-items:center">'+r+'%</div></div><div><b>'+t("ready")+'</b><small>'+t("readyS")+'</small></div></div></div>'+
+  '<div class="wrap"><div class="card"><button class="big ex" data-go="exam"><i>📝</i><span><b>'+t("ex")+'</b><small>'+t("exS")+'</small></span></button></div>'+
+  '<div class="card"><button class="big mi" data-go="mis"><i>🔁</i><span><b>'+t("mi")+' ('+mis+')</b><small>'+t("miS")+'</small></span></button></div>'+
+  '<h3>'+t("tp")+'</h3><div class="card" style="padding:6px 14px">'+tops+'</div></div><div class="note">'+t("note")+'</div>';
+}
+function start(mode,list){S={v:"q",mode:mode,list:list,i:0,ans:[],t0:Date.now()};if(mode=="exam")tick();render()}
+var timer;function tick(){clearInterval(timer);timer=setInterval(function(){if(S.v!="q"||S.mode!="exam"){clearInterval(timer);return}var left=1500-Math.floor((Date.now()-S.t0)/1000);if(left<=0){finish();return}var e=document.getElementById("tm");if(e)e.textContent=Math.floor(left/60)+":"+("0"+left%60).slice(-2)},500)}
+function qv(){
+  var qi=S.list[S.i],q=Q[qi],a=S.ans[S.i],done=a!==undefined;
+  var dots=S.list.map(function(x,k){var v=S.ans[k];return '<span class="'+(k==S.i?"n":v===undefined?"":v==Q[x].c?"c":"w")+'"></span>'}).join("");
+  var opts=q.a.map(function(o,k){var c="";if(done){if(k==q.c)c="ok";else if(k==a)c="bad"}return '<button class="opt '+c+'" data-a="'+k+'"'+(done?" disabled":"")+'>'+o[L]+'</button>'}).join("");
+  app.innerHTML='<div class="top" style="padding-bottom:16px"><div class="row"><button class="back" data-go="home">'+t("back")+'</button>'+(S.mode=="exam"?'<span class="tm" id="tm">25:00</span>':'<span>'+(S.i+1)+'/'+S.list.length+'</span>')+'</div></div>'+
+  '<div class="wrap"><div class="card"><div class="dots">'+dots+'</div><div style="color:#64748b;font-size:13px;margin-bottom:6px">'+t("q")+' '+(S.i+1)+' / '+S.list.length+' · '+TOP[q.t][L]+'</div>'+
+  '<div class="qq">'+q.q[L]+'</div>'+(q.img?'<div class="img">'+SIGN[q.img]+'</div>':'')+opts+
+  '<div class="xp'+(done?" on":"")+'"><b>'+(a==q.c?"✅ "+t("right"):"❌ "+t("wrong"))+'</b>'+q.e[L]+'<br><button class="snd" data-say="1">'+t("listen")+'</button></div>'+
+  (done?'<button class="btn" data-nx="1">'+(S.i==S.list.length-1?t("fin"):t("next"))+' →</button>':'')+'</div></div>';
+  if(S.mode=="exam")tick();
+}
+function answer(k){var qi=S.list[S.i],q=Q[qi];S.ans[S.i]=k;var st=stats();st[qi]=k==q.c?1:0;ls("st",st);var mis=ls("mis")||[];if(k!=q.c){if(mis.indexOf(qi)<0)mis.push(qi)}else mis=mis.filter(function(x){return x!=qi});ls("mis",mis);render()}
+function finish(){clearInterval(timer);var ok=S.list.filter(function(x,k){return S.ans[k]==Q[x].c}).length,n=S.list.length,err=n-ok;
+  if(S.mode=="exam"){var h=ls("hist")||[];h.push(ok/n);ls("hist",h.slice(-20))}
+  var pass=S.mode=="exam"?err<=2:err==0;S={v:"res",ok:ok,n:n,pass:pass,mode:S.mode};render()}
+function res(){app.innerHTML='<div class="wrap"><div class="card res"><div class="em">'+(S.pass?"🎉":"📚")+'</div><h2>'+(S.pass?t("pass"):t("fail"))+'</h2><p>'+(S.pass?t("passS"):t("failS"))+'</p><div class="sc" style="color:'+(S.pass?"#16a34a":"#dc2626")+'">'+S.ok+' / '+S.n+'</div>'+
+  '<button class="btn" data-go="exam">'+t("again")+'</button>'+((ls("mis")||[]).length?'<button class="btn g" data-go="mis">🔁 '+t("mi")+'</button>':'')+'<button class="btn g" data-go="home">'+t("home")+'</button></div></div>'}
+function render(){window.scrollTo(0,0);if(S.v=="home")home();else if(S.v=="q")qv();else res()}
+function say(){try{var q=Q[S.list[S.i]],u=new SpeechSynthesisUtterance(q.e[L]);u.lang=L?"ru-RU":"ky-KG";var vs=speechSynthesis.getVoices(),v=vs.find(function(x){return x.lang.indexOf(L?"ru":"ky")==0})||vs.find(function(x){return x.lang.indexOf("ru")==0});if(v)u.voice=v;speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}}
+document.addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;
+  if(b.dataset.l!==undefined){L=+b.dataset.l;ls("lang",L);render();return}
+  var g=b.dataset.go;if(g=="home"){S={v:"home"};render();return}
+  if(g=="exam"){var idx=shuffle(Q.map(function(_,i){return i})).slice(0,20);start("exam",idx);return}
+  if(g=="mis"){var m=ls("mis")||[];if(!m.length){var sm=b.querySelector("small");if(sm)sm.textContent=t("none");return}start("mis",shuffle(m));return}
+  if(b.dataset.tp){start("topic",Q.map(function(q,i){return q.t==b.dataset.tp?i:-1}).filter(function(i){return i>=0}));return}
+  if(b.dataset.a!==undefined){answer(+b.dataset.a);return}
+  if(b.dataset.nx){if(S.i<S.list.length-1){S.i++;render()}else finish();return}
+  if(b.dataset.say){say();return}
+});
+render();
+</script></body></html>
