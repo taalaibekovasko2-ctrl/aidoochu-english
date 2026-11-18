@@ -75,6 +75,19 @@ h2{font-size:20px;font-weight:900;margin:6px 4px 12px}
 .avs{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:8px}.avs button{background:#f8f9fa;border-radius:16px;font-size:32px;padding:8px 0;border:3px solid transparent}.avs .on{border-color:#fb8500;background:#fff1d0}
 .tl{display:flex;flex-direction:column;gap:8px;margin-top:16px}.tl button{display:flex;align-items:center;gap:10px;background:#f8f9fa;border-radius:16px;padding:10px 14px;font-size:19px;font-weight:800;color:#495057;text-align:left}.tl i{font-style:normal;font-size:24px}.tl span{margin-left:auto;font-size:18px}
 .cat .pb{margin:8px 10px 0}
+.seg{display:flex;background:#fff;border-radius:18px;padding:5px;gap:5px;box-shadow:0 4px 0 rgba(0,0,0,.06)}.seg button{flex:1;padding:12px;border-radius:14px;font-weight:900;font-size:17px;background:none;color:#8d99ae}.seg .on{background:#ffb703;color:#fff}
+.bwrap{background:#fff;border-radius:30px;margin-top:14px;padding:10px;box-shadow:0 8px 0 rgba(0,0,0,.05)}.bsv{display:block;width:100%;max-width:340px;margin:0 auto}
+.bsv [data-bp]{cursor:pointer}.bsv [data-bp]:active{opacity:.7}
+.hl{fill:none;stroke:#ffb703;stroke-width:5;animation:pul 1s ease-in-out infinite;transform-box:fill-box;transform-origin:center;pointer-events:none}
+@keyframes pul{50%{transform:scale(1.25);opacity:.4}}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;justify-content:center}.chips button{background:#fff;border-radius:99px;padding:10px 16px;font-weight:900;font-size:16px;box-shadow:0 4px 0 rgba(0,0,0,.07)}.chips .on{background:#ffb703;color:#fff}
+.sheet{position:fixed;left:0;right:0;bottom:0;background:#fff;border-radius:30px 30px 0 0;padding:18px 20px calc(22px + env(safe-area-inset-bottom));text-align:center;box-shadow:0 -10px 40px rgba(0,0,0,.18);animation:up .35s cubic-bezier(.2,1.3,.4,1);z-index:5;max-height:70vh;overflow:auto}
+@keyframes up{from{transform:translateY(100%)}}
+.sheet .x{position:absolute;right:14px;top:14px;background:#f1f3f5;width:40px;height:40px;border-radius:50%;font-size:18px;font-weight:900}
+.se{font-size:76px;line-height:1.1;animation:pop .45s cubic-bezier(.2,1.6,.4,1)}
+.fact{font-size:18px;line-height:1.5;font-weight:700;color:#495057;margin-top:12px;text-align:left;background:#fff8e7;border-radius:18px;padding:14px 16px}
+.qz{margin-top:12px;background:#2b2d42;color:#fff;border-radius:20px;padding:14px 16px;font-size:20px;font-weight:800;text-align:center}.qz b{color:#ffd166}.qx{background:rgba(255,255,255,.15);color:#fff;font-weight:800;font-size:13px;padding:7px 12px;border-radius:99px;margin-top:10px}.qz span{display:block;font-size:15px;margin-top:6px;color:#bde0fe}
+.bodyt{display:flex;align-items:center;gap:14px;width:100%;margin-bottom:12px;background:linear-gradient(135deg,#ff9a8b,#ff6a88);color:#fff;border-radius:24px;padding:16px;font-weight:900;font-size:19px;text-align:left;box-shadow:0 6px 0 #d94f6c}.bodyt i{font-style:normal;font-size:46px}.bodyt small{display:block;font-size:13px;opacity:.9;margin-top:2px}
 </style></head><body>
 
 <div id="app"></div>
@@ -129,7 +142,7 @@ function hd(title,sub,back){return '<div class="top"><div class="row">'+(back?'<
 function bar(a,b,col){var p=b?Math.round(a/b*100):0;return '<div class="pb"><span style="width:'+p+'%;background:'+(col||"#06d6a0")+'"></span></div>'}
 function home(){var k=kid();app.innerHTML=hd("",'<span class="kidb">'+k.a+' Салам, '+esc(k.n)+'!</span> 3 тилде сөз үйрөнөбүз 🇰🇬🇷🇺🇬🇧')+'<div class="wrap">'+
  '<div class="games"><button class="game" style="background:#3a86ff" data-go="g1"><i>👀</i>Сүрөттү тап</button><button class="game" style="background:#8338ec" data-go="g2"><i>📖</i>Сөздү оку</button><button class="game" style="background:#ef476f;grid-column:span 2" data-go="g3"><i>🇬🇧</i>Англисче үйрөн — уксаң, сүрөттү тап</button><button class="game" style="background:#06d6a0;grid-column:span 2" data-go="abc"><i>🔤</i>Алиппе — 36 тамга</button></div>'+
- '<h2>Сөздүк · '+allW().length+' сөз</h2><div class="cats">'+CATS.map(function(c,i){var s=c.w.filter(function(w){return D.seen[w[1]]}).length;return '<button class="cat" style="background:'+c.c+'" data-cat="'+i+'"><i>'+c.e+'</i>'+c.n+'<small>'+s+' / '+c.w.length+' сөз'+(s==c.w.length?' ✅':'')+'</small>'+bar(s,c.w.length,"rgba(0,0,0,.35)")+'</button>'}).join("")+'</div>'+
+ '<button class="bodyt" data-go="body"><i>🧍</i><span>Адамдын денеси<small>Басып ач — сырты жана ичи: мээ, жүрөк, өпкө…</small></span></button><h2>Сөздүк · '+allW().length+' сөз</h2><div class="cats">'+CATS.map(function(c,i){var s=c.w.filter(function(w){return D.seen[w[1]]}).length;return '<button class="cat" style="background:'+c.c+'" data-cat="'+i+'"><i>'+c.e+'</i>'+c.n+'<small>'+s+' / '+c.w.length+' сөз'+(s==c.w.length?' ✅':'')+'</small>'+bar(s,c.w.length,"rgba(0,0,0,.35)")+'</button>'}).join("")+'</div>'+
  '<button class="parbtn" data-go="gate">👨‍👩‍👧 Ата-эне / Мугалим бөлүмү<small>Баланын жетишкендиги, кыйын сөздөр, отчёт</small></button></div>'}
 function card(){var c=CATS[S.c],w=c.w[S.i],sy=syl(w[1]);D.seen[w[1]]=1;act();
  app.innerHTML=hd(c.e+" "+c.n,"",1)+'<div class="wrap"><div class="card"><span class="big">'+w[0]+'</span><div class="word"><b>'+w[1][0].toUpperCase()+'</b>'+w[1].slice(1)+'</div>'+(sy.length>1?'<div class="syl">'+sy.map(function(x){return '<span>'+x+'</span>'}).join('<span style="background:none;color:#ccc">-</span>')+'</div>':'')+'<button class="say" data-say="'+w[1]+'">🔊 Ук</button>'+((SET.ru||SET.en)?'<div class="tl">'+(SET.ru?'<button data-say="'+w[2]+'" data-l="ru"><i>🇷🇺</i>'+w[2]+'<span>🔊</span></button>':'')+(SET.en?'<button data-say="'+w[3]+'" data-l="en"><i>🇬🇧</i>'+w[3]+'<span>🔊</span></button>':'')+'</div>':'')+'</div>'+
@@ -167,9 +180,91 @@ function par(){var k=kid(),r=stat(D),h=hard(D).slice(0,10),days="";
  '<div class="par">💡 <b>Кеңеш:</b> күнүнө 10–15 мүнөт жетиштүү. «✅ Үйрөнгөн» — бала оюнда туура тапкан сөздөр. Мугалим бир планшетте бир нече баланы кошуп, ар биринин жетишкендигин өзүнчө көрө алат.</div></div>'}
 function addkid(){app.innerHTML=hd("➕ Бала кошуу","",1)+'<div class="wrap"><div class="card"><input id="kn" class="inp" placeholder="Баланын аты" maxlength="20"><p class="lbl" style="margin-top:14px">Сүрөтчө тандаңыз</p><div class="avs">'+AV.map(function(a,i){return '<button data-av="'+a+'"'+(i==0?' class="on"':'')+'>'+a+'</button>'}).join("")+'</div><button class="btn" data-go="savekid">Сактоо</button></div></div>'}
 function report(){var k=kid(),r=stat(D),h=hard(D).slice(0,6);return "🐥 Балапан — "+k.n+" ("+today()+")\n⭐ Жылдыз: "+r.st+"\n✅ Үйрөнгөн сөз: "+r.lr+"\n👀 Көргөн сөз: "+r.seen+" / "+r.tot+"\n🔤 Тамгалар: "+r.ab+" / 36\n🎮 Оюн: "+r.g+"\n📅 Акыркы 7 күндө: "+r.wk+" күн"+(h.length?"\n⚠️ Кыйын сөздөр: "+h.map(function(w){return w[1]}).join(", "):"")}
-function render(){window.scrollTo(0,0);var f={home:home,card:card,abc:abc,letter:letter,game:game,gate:gate,par:par,addkid:addkid}[S.v];(f||win)()}
+/* адамдын денеси */
+var BP={
+hair:["💇","Чач","волосы","hair","Чач башты күндөн жана суудан коргойт. Ал күн сайын бир аз өсөт. Чачыңды таза кармап, тарап жүр!",150,40,"o"],
+head:["🙂","Баш","голова","head","Баштын ичинде мээ жашайт — ал бүт денени башкарат. Велосипед тепкенде башыңды каска менен корго!",112,62,"o"],
+eye:["👁️","Көз","глаз","eye","Көз менен көрөбүз: түстөрдү, сүрөттөрдү, апаңды! Көз ирмегенде өзүн тазалап турат. Телефонду көп карасаң, көз чарчайт.",130,90,"o"],
+ear:["👂","Кулак","ухо","ear","Кулак менен угабыз: музыканы, куштардын сайраганын. Кулак денебиздин тең салмагын сактоого да жардам берет. Кулакка эч нерсе салба!",97,95,"o"],
+nose:["👃","Мурун","нос","nose","Мурун менен дем алабыз жана жыт сезебиз: гүлдүн, нандын жытын. Мурундагы майда түктөр чаңды кармап калат.",150,102,"o"],
+mouth:["👄","Ооз","рот","mouth","Ооз менен сүйлөйбүз, ырдайбыз, тамак жейбиз. Тамакты шашпай, жакшылап чайна!",150,119,"o"],
+neck:["🧣","Моюн","шея","neck","Моюн башты денеге бириктирет. Анын жардамы менен башыбызды оңго-солго, өйдө-ылдый бурабыз.",150,148,"o"],
+shoulder:["🤷","Ийин","плечо","shoulder","Колдор ийинден башталат. Ийин менен колду айландырып, өйдө көтөрөбүз. Сумканы эки ийинге кий!",104,176,"o"],
+chest:["🫁","Көкүрөк","грудь","chest","Көкүрөктүн ичинде жүрөк жана өпкө бар. Кабыргалар аларды кутучадай коргоп турат. Терең дем алсаң, көкүрөгүң көтөрүлөт.",150,205,"o"],
+belly:["🤰","Курсак","живот","belly","Курсактын ичинде ашказан жана ичегилер иштейт — алар тамакты сиңирет. Курсагың ачканда «гүр-гүр» этет!",150,290,"o"],
+arm:["💪","Кол","рука","arm","Колдор менен алабыз, жазабыз, сүрөт тартабыз, кучактайбыз. Ар бир адамдын эки колу бар.",80,215,"o"],
+elbow:["🦾","Чыканак","локоть","elbow","Чыканак колдун ортосундагы муун. Анын жардамы менен колубузду бүгөбүз: кашыкты оозго алып барабыз.",76,255,"o"],
+hand:["✋","Алакан","ладонь","palm","Алакан менен кармайбыз, кол чабабыз. Тамактын алдында колуңду самын менен жуу — микробдор кетет!",70,342,"o"],
+finger:["👆","Манжалар","пальцы","fingers","Бир колдо 5 манжа, эки колдо 10. Ар бир адамдын манжа изи башкача — дүйнөдө сеникиндей из жок!",70,362,"o"],
+leg:["🦵","Бут","нога","leg","Буттар менен басабыз, чуркайбыз, секиребиз, топ тебебиз. Буттар денебизди көтөрүп турат.",124,370,"o"],
+knee:["🦿","Тизе","колено","knee","Тизе буттун ортосундагы муун. Анын жардамы менен отурабыз, секиребиз. Велосипедде тизени коргогуч менен корго.",123,440,"o"],
+foot:["🦶","Таман","стопа","foot","Таман менен жерде турабыз. Бир таманда 26 сөөк бар! Ыңгайлуу бут кийим кий.",116,515,"o"],
+teeth:["🦷","Тиштер","зубы","teeth","Балдарда 20 сүт тиш болот, кийин алар түшүп, ордуна 32 туруктуу тиш чыгат. Тишти күнүнө 2 жолу жуу!",0,0,"o"],
+tongue:["👅","Тил","язык","tongue","Тил даамды сезет: таттуу, туздуу, кычкыл, ачуу. Тилсиз сүйлөй да албайбыз.",0,0,"o"],
+skin:["🖐️","Тери","кожа","skin","Тери бүт денени кийимдей жаап, коргойт. Ал ысыкты, сууктуу, тийгенди сезет. Күндүн ысыгынан корго!",0,0,"o"],
+nails:["💅","Тырмактар","ногти","nails","Тырмактар манжалардын учун коргойт. Алар өсө берет — ошондуктан аларды кыскартып турабыз.",0,0,"o"],
+brain:["🧠","Мээ","мозг","brain","Мээ — дененин башкаруучусу. Ойлонобуз, эстейбиз, үйрөнөбүз, кыялданабыз — баары мээнин иши. Мээ түнү уктаганда эс алат, ошондуктан эрте жат!",150,70,"i"],
+lungs:["🫁","Өпкө","лёгкие","lungs","Бизде эки өпкө бар. Дем алганда алар абага толуп, шардай көөп чыгат. Таза абада көп ойно!",128,205,"i"],
+heart:["❤️","Жүрөк","сердце","heart","Жүрөк муштумуңдай чоң. Ал тынымсыз согуп, канды бүт денеге айдайт. Колуңду көкүрөгүңө кой — «тык-тык» сезесиңби?",158,218,"i"],
+liver:["🟤","Боор","печень","liver","Боор денени тазалап, тамактан келген зыяндуу заттарды чыгарат. Ал эң чоң ички органдардын бири.",128,262,"i"],
+stomach:["🫃","Ашказан","желудок","stomach","Ашказан тамакты майдалап, ботко сыяктуу кылат. Ошондуктан тамакты жакшылап чайна.",172,265,"i"],
+intestines:["🌀","Ичегилер","кишечник","intestines","Ичегилер абдан узун, курсакта бүктөлүп жатат. Алар тамактан пайдалуусун алып, денеге берет.",150,306,"i"],
+kidneys:["🫘","Бөйрөктөр","почки","kidneys","Бөйрөк экөө, буурчакка окшош. Алар канды тазалайт. Суу көп ич — бөйрөктөргө жакшы!",110,300,"i"],
+bones:["🦴","Сөөктөр","кости","bones","Чоң адамда 206 сөөк бар. Сөөктөр денени тик кармап, ички органдарды коргойт. Сүт ичсең, сөөк бекем болот!",0,0,"i"],
+muscles:["💪","Булчуңдар","мышцы","muscles","Булчуңдар бизди кыймылдатат: басабыз, жылмаябыз, көз ирмейбиз. Ойноп, спорт менен машыксаң, булчуң күчтөнөт!",0,0,"i"],
+blood:["🩸","Кан","кровь","blood","Кан тамырлар аркылуу бүт денеге агат. Ал денеге аба менен тамакты жеткирип турат.",0,0,"i"]};
+function bsvg(m){var sk="#ffd3b0",sh="#4cc9f0",pa="#3a86ff",o=m=="o",s=S.sel,hl=s&&BP[s][5]?'<circle class="hl" cx="'+BP[s][5]+'" cy="'+BP[s][6]+'" r="22"/>':'';
+ var g='<svg viewBox="0 0 300 545" class="bsv">'+
+ /* буттар */
+ '<path data-bp="leg" d="M126 330 L124 402" stroke="'+(o?pa:"#cfe8ff")+'" stroke-width="40" stroke-linecap="round" fill="none"/><path data-bp="leg" d="M174 330 L176 402" stroke="'+(o?pa:"#cfe8ff")+'" stroke-width="40" stroke-linecap="round" fill="none"/>'+
+ '<path data-bp="leg" d="M124 400 L121 505" stroke="'+sk+'" stroke-width="28" stroke-linecap="round" fill="none"/><path data-bp="leg" d="M176 400 L179 505" stroke="'+sk+'" stroke-width="28" stroke-linecap="round" fill="none"/>'+
+ '<ellipse data-bp="foot" cx="114" cy="516" rx="24" ry="12" fill="#ef476f"/><ellipse data-bp="foot" cx="186" cy="516" rx="24" ry="12" fill="#ef476f"/>'+
+ /* колдор */
+ '<path data-bp="arm" d="M102 180 L76 255 L71 328" stroke="'+sk+'" stroke-width="24" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path data-bp="arm" d="M198 180 L224 255 L229 328" stroke="'+sk+'" stroke-width="24" stroke-linecap="round" stroke-linejoin="round" fill="none"/>'+
+ (o?'<path data-bp="arm" d="M102 180 L86 225" stroke="'+sh+'" stroke-width="30" stroke-linecap="round" fill="none"/><path data-bp="arm" d="M198 180 L214 225" stroke="'+sh+'" stroke-width="30" stroke-linecap="round" fill="none"/>':'')+
+ '<circle data-bp="hand" cx="70" cy="342" r="17" fill="'+sk+'"/><circle data-bp="hand" cx="230" cy="342" r="17" fill="'+sk+'"/>'+
+ '<g data-bp="finger" fill="'+sk+'"><rect x="58" y="348" width="6" height="17" rx="3"/><rect x="65" y="351" width="6" height="18" rx="3"/><rect x="72" y="351" width="6" height="18" rx="3"/><rect x="79" y="348" width="6" height="15" rx="3"/><rect x="215" y="348" width="6" height="15" rx="3"/><rect x="222" y="351" width="6" height="18" rx="3"/><rect x="229" y="351" width="6" height="18" rx="3"/><rect x="236" y="348" width="6" height="17" rx="3"/></g>'+
+ /* моюн, дене */
+ '<rect data-bp="neck" x="137" y="132" width="26" height="34" rx="8" fill="'+sk+'"/>'+
+ (o?'<rect data-bp="chest" x="94" y="158" width="112" height="92" rx="30" fill="'+sh+'"/><rect data-bp="belly" x="94" y="238" width="112" height="102" rx="22" fill="'+sh+'"/><rect x="94" y="238" width="112" height="14" fill="'+sh+'"/><circle cx="150" cy="292" r="3" fill="#2b6cb0" data-bp="belly"/>':
+  '<rect x="94" y="158" width="112" height="182" rx="30" fill="#fff4ec" stroke="#ffb4a2" stroke-width="3" stroke-dasharray="7 6"/>'+
+  '<ellipse data-bp="lungs" cx="127" cy="206" rx="21" ry="38" fill="#ff8fab"/><ellipse data-bp="lungs" cx="173" cy="206" rx="21" ry="38" fill="#ff8fab"/>'+
+  '<path data-bp="heart" d="M158 238 C130 220 136 198 150 200 C155 200 158 205 158 208 C158 205 161 200 166 200 C180 198 186 220 158 238Z" fill="#e63946"/>'+
+  '<ellipse data-bp="liver" cx="128" cy="262" rx="30" ry="15" fill="#a0522d"/><ellipse data-bp="stomach" cx="172" cy="265" rx="22" ry="15" fill="#c77dff" transform="rotate(-20 172 265)"/>'+
+  '<rect data-bp="intestines" x="116" y="283" width="68" height="46" rx="18" fill="#ffb703"/><path data-bp="intestines" d="M124 295 Q134 287 144 295 T164 295 T178 295 M124 310 Q134 302 144 310 T164 310 T178 310 M128 322 Q138 315 150 322 T172 322" stroke="#e08e00" stroke-width="4" fill="none"/>'+
+  '<ellipse data-bp="kidneys" cx="106" cy="300" rx="8" ry="13" fill="#9d0208"/><ellipse data-bp="kidneys" cx="194" cy="300" rx="8" ry="13" fill="#9d0208"/>')+
+ /* баш */
+ '<circle data-bp="ear" cx="97" cy="95" r="13" fill="'+sk+'"/><circle data-bp="ear" cx="203" cy="95" r="13" fill="'+sk+'"/>'+
+ '<circle data-bp="head" cx="150" cy="88" r="53" fill="'+sk+'"/>'+
+ (o?'<path data-bp="hair" d="M96 88 Q92 30 150 30 Q208 30 204 88 Q196 52 150 56 Q104 52 96 88Z" fill="#5a3825"/>':
+  '<path data-bp="brain" d="M108 82 Q104 50 130 44 Q150 32 170 44 Q196 50 192 82 Q150 94 108 82Z" fill="#ffafcc" stroke="#f472b6" stroke-width="2"/><path data-bp="brain" d="M120 70 q8 -10 16 0 q8 10 16 0 q8 -10 16 0 q8 10 14 0 M128 56 q10 8 20 0 q10 -8 20 0" stroke="#f472b6" stroke-width="2.5" fill="none"/>')+
+ '<g data-bp="eye"><ellipse cx="130" cy="92" rx="9" ry="10" fill="#fff"/><ellipse cx="170" cy="92" rx="9" ry="10" fill="#fff"/><circle cx="131" cy="94" r="5" fill="#2b2d42"/><circle cx="171" cy="94" r="5" fill="#2b2d42"/></g>'+
+ '<path data-bp="nose" d="M150 96 Q144 108 150 110 Q155 110 154 107" stroke="#e29578" stroke-width="3" fill="none" stroke-linecap="round"/>'+
+ '<path data-bp="mouth" d="M134 119 Q150 133 166 119Z" fill="#e63946"/><circle cx="117" cy="110" r="8" fill="#ffadad" opacity=".6"/><circle cx="183" cy="110" r="8" fill="#ffadad" opacity=".6"/>';
+ /* кичине бөлүктөр үчүн чоң басуу аянты */
+ var hit=o?[["eye",130,92,14],["eye",170,92,14],["nose",150,104,11],["mouth",150,123,13],["ear",95,95,15],["ear",205,95,15],["shoulder",104,176,15],["shoulder",196,176,15],["elbow",76,255,15],["elbow",224,255,15],["finger",70,360,11],["finger",230,360,11],["knee",123,440,16],["knee",177,440,16]]:[["heart",158,218,14]];
+ g+=hit.map(function(h){return '<circle data-bp="'+h[0]+'" cx="'+h[1]+'" cy="'+h[2]+'" r="'+h[3]+'" fill="transparent"/>'}).join("");
+ if(o&&S.sel=="knee")g+='';
+ return g+hl+'</svg>'}
+function body(){var m=S.m||"o",s=S.sel,p=s&&BP[s],extra=Object.keys(BP).filter(function(k){return BP[k][7]==m&&!BP[k][5]}),seen=Object.keys(BP).filter(function(k){return D.bp&&D.bp[k]}).length;
+ app.innerHTML=hd("🧍 Адамдын денеси","Бир жерин бас — ачылып, айтып берет",1)+'<div class="wrap">'+
+ '<div class="seg"><button data-bm="o" class="'+(m=="o"?"on":"")+'">👕 Сырты</button><button data-bm="i" class="'+(m=="i"?"on":"")+'">🫀 Ичи</button></div>'+
+ (S.qz?'<div class="qz">🎯 <b>'+BP[S.qz][1]+'</b> — ушуну тап да бас!<span id="qm">'+(S.qm||"")+'</span></div>':'<button class="btn o" data-bq="1" style="margin-top:12px">🎯 Оюн: «Тап да бас!»</button>')+
+ '<div class="bwrap">'+bsvg(m)+'</div>'+
+ '<div class="chips">'+extra.map(function(k){return '<button data-bp="'+k+'" class="'+(s==k?"on":"")+'">'+BP[k][0]+' '+BP[k][1]+'</button>'}).join("")+'</div>'+
+ '<p class="cnt">Ачылган: '+seen+' / '+Object.keys(BP).length+'</p></div>'+
+ (p&&!S.qz?'<div class="sheet"><button class="x" data-bx="1">✕</button><div class="se">'+p[0]+'</div><div class="word" style="font-size:38px;margin-top:0">'+p[1]+'</div>'+
+ '<div class="tl" style="flex-direction:row;justify-content:center;margin-top:8px">'+(SET.ru?'<button data-say="'+p[2]+'" data-l="ru"><i>🇷🇺</i>'+p[2]+'</button>':'')+(SET.en?'<button data-say="'+p[3]+'" data-l="en"><i>🇬🇧</i>'+p[3]+'</button>':'')+'</div>'+
+ '<p class="fact">'+p[4]+'</p><button class="say" data-say="'+p[1]+'. '+p[4]+'">🔊 Угуу</button></div>':'')}
+function bpick(k){if(S.qz){if(k==S.qz){D.st++;S.qok=(S.qok||0)+1;act();say(BP[k][1]);conf();var ks=Object.keys(BP).filter(function(x){return BP[x][7]==(S.m||"o")&&x!=k});S.qz=ks[Math.floor(Math.random()*ks.length)];S.qm="✅ Туура! Эми кийинкиси";S.sel=null}else{S.qm="❌ Бул — "+BP[k][1].toLowerCase()+". Дагы аракет кыл!"}render();return}
+ if(!D.bp)D.bp={};D.bp[k]=1;act();S.sel=k;render();say(BP[k][1])}
+function render(){if(S.v!="body"||!S.keep)window.scrollTo(0,0);S.keep=S.v=="body";var f={home:home,card:card,abc:abc,letter:letter,game:game,body:body,gate:gate,par:par,addkid:addkid}[S.v];(f||win)()}
 document.addEventListener("change",function(e){if(e.target.id=="ru"||e.target.id=="en"){SET[e.target.id]=e.target.checked?1:0;ls("set",SET)}});
-document.addEventListener("click",function(e){var b=e.target.closest("button,[data-go]");if(!b)return;var d=b.dataset;
+document.addEventListener("click",function(e){var bq=e.target.closest("[data-bp]");if(bq){bpick(bq.getAttribute("data-bp"));return}var b=e.target.closest("button,[data-go]");if(!b)return;var d=b.dataset;
+ if(d.bm){S.m=d.bm;S.sel=null;if(S.qz){var ks=Object.keys(BP).filter(function(x){return BP[x][7]==d.bm});S.qz=ks[Math.floor(Math.random()*ks.length)];S.qm=""}render();return}
+ if(d.bx){S.sel=null;render();return}
+ if(d.bqx){S.qz=null;S.qm="";render();return}
+ if(d.bq){var ks2=Object.keys(BP).filter(function(x){return BP[x][7]==(S.m||"o")});S.qz=ks2[Math.floor(Math.random()*ks2.length)];S.qm="";S.sel=null;render();say(BP[S.qz][1]);return}
  if(d.go){var g=d.go;
   if(g=="g1"||g=="g2"||g=="g3"){newGame(g);return}
   if(g=="hardgame"){var h=hard(D);if(h.length<8)h=h.concat(shuf(allW().filter(function(w){return h.indexOf(w)<0})).slice(0,8-h.length));newGame("g2",h);return}
