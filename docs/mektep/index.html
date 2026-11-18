@@ -61,6 +61,7 @@ td{padding:9px 6px;border-bottom:1px solid #f2f5f4}
 .tt{display:grid;grid-template-columns:60px repeat(5,1fr);gap:4px;font-size:12px}.tt div{padding:7px 5px;border-radius:8px;background:#f6faf9;text-align:center}.tt .h{background:none;font-weight:800;color:var(--mut)}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#11302c;color:#fff;padding:12px 18px;border-radius:12px;font-size:14px;opacity:0;transition:.3s;pointer-events:none;z-index:9}.toast.on{opacity:1}
 .mnav{display:none}
+
 @media(max-width:860px){
  .app{grid-template-columns:1fr}.side{display:none}.main{padding:14px 14px 90px}
  .s3,.s4,.s5,.s6,.s7,.s8{grid-column:span 12}.s3.kpi{grid-column:span 6}
@@ -69,6 +70,7 @@ td{padding:9px 6px;border-bottom:1px solid #f2f5f4}
  .mnav button{border:0;background:none;font-size:11px;color:var(--mut);display:flex;flex-direction:column;align-items:center;gap:2px;font-weight:700}.mnav button.on{color:var(--g)}.mnav i{font-style:normal;font-size:20px}
 }
 @media print{.side,.roles,.mnav,.btn{display:none}.app{display:block}}
+.mini .c{grid-column:span 4!important}
 </style></head><body>
 <div class="app">
 <aside class="side">
@@ -121,7 +123,7 @@ function student(){
 function parent(){
  return hdr("Саламатсызбы, Асан байке 👋","Айбектин бүгүнкү абалы","Асан Асанов")+
  '<div class="grid"><div class="c s5"><div class="child">'+av("Айбек Асанов",0)+'<div><b style="font-size:18px">Айбек Асанов</b><div style="color:#6b8380;font-size:13.5px">8-«А» класс · Класс жетекчи: Гүлнара Асанова</div></div></div>'+
- '<div class="grid" style="margin-top:14px;gap:10px"><div class="c s4 kpi" style="background:#e3f8ea;box-shadow:none;padding:12px"><b style="font-size:22px">✓</b><span>Бүгүн келди</span></div><div class="c s4 kpi" style="background:#e6f1ff;box-shadow:none;padding:12px"><b style="font-size:22px">4.6</b><span>Орточо баа</span></div><div class="c s4 kpi" style="background:#fff4dc;box-shadow:none;padding:12px"><b style="font-size:22px">1</b><span>Тапшырма калды</span></div></div></div>'+
+ '<div class="grid mini" style="margin-top:14px;gap:10px"><div class="c s4 kpi" style="background:#e3f8ea;box-shadow:none;padding:12px"><b style="font-size:22px">✓</b><span>Бүгүн келди</span></div><div class="c s4 kpi" style="background:#e6f1ff;box-shadow:none;padding:12px"><b style="font-size:22px">4.6</b><span>Орточо баа</span></div><div class="c s4 kpi" style="background:#fff4dc;box-shadow:none;padding:12px"><b style="font-size:22px">1</b><span>Тапшырма калды</span></div></div></div>'+
  '<div class="c s7"><h3>Билдирүүлөр</h3>'+[["🟢","Айбек сабакка келди","08:02"],["⭐","Математикадан 5 алды","09:40"],["📚","Жаңы үй тапшырма: Физика — тест","11:15"],["📢","Жума күнү ата-энелер жыйналышы, 18:00","Кечээ"]].map(function(x){return '<div class="ntf"><i>'+x[0]+'</i><div>'+x[1]+'<small>'+x[2]+'</small></div></div>'}).join("")+'</div>'+
  '<div class="c s7"><h3>Мугалим менен чат <small>Гүлнара эже</small></h3><div class="chat" id="chat">'+CHAT.map(function(m){return '<div class="msg '+m[0]+'">'+m[1]+'</div>'}).join("")+'</div><div class="cr"><input class="in" id="cin" placeholder="Билдирүү жазыңыз..."><button class="btn" data-x="send">➤</button></div></div>'+
  '<div class="c s5"><h3>Мектептин жарыялары</h3><div class="list"><div>🎄 Жаңы жылдык майрам<small>27-декабрь · акт залы</small></div><div>💰 Класс фонду: 500 сом<small>Төлөгөндөр: 21 / 30</small></div><div>🏖 Кышкы каникул<small>29-декабрь – 11-январь</small></div></div></div>'+
