@@ -75,14 +75,14 @@ td{padding:9px 6px;border-bottom:1px solid #f2f5f4}
 <div class="app">
 <aside class="side">
  <div class="logo"><i>📖</i>Mektep</div>
- <button class="nav" data-r="t">👩‍🏫 Класс жетекчи</button><button class="nav" data-r="p">👨‍👩‍👧 Ата-эне</button><button class="nav" data-r="s">🎒 Окуучу</button>
+ <button class="nav" data-r="t">👩‍🏫 Класс жетекчи</button><button class="nav" data-r="p">👨‍👩‍👧 Ата-эне</button>
  <div style="height:14px"></div>
  <button class="nav" data-x="res">📚 Ресурстар</button><button class="nav" data-x="set">⚙️ Жөндөөлөр</button>
- <div class="sup"><b>8-«А» класс · 10 окуучу</b>Класс жетекчи жана ата-энелер үчүн.<br><br><b>Колдоо кызматы</b>Суроо болсо, каалаган убакта жазыңыз 💬</div>
+ <div class="sup"><b>8-«А» класс · 10 окуучу</b>Класс жетекчи жана ата-энелер үчүн — WhatsApp тобунун ордуна.<br><br><b>Колдоо кызматы</b>Суроо болсо, каалаган убакта жазыңыз 💬</div>
 </aside>
 <main class="main" id="m"></main>
 </div>
-<nav class="mnav"><button data-r="t"><i>👩‍🏫</i>Жетекчи</button><button data-r="p"><i>👨‍👩‍👧</i>Ата-эне</button><button data-r="s"><i>🎒</i>Окуучу</button></nav>
+<nav class="mnav"><button data-r="t"><i>👩‍🏫</i>Жетекчи</button><button data-r="p"><i>👨‍👩‍👧</i>Ата-эне</button></nav>
 <div class="toast" id="toast"></div>
 <script>
 var COL=["#2f8f83","#e5534b","#f2994a","#9b51e0","#2d9cdb","#27ae60","#eb5757","#f2c94c","#56ccf2","#bb6bd9"];
@@ -98,7 +98,7 @@ function toast(t){var e=document.getElementById("toast");e.textContent=t;e.class
 function bars(vals,labels,colors,h){h=h||150;var w=100/vals.length,mx=Math.max.apply(null,vals);
  return '<svg viewBox="0 0 '+vals.length*40+' '+(h+34)+'" width="100%" height="'+(h+34)+'">'+vals.map(function(v,i){var bh=v/mx*h*.86;return '<text x="'+(i*40+20)+'" y="'+(h-bh-6)+'" text-anchor="middle" font-size="11" fill="#6b8380" font-weight="700">'+v+'</text><rect x="'+(i*40+11)+'" y="'+(h-bh)+'" width="18" height="'+bh+'" rx="9" fill="'+colors[i]+'"/><text x="'+(i*40+20)+'" y="'+(h+20)+'" text-anchor="middle" font-size="11" fill="#6b8380">'+labels[i]+'</text>'}).join("")+'</svg>'}
 function ring(p,c){var r=62,C=2*Math.PI*r;return '<div class="ring"><svg width="150" height="150"><circle cx="75" cy="75" r="'+r+'" stroke="#e3f3f0" stroke-width="14" fill="none"/><circle cx="75" cy="75" r="'+r+'" stroke="'+(c||"#2f8f83")+'" stroke-width="14" fill="none" stroke-linecap="round" stroke-dasharray="'+C*p/100+' '+C+'" transform="rotate(-90 75 75)"/></svg><b>'+p+'%</b></div>'}
-function hdr(t,l,who){return '<div class="hd"><div class="roles">'+[["t","Класс жетекчи"],["p","Ата-эне"],["s","Окуучу"]].map(function(x){return '<button data-r="'+x[0]+'" class="'+(R==x[0]?"on":"")+'">'+x[1]+'</button>'}).join("")+'</div><div class="me">🔔 &nbsp; '+who+'</div></div><h1>'+t+'</h1><div class="lead">'+l+'</div>'}
+function hdr(t,l,who){return '<div class="hd"><div class="roles">'+[["t","Класс жетекчи"],["p","Ата-эне"]].map(function(x){return '<button data-r="'+x[0]+'" class="'+(R==x[0]?"on":"")+'">'+x[1]+'</button>'}).join("")+'</div><div class="me">🔔 &nbsp; '+who+'</div></div><h1>'+t+'</h1><div class="lead">'+l+'</div>'}
 function teacher(){
  var present=att.filter(function(a){return a=="p"}).length;
  return hdr("Саламатсызбы, Гүлнара эже 👋","8-«А» класстын жетекчиси · Бүгүн 18-ноябрь, шаршемби",'Гүлнара Асанова')+
@@ -126,7 +126,7 @@ function parent(){
  '<div class="grid mini" style="margin-top:14px;gap:10px"><div class="c s4 kpi" style="background:#e3f8ea;box-shadow:none;padding:12px"><b style="font-size:22px">✓</b><span>Бүгүн келди</span></div><div class="c s4 kpi" style="background:#e6f1ff;box-shadow:none;padding:12px"><b style="font-size:22px">4.6</b><span>Орточо баа</span></div><div class="c s4 kpi" style="background:#fff4dc;box-shadow:none;padding:12px"><b style="font-size:22px">1</b><span>Тапшырма калды</span></div></div></div>'+
  '<div class="c s7"><h3>Билдирүүлөр</h3>'+[["🟢","Айбек сабакка келди","08:02"],["⭐","Математикадан 5 алды","09:40"],["📚","Жаңы үй тапшырма: Физика — тест","11:15"],["📢","Жума күнү ата-энелер жыйналышы, 18:00","Кечээ"]].map(function(x){return '<div class="ntf"><i>'+x[0]+'</i><div>'+x[1]+'<small>'+x[2]+'</small></div></div>'}).join("")+'</div>'+
  '<div class="c s7"><h3>Мугалим менен чат <small>Гүлнара эже</small></h3><div class="chat" id="chat">'+CHAT.map(function(m){return '<div class="msg '+m[0]+'">'+m[1]+'</div>'}).join("")+'</div><div class="cr"><input class="in" id="cin" placeholder="Билдирүү жазыңыз..."><button class="btn" data-x="send">➤</button></div></div>'+
- '<div class="c s5"><h3>Мектептин жарыялары</h3><div class="list"><div>🎄 Жаңы жылдык майрам<small>27-декабрь · акт залы</small></div><div>💰 Класс фонду: 500 сом<small>Төлөгөндөр: 21 / 30</small></div><div>🏖 Кышкы каникул<small>29-декабрь – 11-январь</small></div></div></div>'+
+ '<div class="c s5"><h3>Бүгүнкү сабактар</h3><div class="sch">'+[["08:00","Математика","каб. 12"],["08:55","Кыргыз тили","каб. 7"],["09:50","Англис тили","каб. 21"],["10:55","Физика","каб. 15"],["11:50","Тарых","каб. 9"]].map(function(x,i){return '<div class="'+(i==2?"now":"")+'"><b>'+x[0]+'</b><span style="flex:1">'+x[1]+'</span><small>'+x[2]+'</small></div>'}).join("")+'</div></div>'+'<div class="c s7"><h3>Үй тапшырмалары <small>Айбек</small></h3>'+HW.map(function(h,i){var st=h[3][0];return '<div class="att"><div><b>'+h[1]+'</b><div style="color:#6b8380;font-size:13px">'+h[2]+' · '+h[0]+'</div></div>'+(st=="ok"?'<span class="tag ok">✓ Аткарылды</span>':'<button class="btn lt" data-sub="'+i+'">✓ Аткарды</button>')+'</div>'}).join("")+'</div>'+'<div class="c s5"><h3>Мектептин жарыялары</h3><div class="list"><div>🎄 Жаңы жылдык майрам<small>27-декабрь · акт залы</small></div><div>💰 Класс фонду: 500 сом<small>Төлөгөндөр: 21 / 30</small></div><div>🏖 Кышкы каникул<small>29-декабрь – 11-январь</small></div></div></div>'+'<div class="c s12"><h3>Айбектин баалары <small>предметтер боюнча</small></h3><div style="display:flex;gap:10px;flex-wrap:wrap">'+SUB.map(function(sb,j){var v=grades[0][j];return '<div style="flex:1;min-width:110px;background:#f6faf9;border-radius:14px;padding:12px;text-align:center"><div style="font-size:13px;color:#6b8380">'+sb+'</div><span class="gr g'+v+'" style="display:inline-grid;place-items:center;margin-top:6px;width:40px;height:40px;font-size:17px">'+v+'</span></div>'}).join("")+'</div></div>'+
  '</div>'}
 function admin(){
  var cls=["5-А","5-Б","6-А","6-Б","7-А","7-Б","8-А","8-Б","9-А","10-А","11-А"],v=[97,94,92,95,90,93,95,88,91,94,96];
@@ -137,13 +137,13 @@ function admin(){
  '<div class="c s6"><h3>Мугалимдер</h3><table><tr><th>Аты-жөнү</th><th>Предмет</th><th>Саат/апта</th></tr>'+[["Гүлнара Асанова","Англис тили",22],["Бакыт Жээнбеков","Математика",24],["Чолпон Исакова","Кыргыз тили",20],["Нурлан Сыдыков","Физика",18],["Айгүл Мамбетова","Тарых",16]].map(function(t){return '<tr><td>'+t[0]+'</td><td>'+t[1]+'</td><td><span class="tag '+(t[2]>22?"wt":"ok")+'">'+t[2]+'</span></td></tr>'}).join("")+'</table></div>'+
  '<div class="c s6"><h3>Расписание <small>8-«А»</small></h3><div class="tt"><div class="h"></div>'+["Дш","Шй","Шр","Бш","Жм"].map(function(d){return '<div class="h">'+d+'</div>'}).join("")+["08:00","08:55","09:50","10:55"].map(function(t,i){return '<div class="h">'+t+'</div>'+[0,1,2,3,4].map(function(d){return '<div>'+["Мат","Кырг","Англ","Физ","Тар"][(i+d)%5]+'</div>'}).join("")}).join("")+'</div></div>'+
  '</div>'}
-function render(){var m=document.getElementById("m");m.innerHTML=R=="t"?teacher():R=="s"?student():parent();
+function render(){var m=document.getElementById("m");m.innerHTML=R=="t"?teacher():parent();
  document.querySelectorAll(".nav[data-r],.mnav button").forEach(function(b){b.classList.toggle("on",b.dataset.r==R)});var c=document.getElementById("chat");if(c)c.scrollTop=9999}
 document.addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;
  if(b.dataset.r){R=b.dataset.r;render();window.scrollTo(0,0);return}
  if(b.dataset.att){var p=b.dataset.att.split(":");att[+p[0]]=p[1];render();toast(p[1]=="a"?"📩 Ата-энеге билдирүү кетти":"✓ Белгиленди");return}
  if(b.dataset.g){var q=b.dataset.g.split(":"),v=grades[+q[0]][+q[1]];grades[+q[0]][+q[1]]=v<=2?5:v-1;render();return}
- if(b.dataset.sub){HW[+b.dataset.sub][3][0]="ok";render();toast("✓ Тапшырма жиберилди");return}
+ if(b.dataset.sub){HW[+b.dataset.sub][3][0]="ok";render();toast("✓ Белгиленди — класс жетекчи көрөт");return}
  var x=b.dataset.x;
  if(x=="addhw"){document.getElementById("hwf").innerHTML='<input class="in" id="hws" placeholder="Предмет"><input class="in" id="hwt" placeholder="Тапшырма"><button class="btn" data-x="savehw" style="margin-bottom:10px">Сактоо</button>';return}
  if(x=="savehw"){var s=document.getElementById("hws").value||"Англис тили",t=document.getElementById("hwt").value||"Жаңы тапшырма";HW.unshift(["18.11",s,t,["wt","wt","wt","wt","wt"]]);render();toast("📚 Окуучуларга жана ата-энелерге жиберилди");return}
