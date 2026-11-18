@@ -52,55 +52,136 @@ h2{font-size:20px;font-weight:900;margin:6px 4px 12px}
 .conf{position:fixed;top:-20px;font-size:26px;pointer-events:none;animation:fall 1.6s linear forwards;z-index:9}
 @keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
 .par{margin-top:22px;background:#fff;border-radius:22px;padding:14px 16px;font-size:14px;color:#6c757d;line-height:1.5;box-shadow:0 5px 0 rgba(0,0,0,.05)}
+.pb{height:7px;background:rgba(0,0,0,.08);border-radius:99px;overflow:hidden;margin-top:8px}.pb span{display:block;height:100%;border-radius:99px}
+.kidb{background:rgba(255,255,255,.28);padding:3px 10px;border-radius:99px;margin-right:4px;cursor:pointer;white-space:nowrap}
+.parbtn{display:block;width:100%;margin-top:20px;background:#2b2d42;color:#fff;border-radius:24px;padding:18px;font-size:18px;font-weight:900;text-align:left;box-shadow:0 6px 0 #11131f}
+.parbtn small{display:block;font-size:13px;opacity:.7;font-weight:700;margin-top:3px}
+.abc button{position:relative}.abc em{position:absolute;top:4px;right:7px;font-size:12px;color:#06d6a0;font-style:normal}
+.inp{width:100%;margin-top:16px;border:3px solid #ffe0a3;border-radius:18px;padding:14px;font-size:22px;font-weight:800;text-align:center;font-family:inherit;outline:none}.inp:focus{border-color:#fb8500}
+.kids{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 8px}
+.kidc{flex:0 0 auto;background:#fff;border-radius:20px;padding:10px 14px;font-weight:900;font-size:15px;box-shadow:0 4px 0 rgba(0,0,0,.07);border:3px solid transparent;min-width:84px}
+.kidc i{display:block;font-style:normal;font-size:32px}.kidc.on{border-color:#fb8500}.kidc.add{color:#8d99ae}
+.sec{background:#fff;border-radius:24px;padding:16px;margin-top:14px;box-shadow:0 5px 0 rgba(0,0,0,.05)}
+.sh{font-size:17px;font-weight:900;margin-bottom:10px}
+.kp{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.kp div{background:#fff8e7;border-radius:16px;padding:10px 4px;text-align:center;font-size:12px;font-weight:800;color:#6c757d}.kp b{display:block;font-size:24px;color:#2b2d42}
+.lbl{font-size:13.5px;color:#6c757d;font-weight:800;margin-top:12px}
+.days{display:flex;gap:6px;margin-top:8px}.day{flex:1;text-align:center;background:#f1f3f5;border-radius:12px;padding:6px 0;font-weight:900;color:#adb5bd;font-size:16px}.day b{display:block;font-size:11px}.day.on{background:#06d6a0;color:#fff}
+.tr{display:flex;justify-content:space-between;font-weight:800;font-size:14.5px;margin-top:12px}.tr em{font-style:normal;color:#8d99ae;font-size:13px}
+.hw{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.hw button{background:#fff1f1;border-radius:16px;padding:10px 4px;font-weight:900;font-size:14px}.hw i{display:block;font-style:normal;font-size:34px}.hw small{display:block;color:#e63946;font-size:11px}
+.tb{width:100%;border-collapse:collapse;font-size:14px}.tb th{color:#8d99ae;font-size:12px;padding:6px 4px;text-align:center}.tb td{padding:9px 4px;border-top:1px solid #f1f3f5;text-align:center;font-weight:800}.tb td:first-child,.tb th:first-child{text-align:left}
+.btn.wa{background:#25d366;box-shadow:0 6px 0 #1a9e4b}
+.tg{display:flex;gap:10px;align-items:center;font-weight:800;font-size:15px}.tg input{width:22px;height:22px;accent-color:#06d6a0}
+.sm{display:block;width:100%;text-align:left;background:#f8f9fa;border-radius:14px;padding:12px 14px;font-weight:800;font-size:15px;margin-top:10px}.sm.red{color:#e63946}
+.avs{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:8px}.avs button{background:#f8f9fa;border-radius:16px;font-size:32px;padding:8px 0;border:3px solid transparent}.avs .on{border-color:#fb8500;background:#fff1d0}
+.cat .pb{margin:8px 10px 0}
 </style></head><body>
+
 <div id="app"></div>
 <script>
 var CATS=[
-{id:"an",n:"Жаныбарлар",e:"🐻",c:"#ffd6a5",w:[["🐕","ит","собака"],["🐈","мышык","кошка"],["🐎","ат","лошадь"],["🐄","уй","корова"],["🐑","кой","овца"],["🐐","эчки","коза"],["🐔","тоок","курица"],["🐇","коён","заяц"],["🐻","аюу","медведь"],["🐺","карышкыр","волк"],["🦊","түлкү","лиса"],["🐘","пил","слон"],["🦁","арстан","лев"],["🐟","балык","рыба"],["🦅","бүркүт","беркут"]]},
-{id:"fr",n:"Жемиш, жашылча",e:"🍎",c:"#caffbf",w:[["🍎","алма","яблоко"],["🍐","алмурут","груша"],["🍇","жүзүм","виноград"],["🍉","дарбыз","арбуз"],["🍌","банан","банан"],["🍊","апельсин","апельсин"],["🍋","лимон","лимон"],["🍒","алча","вишня"],["🥕","сабиз","морковь"],["🍅","помидор","помидор"],["🥒","бадыраң","огурец"],["🥔","картошка","картофель"]]},
-{id:"co",n:"Түстөр",e:"🎨",c:"#ffc6ff",w:[["🔴","кызыл","красный"],["🔵","көк","синий"],["🟢","жашыл","зелёный"],["🟡","сары","жёлтый"],["⚪","ак","белый"],["⚫","кара","чёрный"],["🟤","күрөң","коричневый"]]},
+{id:"an",n:"Жаныбарлар",e:"🐻",c:"#ffd6a5",w:[["🐕","ит","собака"],["🐈","мышык","кошка"],["🐎","ат","лошадь"],["🐄","уй","корова"],["🐑","кой","овца"],["🐐","эчки","коза"],["🐔","тоок","курица"],["🐇","коён","заяц"],["🐻","аюу","медведь"],["🐺","карышкыр","волк"],["🦊","түлкү","лиса"],["🐘","пил","слон"],["🦁","арстан","лев"],["🐟","балык","рыба"],["🦅","бүркүт","беркут"],["🐪","төө","верблюд"],["🐒","маймыл","обезьяна"],["🐯","жолборс","тигр"],["🦒","жираф","жираф"],["🐭","чычкан","мышь"],["🦔","кирпи","ёж"],["🦌","бугу","олень"]]},
+{id:"bi",n:"Куштар, курт-кумурска",e:"🦋",c:"#e4c1f9",w:[["🦋","көпөлөк","бабочка"],["🐝","аары","пчела"],["🐜","кумурска","муравей"],["🕷️","жөргөмүш","паук"],["🐞","коңуз","божья коровка"],["🐌","үлүл","улитка"],["🐛","курт","гусеница"],["🦉","үкү","сова"],["🐧","пингвин","пингвин"],["🦆","өрдөк","утка"],["🐓","короз","петух"],["🕊️","көгүчкөн","голубь"],["🦜","тоту куш","попугай"],["🐸","бака","лягушка"],["🐢","таш бака","черепаха"]]},
+{id:"fr",n:"Жемиш, жашылча",e:"🍎",c:"#caffbf",w:[["🍎","алма","яблоко"],["🍐","алмурут","груша"],["🍇","жүзүм","виноград"],["🍉","дарбыз","арбуз"],["🍌","банан","банан"],["🍊","апельсин","апельсин"],["🍋","лимон","лимон"],["🍒","алча","вишня"],["🍓","кулпунай","клубника"],["🍑","шабдаалы","персик"],["🍍","ананас","ананас"],["🥕","сабиз","морковь"],["🍅","помидор","помидор"],["🥒","бадыраң","огурец"],["🥔","картошка","картофель"],["🧅","пияз","лук"],["🧄","сарымсак","чеснок"],["🌽","жүгөрү","кукуруза"],["🫑","калемпир","перец"],["🍆","баклажан","баклажан"]]},
+{id:"fo",n:"Тамак-аш",e:"🍞",c:"#ffe5b4",w:[["🍞","нан","хлеб"],["🥛","сүт","молоко"],["🥚","жумуртка","яйцо"],["🥩","эт","мясо"],["🍲","шорпо","суп"],["🍚","күрүч","рис"],["🍯","бал","мёд"],["🧀","сыр","сыр"],["🧈","май","масло"],["🍵","чай","чай"],["🥟","манты","манты"],["🎂","торт","торт"],["🍦","балмуздак","мороженое"],["🍬","конфет","конфета"]]},
+{id:"cl",n:"Кийим",e:"👕",c:"#ffcad4",w:[["👗","көйнөк","платье"],["👕","футболка","футболка"],["👖","шым","брюки"],["🩳","шорты","шорты"],["🧥","пальто","пальто"],["🧣","шарф","шарф"],["🧤","мээлей","варежки"],["🧢","кепка","кепка"],["👟","кроссовка","кроссовки"],["👢","өтүк","сапоги"],["🧦","байпак","носки"],["👓","көз айнек","очки"]]},
+{id:"bo",n:"Дене",e:"🧒",c:"#fde4cf",w:[["👁️","көз","глаз"],["👂","кулак","ухо"],["👃","мурун","нос"],["👄","ооз","рот"],["🦷","тиш","зуб"],["👅","тил","язык"],["✋","кол","рука"],["🦵","бут","нога"],["👆","манжа","палец"],["🧠","мээ","мозг"],["❤️","жүрөк","сердце"],["💇","чач","волосы"]]},
+{id:"tr",n:"Унаа",e:"🚗",c:"#cfe1ff",w:[["🚗","машина","машина"],["🚌","автобус","автобус"],["🚕","такси","такси"],["🚚","жүк машина","грузовик"],["🚜","трактор","трактор"],["🚂","поезд","поезд"],["✈️","учак","самолёт"],["🚁","тик учак","вертолёт"],["🚢","кеме","корабль"],["🚲","велосипед","велосипед"],["🏍️","мотоцикл","мотоцикл"],["🚦","светофор","светофор"]]},
+{id:"ho",n:"Үй буюмдары",e:"🛋️",c:"#d8f3dc",w:[["🪑","отургуч","стул"],["🛏️","керебет","кровать"],["🚪","эшик","дверь"],["🪟","терезе","окно"],["📺","телевизор","телевизор"],["⏰","саат","часы"],["🔑","ачкыч","ключ"],["🥄","кашык","ложка"],["🍴","айры","вилка"],["🔪","бычак","нож"],["🍽️","табак","тарелка"],["🫖","чайнек","чайник"],["💡","лампа","лампа"],["🧹","шыпыргы","веник"],["🧸","оюнчук","игрушка"]]},
+{id:"jb",n:"Кесиптер",e:"👩‍⚕️",c:"#ffd8be",w:[["👩‍⚕️","дарыгер","врач"],["👨‍🍳","ашпозчу","повар"],["👨‍🚒","өрт өчүрүүчү","пожарный"],["👷","куруучу","строитель"],["👨‍🌾","дыйкан","фермер"],["🧑‍✈️","учкуч","лётчик"],["🧑‍🚀","космонавт","космонавт"],["👨‍🎨","сүрөтчү","художник"],["👨‍🔧","уста","мастер"],["👮","милиционер","милиционер"]]},
+{id:"co",n:"Түстөр",e:"🎨",c:"#ffc6ff",w:[["🔴","кызыл","красный"],["🔵","көк","синий"],["🟢","жашыл","зелёный"],["🟡","сары","жёлтый"],["🟠","кызгылт сары","оранжевый"],["🟣","кызгылт көк","фиолетовый"],["🩷","кызгылт","розовый"],["⚪","ак","белый"],["⚫","кара","чёрный"],["🟤","күрөң","коричневый"]]},
 {id:"nu",n:"Сандар",e:"🔢",c:"#bde0fe",w:[["1️⃣","бир","один"],["2️⃣","эки","два"],["3️⃣","үч","три"],["4️⃣","төрт","четыре"],["5️⃣","беш","пять"],["6️⃣","алты","шесть"],["7️⃣","жети","семь"],["8️⃣","сегиз","восемь"],["9️⃣","тогуз","девять"],["🔟","он","десять"]]},
-{id:"sc",n:"Мектеп",e:"🎒",c:"#a0c4ff",w:[["📖","китеп","книга"],["✏️","калем","карандаш"],["🎒","сумка","рюкзак"],["📓","дептер","тетрадь"],["👩‍🏫","мугалим","учитель"],["✂️","кайчы","ножницы"],["📏","сызгыч","линейка"],["🏫","мектеп","школа"],["🌍","жер шары","глобус"]]},
-{id:"fa",n:"Үй-бүлө",e:"👨‍👩‍👧",c:"#fdffb6",w:[["👩","апа","мама"],["👨","ата","папа"],["👵","чоң апа","бабушка"],["👴","чоң ата","дедушка"],["👦","уул","сын"],["👧","кыз","дочь"],["👶","бөбөк","малыш"],["🏠","үй","дом"]]},
-{id:"na",n:"Табият",e:"🌳",c:"#9bf6ff",w:[["☀️","күн","солнце"],["🌙","ай","луна"],["⭐","жылдыз","звезда"],["☁️","булут","облако"],["🌧️","жамгыр","дождь"],["❄️","кар","снег"],["🏔️","тоо","гора"],["🌸","гүл","цветок"],["🌳","дарак","дерево"],["💧","суу","вода"]]}];
+{id:"sc",n:"Мектеп",e:"🎒",c:"#a0c4ff",w:[["📖","китеп","книга"],["✏️","калем","карандаш"],["🖊️","сыя калем","ручка"],["🖍️","түстүү калем","цветные карандаши"],["🎒","сумка","рюкзак"],["📓","дептер","тетрадь"],["👩‍🏫","мугалим","учитель"],["✂️","кайчы","ножницы"],["📏","сызгыч","линейка"],["📐","бурчтук","треугольник"],["🎨","боёк","краски"],["🔔","коңгуроо","звонок"],["🧮","эсептегич","счёты"],["🏫","мектеп","школа"],["🌍","жер шары","глобус"]]},
+{id:"fa",n:"Үй-бүлө",e:"👨‍👩‍👧",c:"#fdffb6",w:[["👩","апа","мама"],["👨","ата","папа"],["👵","чоң апа","бабушка"],["👴","чоң ата","дедушка"],["🧔","ага","старший брат"],["👩‍🦱","эже","старшая сестра"],["🧒","ини","младший брат"],["👦","уул","сын"],["👧","кыз","дочь"],["👶","бөбөк","малыш"],["👪","үй-бүлө","семья"],["🏠","үй","дом"]]},
+{id:"na",n:"Табият",e:"🌳",c:"#9bf6ff",w:[["☀️","күн","солнце"],["🌙","ай","луна"],["⭐","жылдыз","звезда"],["☁️","булут","облако"],["🌧️","жамгыр","дождь"],["❄️","кар","снег"],["🌈","асан-үсөн","радуга"],["⚡","чагылган","молния"],["🌬️","шамал","ветер"],["🔥","от","огонь"],["🏔️","тоо","гора"],["🏞️","көл","озеро"],["🌸","гүл","цветок"],["🌳","дарак","дерево"],["🍂","жалбырак","лист"],["🪨","таш","камень"],["💧","суу","вода"]]}];
 var ABC=[["А","🍎","алма"],["Б","🐟","балык"],["В","🚃","вагон"],["Г","🌸","гүл"],["Д","🌳","дарак"],["Е","🦝","енот"],["Ё","🎄","ёлка"],["Ж","⭐","жылдыз"],["З","🦓","зебра"],["И","🐕","ит"],["Й","🥛","йогурт"],["К","🐑","кой"],["Л","🍋","лимон"],["М","🐈","мышык"],["Н","🍞","нан"],["Ң","🌅","таң"],["О","🧸","оюнчук"],["Ө","🦆","өрдөк"],["П","🐘","пил"],["Р","🚀","ракета"],["С","🥕","сабиз"],["Т","🏔️","тоо"],["У","🐄","уй"],["Ү","🏠","үй"],["Ф","⚽","футбол"],["Х","🐹","хомяк"],["Ц","🎪","цирк"],["Ч","🐦","чымчык"],["Ш","🎈","шар"],["Щ","🪥","щётка"],["Ъ","🔤","ажыратуу белгиси"],["Ы","🎵","ыр"],["Ь","🔤","жумшартуу белгиси"],["Э","🫏","эшек"],["Ю","🪀","юла"],["Я","📦","ящик"]];
 var COLS=["#ff595e","#ffca3a","#8ac926","#1982c4","#6a4c93","#ff924c","#06d6a0"];
+var AV=["🐥","🐻","🐰","🦊","🐼","🐯","🦁","🐸","🐨","🦄"];
 var S={v:"home"},app=document.getElementById("app");
 function ls(k,v){try{if(v===undefined)return JSON.parse(localStorage.getItem("bp_"+k));localStorage.setItem("bp_"+k,JSON.stringify(v))}catch(e){return null}}
-var stars=ls("stars")||0;
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+/* профилдер жана прогресс */
+var PR=ls("profiles");if(!PR){PR={list:[{id:"p1",n:"Балам",a:"🐥"}],cur:"p1"};ls("profiles",PR)}
+var SET=ls("set")||{ru:1};
+function blank(){return {st:0,seen:{},ok:{},bad:{},ab:{},g:0,days:{},last:0}}
+function load(id){var d=ls("d_"+id);if(!d){d=blank();if(id=="p1"&&ls("stars"))d.st=ls("stars")}return d}
+var D=load(PR.cur);
+function sv(){ls("d_"+PR.cur,D)}
+function today(){var d=new Date();return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2)}
+function act(){D.days[today()]=1;D.last=Date.now();sv()}
+function kid(){return PR.list.filter(function(k){return k.id==PR.cur})[0]||PR.list[0]}
+function learned(d,w){var o=d.ok[w]||0,b=d.bad[w]||0;return o>=1&&o>b}
+function stat(d){var all=allW(),r={seen:0,lr:0,tot:all.length,ab:Object.keys(d.ab).length,g:d.g,st:d.st};all.forEach(function(w){if(d.seen[w[1]])r.seen++;if(learned(d,w[1]))r.lr++});
+ var wk=0;for(var i=0;i<7;i++){var x=new Date(Date.now()-i*864e5),k=x.getFullYear()+"-"+("0"+(x.getMonth()+1)).slice(-2)+"-"+("0"+x.getDate()).slice(-2);if(d.days[k])wk++}r.wk=wk;return r}
+function hard(d){return allW().filter(function(w){return (d.bad[w[1]]||0)>0&&!((d.ok[w[1]]||0)>(d.bad[w[1]]||0)+1)}).sort(function(a,b){return (d.bad[b[1]]||0)-(d.bad[a[1]]||0)})}
 function V(c){return "аеёиоөуүыэюяАЕЁИОӨУҮЫЭЮЯ".indexOf(c)>=0}
-function syl(w){if(w.indexOf(" ")>=0)return w.split(" ");var v=[];for(var i=0;i<w.length;i++)if(V(w[i]))v.push(i);if(v.length<2)return [w];var cut=[];for(var k=1;k<v.length;k++){var n=v[k]-v[k-1]-1;cut.push(n<=1?v[k]-n:v[k]-1)}var out=[],p=0;cut.forEach(function(c){out.push(w.slice(p,c));p=c});out.push(w.slice(p));return out}
+function syl(w){if(w.indexOf(" ")>=0)return w.split(" ");if(w.indexOf("-")>=0)return w.split("-");var v=[];for(var i=0;i<w.length;i++)if(V(w[i]))v.push(i);if(v.length<2)return [w];var cut=[];for(var k=1;k<v.length;k++){var n=v[k]-v[k-1]-1;cut.push(n<=1?v[k]-n:v[k]-1)}var out=[],p=0;cut.forEach(function(c){out.push(w.slice(p,c));p=c});out.push(w.slice(p));return out}
 function say(t){try{var u=new SpeechSynthesisUtterance(t),vs=speechSynthesis.getVoices();var v=vs.find(function(x){return /^ky/i.test(x.lang)})||vs.find(function(x){return /^kk/i.test(x.lang)})||vs.find(function(x){return /^ru/i.test(x.lang)});if(v){u.voice=v;u.lang=v.lang}u.rate=.8;speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}}
 function conf(){for(var i=0;i<18;i++){var d=document.createElement("div");d.className="conf";d.textContent=["⭐","🎉","🌟","🎈","✨"][i%5];d.style.left=Math.random()*100+"vw";d.style.animationDelay=Math.random()*.5+"s";document.body.appendChild(d);setTimeout(function(x){return function(){x.remove()}}(d),2300)}}
-function hd(title,sub,back){return '<div class="top"><div class="row">'+(back?'<button class="back" data-go="home">‹ Артка</button>':'<div class="logo">🐥 Балапан</div>')+'<div class="stars">⭐ '+stars+'</div></div>'+(title?'<p style="font-size:22px;font-weight:900;margin-top:12px">'+title+'</p>':'')+(sub?'<p>'+sub+'</p>':'')+'</div>'}
-function home(){app.innerHTML=hd("","Сүрөттөр менен сөз үйрөнөбүз! 👋")+'<div class="wrap">'+
+function hd(title,sub,back){return '<div class="top"><div class="row">'+(back?'<button class="back" data-go="home">‹ Артка</button>':'<div class="logo">🐥 Балапан</div>')+'<div class="stars">⭐ '+D.st+'</div></div>'+(title?'<p style="font-size:22px;font-weight:900;margin-top:12px">'+title+'</p>':'')+(sub?'<p>'+sub+'</p>':'')+'</div>'}
+function bar(a,b,col){var p=b?Math.round(a/b*100):0;return '<div class="pb"><span style="width:'+p+'%;background:'+(col||"#06d6a0")+'"></span></div>'}
+function home(){var k=kid();app.innerHTML=hd("",'<span class="kidb">'+k.a+' Салам, '+esc(k.n)+'!</span> Сөз үйрөнөбүз 👋')+'<div class="wrap">'+
  '<div class="games"><button class="game" style="background:#3a86ff" data-go="g1"><i>👀</i>Сүрөттү тап</button><button class="game" style="background:#8338ec" data-go="g2"><i>📖</i>Сөздү оку</button><button class="game" style="background:#06d6a0;grid-column:span 2" data-go="abc"><i>🔤</i>Алиппе — 36 тамга</button></div>'+
- '<h2>Сөздүк</h2><div class="cats">'+CATS.map(function(c,i){return '<button class="cat" style="background:'+c.c+'" data-cat="'+i+'"><i>'+c.e+'</i>'+c.n+'<small>'+c.w.length+' сөз</small></button>'}).join("")+'</div>'+
- '<div class="par">👨‍👩‍👧 <b>Ата-энелерге:</b> балаңыз менен бирге көрүңүз. Сөздү үн чыгарып окуп, муундарга бөлүп айтыңыз. Ар бир туура жооп үчүн жылдызча берилет ⭐</div></div>'}
-function card(){var c=CATS[S.c],w=c.w[S.i],sy=syl(w[1]);
- app.innerHTML=hd(c.e+" "+c.n,"",1)+'<div class="wrap"><div class="card"><span class="big" key="'+S.i+'">'+w[0]+'</span><div class="word"><b>'+w[1][0].toUpperCase()+'</b>'+w[1].slice(1)+'</div>'+(sy.length>1?'<div class="syl">'+sy.map(function(x){return '<span>'+x+'</span>'}).join('<span style="background:none;color:#ccc">-</span>')+'</div>':'')+'<div class="ru">'+w[2]+'</div><button class="say" data-say="'+w[1]+'">🔊 Ук</button></div>'+
+ '<h2>Сөздүк · '+allW().length+' сөз</h2><div class="cats">'+CATS.map(function(c,i){var s=c.w.filter(function(w){return D.seen[w[1]]}).length;return '<button class="cat" style="background:'+c.c+'" data-cat="'+i+'"><i>'+c.e+'</i>'+c.n+'<small>'+s+' / '+c.w.length+' сөз'+(s==c.w.length?' ✅':'')+'</small>'+bar(s,c.w.length,"rgba(0,0,0,.35)")+'</button>'}).join("")+'</div>'+
+ '<button class="parbtn" data-go="gate">👨‍👩‍👧 Ата-эне / Мугалим бөлүмү<small>Баланын жетишкендиги, кыйын сөздөр, отчёт</small></button></div>'}
+function card(){var c=CATS[S.c],w=c.w[S.i],sy=syl(w[1]);D.seen[w[1]]=1;act();
+ app.innerHTML=hd(c.e+" "+c.n,"",1)+'<div class="wrap"><div class="card"><span class="big">'+w[0]+'</span><div class="word"><b>'+w[1][0].toUpperCase()+'</b>'+w[1].slice(1)+'</div>'+(sy.length>1?'<div class="syl">'+sy.map(function(x){return '<span>'+x+'</span>'}).join('<span style="background:none;color:#ccc">-</span>')+'</div>':'')+(SET.ru?'<div class="ru">'+w[2]+'</div>':'')+'<button class="say" data-say="'+w[1]+'">🔊 Ук</button></div>'+
  '<div class="nav"><button data-nv="-1">⬅️</button><button data-nv="1">➡️</button></div><div class="cnt">'+(S.i+1)+' / '+c.w.length+'</div></div>'}
-function abc(){app.innerHTML=hd("🔤 Алиппе","Тамганы бас — сүрөтүн көр",1)+'<div class="wrap"><div class="abc">'+ABC.map(function(a,i){return '<button data-ab="'+i+'" style="color:'+COLS[i%COLS.length]+'">'+a[0]+'<small>'+a[1]+'</small></button>'}).join("")+'</div></div>'}
-function letter(){var a=ABC[S.i],w=a[2],k=w.toUpperCase().indexOf(a[0]);
+function abc(){app.innerHTML=hd("🔤 Алиппе","Тамганы бас — сүрөтүн көр",1)+'<div class="wrap"><div class="abc">'+ABC.map(function(a,i){return '<button data-ab="'+i+'" style="color:'+COLS[i%COLS.length]+'">'+a[0]+(D.ab[a[0]]?'<em>✓</em>':'')+'<small>'+a[1]+'</small></button>'}).join("")+'</div></div>'}
+function letter(){var a=ABC[S.i],w=a[2],k=w.toUpperCase().indexOf(a[0]);D.ab[a[0]]=1;act();
  app.innerHTML=hd("🔤 Алиппе","",1)+'<div class="wrap"><div class="card"><div style="font-size:120px;font-weight:900;line-height:1;color:'+COLS[S.i%COLS.length]+'">'+a[0]+' '+a[0].toLowerCase()+'</div><span class="big" style="font-size:110px">'+a[1]+'</span><div class="word" style="font-size:36px">'+(k>=0?w.slice(0,k)+'<b>'+w[k]+'</b>'+w.slice(k+1):w)+'</div><button class="say" data-say="'+a[0]+'. '+w+'">🔊 Ук</button></div>'+
  '<div class="nav"><button data-ln="-1">⬅️</button><button data-ln="1">➡️</button></div><div class="cnt">'+(S.i+1)+' / 36</div></div>'}
 function allW(){var a=[];CATS.forEach(function(c){c.w.forEach(function(w){a.push(w)})});return a}
 function shuf(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t}return a}
-function newGame(t){var W=shuf(allW()).slice(0,8);S={v:"game",t:t,qs:W.map(function(w){var o=shuf(allW().filter(function(x){return x!==w&&x[0]!==w[0]})).slice(0,2);return {w:w,o:shuf([w].concat(o))}}),i:0,ok:0,done:false};render();if(t=="g1")setTimeout(function(){say(S.qs[0].w[1])},400)}
+function newGame(t,list){var W=list?shuf(list).slice(0,8):shuf(allW()).slice(0,8);S={v:"game",t:t,hard:!!list,qs:W.map(function(w){var o=shuf(allW().filter(function(x){return x!==w&&x[0]!==w[0]})).slice(0,2);return {w:w,o:shuf([w].concat(o))}}),i:0,ok:0};render();if(t=="g1")setTimeout(function(){say(S.qs[0].w[1])},400)}
 function game(){var q=S.qs[S.i],g1=S.t=="g1";
- app.innerHTML=hd(g1?"👀 Сүрөттү тап":"📖 Сөздү оку","",1)+'<div class="wrap"><div class="prog"><span style="width:'+(S.i/S.qs.length*100)+'%"></span></div><div class="card">'+
+ app.innerHTML=hd(S.hard?"💪 Кыйын сөздөр":g1?"👀 Сүрөттү тап":"📖 Сөздү оку","",1)+'<div class="wrap"><div class="prog"><span style="width:'+(S.i/S.qs.length*100)+'%"></span></div><div class="card">'+
  (g1?'<div class="q">Кайсынысы?</div><div class="word" style="font-size:44px">'+q.w[1]+'</div><button class="say" data-say="'+q.w[1]+'">🔊 Ук</button>':'<div class="q">Бул эмне?</div><span class="big" style="font-size:120px">'+q.w[0]+'</span>')+
  '</div><div class="opts'+(g1?'':' w')+'">'+q.o.map(function(o,k){return '<button data-op="'+k+'">'+(g1?o[0]:o[1])+'</button>'}).join("")+'</div></div>'}
-function win(){var p=S.ok;app.innerHTML=hd("","",1)+'<div class="wrap"><div class="card win"><div class="e">'+(p>=7?"🏆":p>=4?"🌟":"💪")+'</div><h2>'+(p>=7?"Азаматсың!":p>=4?"Абдан жакшы!":"Дагы аракет кыл!")+'</h2><p>'+p+' / '+S.qs.length+' туура · +'+p+' ⭐</p><button class="btn" data-go="'+S.t+'">🔁 Дагы ойнойм</button><button class="btn o" data-go="home">🏠 Башкы бет</button></div></div>';if(p>=4)conf()}
-function render(){window.scrollTo(0,0);S.v=="home"?home():S.v=="card"?card():S.v=="abc"?abc():S.v=="letter"?letter():S.v=="game"?game():win()}
-document.addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;var d=b.dataset;
- if(d.go){if(d.go=="g1"||d.go=="g2"){newGame(d.go);return}S={v:d.go};render();return}
+function win(){var p=S.ok,n=S.qs.length;D.g++;act();app.innerHTML=hd("","",1)+'<div class="wrap"><div class="card win"><div class="e">'+(p>=n-1?"🏆":p>=n/2?"🌟":"💪")+'</div><h2>'+(p>=n-1?"Азаматсың!":p>=n/2?"Абдан жакшы!":"Дагы аракет кыл!")+'</h2><p>'+p+' / '+n+' туура · +'+p+' ⭐</p><button class="btn" data-go="'+S.t+'">🔁 Дагы ойнойм</button><button class="btn o" data-go="home">🏠 Башкы бет</button></div></div>';if(p>=n/2)conf()}
+/* ата-эне бөлүмү */
+function gate(){var a=3+Math.floor(Math.random()*6),b=4+Math.floor(Math.random()*5);S.ans=a+b;
+ app.innerHTML=hd("👨‍👩‍👧 Ата-эне / Мугалим","Бул бөлүм чоңдор үчүн",1)+'<div class="wrap"><div class="card"><div style="font-size:60px">🔒</div><div class="q" style="margin-top:6px">Чоңдор үчүн текшерүү</div><div class="word" style="font-size:40px">'+a+' + '+b+' = ?</div><input id="gi" type="number" inputmode="numeric" class="inp" placeholder="Жоопту жазыңыз"><button class="btn" data-gt="1">Кирүү</button><div id="ge" class="ru"></div></div></div>'}
+function par(){var k=kid(),r=stat(D),h=hard(D).slice(0,10),days="";
+ for(var i=6;i>=0;i--){var x=new Date(Date.now()-i*864e5),key=x.getFullYear()+"-"+("0"+(x.getMonth()+1)).slice(-2)+"-"+("0"+x.getDate()).slice(-2);days+='<div class="day'+(D.days[key]?' on':'')+'"><b>'+["Жш","Дш","Шш","Шр","Бш","Жм","Иш"][x.getDay()]+'</b>'+(D.days[key]?'✓':'·')+'</div>'}
+ app.innerHTML=hd("👨‍👩‍👧 Ата-эне / Мугалим","",1)+'<div class="wrap">'+
+ '<h2>Балдар</h2><div class="kids">'+PR.list.map(function(x){return '<button class="kidc'+(x.id==PR.cur?' on':'')+'" data-kid="'+x.id+'"><i>'+x.a+'</i>'+esc(x.n)+'</button>'}).join("")+'<button class="kidc add" data-go="addkid"><i>➕</i>Кошуу</button></div>'+
+ '<div class="sec"><div class="sh">'+k.a+' <b>'+esc(k.n)+'</b> — жетишкендиги</div>'+
+ '<div class="kp"><div><b>'+r.st+'</b>⭐ жылдыз</div><div><b>'+r.lr+'</b>✅ үйрөнгөн</div><div><b>'+r.seen+'</b>👀 көргөн</div><div><b>'+r.ab+'/36</b>🔤 тамга</div><div><b>'+r.g+'</b>🎮 оюн</div><div><b>'+r.wk+'/7</b>📅 күн</div></div>'+
+ '<p class="lbl">Сөздүк: '+r.seen+' / '+r.tot+' сөз көрдү</p>'+bar(r.seen,r.tot,"#3a86ff")+
+ '<p class="lbl">Акыркы 7 күн</p><div class="days">'+days+'</div></div>'+
+ '<div class="sec"><div class="sh">📚 Темалар боюнча</div>'+CATS.map(function(c){var s=0,l=0;c.w.forEach(function(w){if(D.seen[w[1]])s++;if(learned(D,w[1]))l++});return '<div class="tr"><span>'+c.e+' '+c.n+'</span><em>'+l+'✅ · '+s+'/'+c.w.length+'</em></div>'+bar(s,c.w.length,"#ffb703")}).join("")+'</div>'+
+ '<div class="sec"><div class="sh">⚠️ Кыйын сөздөр</div>'+(h.length?'<div class="hw">'+h.map(function(w){return '<button data-say="'+w[1]+'"><i>'+w[0]+'</i>'+w[1]+'<small>'+D.bad[w[1]]+'× ката</small></button>'}).join("")+'</div><button class="btn" data-go="hardgame">💪 Кыйын сөздөрдү машыктыруу</button>':'<p class="lbl">Азырынча кыйын сөз жок. Бала оюн ойногондо, ката кетирген сөздөр бул жерге чыгат.</p>')+'</div>'+
+ (PR.list.length>1?'<div class="sec"><div class="sh">🏫 Класс (баары)</div><table class="tb"><tr><th>Бала</th><th>⭐</th><th>✅</th><th>👀</th><th>📅</th></tr>'+PR.list.map(function(x){var rr=stat(x.id==PR.cur?D:load(x.id));return '<tr><td>'+x.a+' '+esc(x.n)+'</td><td>'+rr.st+'</td><td>'+rr.lr+'</td><td>'+rr.seen+'</td><td>'+rr.wk+'/7</td></tr>'}).join("")+'</table></div>':'')+
+ '<button class="btn wa" data-go="share">📤 Отчётту WhatsApp\'ка жөнөтүү</button>'+
+ '<div class="sec"><div class="sh">⚙️ Жөндөөлөр</div><label class="tg"><input type="checkbox" id="ru"'+(SET.ru?' checked':'')+'> Орусча котормону көрсөтүү</label>'+
+ '<button class="sm" data-go="rename">✏️ Атын өзгөртүү</button><button class="sm" data-go="reset">🔄 Прогрессти тазалоо</button>'+(PR.list.length>1?'<button class="sm red" data-go="delkid">🗑 Бул баланы өчүрүү</button>':'')+'</div>'+
+ '<div class="par">💡 <b>Кеңеш:</b> күнүнө 10–15 мүнөт жетиштүү. «✅ Үйрөнгөн» — бала оюнда туура тапкан сөздөр. Мугалим бир планшетте бир нече баланы кошуп, ар биринин жетишкендигин өзүнчө көрө алат.</div></div>'}
+function addkid(){app.innerHTML=hd("➕ Бала кошуу","",1)+'<div class="wrap"><div class="card"><input id="kn" class="inp" placeholder="Баланын аты" maxlength="20"><p class="lbl" style="margin-top:14px">Сүрөтчө тандаңыз</p><div class="avs">'+AV.map(function(a,i){return '<button data-av="'+a+'"'+(i==0?' class="on"':'')+'>'+a+'</button>'}).join("")+'</div><button class="btn" data-go="savekid">Сактоо</button></div></div>'}
+function report(){var k=kid(),r=stat(D),h=hard(D).slice(0,6);return "🐥 Балапан — "+k.n+" ("+today()+")\n⭐ Жылдыз: "+r.st+"\n✅ Үйрөнгөн сөз: "+r.lr+"\n👀 Көргөн сөз: "+r.seen+" / "+r.tot+"\n🔤 Тамгалар: "+r.ab+" / 36\n🎮 Оюн: "+r.g+"\n📅 Акыркы 7 күндө: "+r.wk+" күн"+(h.length?"\n⚠️ Кыйын сөздөр: "+h.map(function(w){return w[1]}).join(", "):"")}
+function render(){window.scrollTo(0,0);var f={home:home,card:card,abc:abc,letter:letter,game:game,gate:gate,par:par,addkid:addkid}[S.v];(f||win)()}
+document.addEventListener("change",function(e){if(e.target.id=="ru"){SET.ru=e.target.checked?1:0;ls("set",SET)}});
+document.addEventListener("click",function(e){var b=e.target.closest("button,[data-go]");if(!b)return;var d=b.dataset;
+ if(d.go){var g=d.go;
+  if(g=="g1"||g=="g2"){newGame(g);return}
+  if(g=="hardgame"){var h=hard(D);if(h.length<8)h=h.concat(shuf(allW().filter(function(w){return h.indexOf(w)<0})).slice(0,8-h.length));newGame("g2",h);return}
+  if(g=="share"){window.open("https://wa.me/?text="+encodeURIComponent(report()),"_blank");return}
+  if(g=="savekid"){var n=(document.getElementById("kn").value||"").trim();if(!n){document.getElementById("kn").focus();return}var av=(document.querySelector(".avs .on")||{}).dataset;var id="p"+Date.now();PR.list.push({id:id,n:n,a:av?av.av:"🐥"});PR.cur=id;ls("profiles",PR);D=load(id);S={v:"par"};render();return}
+  if(g=="rename"){var nn=prompt("Жаңы ат:",kid().n);if(nn&&nn.trim()){kid().n=nn.trim().slice(0,20);ls("profiles",PR)}render();return}
+  if(g=="reset"){if(confirm(kid().n+" — бардык прогресс тазалансынбы?")){D=blank();sv()}render();return}
+  if(g=="delkid"){if(confirm(kid().n+" өчүрүлсүнбү?")){try{localStorage.removeItem("bp_d_"+PR.cur)}catch(x){}PR.list=PR.list.filter(function(x){return x.id!=PR.cur});PR.cur=PR.list[0].id;ls("profiles",PR);D=load(PR.cur)}render();return}
+  if(g=="win")g="home";
+  S={v:g};render();return}
+ if(d.gt){var v=+document.getElementById("gi").value;if(v===S.ans){S={v:"par"};render()}else{document.getElementById("ge").textContent="Туура эмес. Кайра аракет кылыңыз.";}return}
+ if(d.kid){PR.cur=d.kid;ls("profiles",PR);D=load(d.kid);render();return}
+ if(d.av){document.querySelectorAll(".avs button").forEach(function(x){x.classList.remove("on")});b.classList.add("on");return}
  if(d.cat){S={v:"card",c:+d.cat,i:0};render();say(CATS[S.c].w[0][1]);return}
  if(d.nv){var n=CATS[S.c].w.length;S.i=(S.i+ +d.nv+n)%n;render();say(CATS[S.c].w[S.i][1]);return}
  if(d.ab){S={v:"letter",i:+d.ab};render();say(ABC[S.i][0]+". "+ABC[S.i][2]);return}
  if(d.ln){S.i=(S.i+ +d.ln+36)%36;render();say(ABC[S.i][0]+". "+ABC[S.i][2]);return}
  if(d.say){say(d.say);return}
- if(d.op!==undefined&&!S.lock){var q=S.qs[S.i],ok=q.o[+d.op]===q.w;b.classList.add(ok?"ok":"no");if(!ok){S.miss=1;return}S.lock=1;S.ok+=(S.miss?0:1);stars+=(S.miss?0:1);ls("stars",stars);say(q.w[1]);
+ if(d.op!==undefined&&!S.lock){var q=S.qs[S.i],ok=q.o[+d.op]===q.w,wd=q.w[1];b.classList.add(ok?"ok":"no");
+  if(!ok){if(!S.miss){D.bad[wd]=(D.bad[wd]||0)+1;sv()}S.miss=1;return}
+  S.lock=1;if(!S.miss){S.ok++;D.st++;D.ok[wd]=(D.ok[wd]||0)+1}D.seen[wd]=1;act();say(wd);
   setTimeout(function(){S.lock=0;S.miss=0;S.i++;if(S.i>=S.qs.length){S.v="win";render()}else{render();if(S.t=="g1")setTimeout(function(){say(S.qs[S.i].w[1])},300)}},900);return}
 });
 render();
