@@ -32,12 +32,12 @@ h2{font-size:20px;font-weight:900;margin:14px 4px 12px}
 .word{font-size:44px;font-weight:900;margin-top:10px;letter-spacing:.5px;line-height:1.15}.word b{color:var(--acc)}
 .syl{display:flex;justify-content:center;gap:8px;margin-top:10px;flex-wrap:wrap}.syl span{background:#eef4ff;color:#3b5bcc;font-weight:900;font-size:21px;padding:6px 14px;border-radius:14px}.syl .d{background:none;color:#c3cbd8;padding:6px 0}
 .lp{margin-top:14px;border:1px solid var(--line);border-radius:20px;padding:12px 14px;text-align:left;background:#fafbfd}.lp.main{background:#fff;border-color:#cdd9f5;box-shadow:0 2px 10px rgba(79,124,255,.08)}
-.lh{display:flex;align-items:center;gap:10px}.lh i{font-style:normal;font-size:26px}.lw{font-size:28px;font-weight:900;flex:1;line-height:1.15;word-break:break-word}.main .lw{font-size:38px}.lw b{color:var(--acc)}
-.ls{background:var(--pri);color:#fff;width:46px;height:46px;border-radius:14px;font-size:20px;flex:0 0 auto}.lp:not(.main) .ls{background:#eef2f8}
+.lh{display:flex;align-items:center;gap:10px}.lh i{font-style:normal;font-size:26px}.lw{font-size:28px;font-weight:900;flex:1;line-height:1.15;overflow-wrap:anywhere}.main .lw{font-size:38px}.lw b{color:var(--acc)}
+.ls{background:var(--pri);color:#fff}.lp:not(.main) .ls{background:#e3ebff;color:#2f4fb8}
 .lp .syl{justify-content:flex-start;margin-top:10px;gap:5px;align-items:center}.lp .syl .d{font-size:16px;padding:0 1px}.lp .syl span{font-size:19px;padding:5px 12px}.lp:not(.main) .syl span{background:#f1f3f7;color:var(--sub)}
 .syl .gap{width:14px;padding:0!important;background:none!important}
 .ltr{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px;align-items:center}.ltr em{font-style:normal;min-width:30px;height:36px;display:inline-flex;align-items:center;justify-content:center;border:1.5px solid var(--line);border-radius:9px;font-weight:900;font-size:19px;background:#fff;text-transform:uppercase;transition:.2s}.ltr em.on{background:var(--pri);color:#fff;border-color:var(--pri);transform:translateY(-3px)}
-.sp{background:#eef2f8;width:46px;height:46px;border-radius:14px;font-size:20px;flex:0 0 auto}
+.lb{display:flex;gap:8px;margin-top:12px}.lb button{flex:1;height:46px;border-radius:14px;font-size:16px;font-weight:900}.sp{background:#eef2f8}
 .tl{display:flex;flex-direction:column;gap:8px;margin-top:14px}.tl button{display:flex;align-items:center;gap:10px;background:#f6f8fc;border:1px solid var(--line);border-radius:16px;padding:11px 14px;font-size:21px;font-weight:900;text-align:left}.tl i{font-style:normal;font-size:24px}.tl span{margin-left:auto;font-size:18px}
 .say{margin-top:16px;background:var(--pri);color:#fff;font-size:19px;font-weight:900;padding:13px 26px;border-radius:18px}
 .cnt{text-align:center;color:var(--sub);font-weight:800;margin-top:14px;font-size:15px}.swh{text-align:center;color:#9aa6b8;font-weight:800;font-size:14px;margin-top:6px}
@@ -174,9 +174,9 @@ function home(){var k=kid();app.innerHTML=hd("",k.a+" "+t("hi",{n:esc(k.n)}))+'<
  '<h2>'+t("dict")+' · '+allW().length+' '+t("words")+'</h2><div class="cats">'+CATS.map(function(c,i){var s=c.w.filter(function(w){return D.seen[w[1]]}).length;return '<button class="cat" style="background:'+c.c+'" data-cat="'+i+'"><i>'+c.e+'</i>'+c[L()]+'<small>'+s+' / '+c.w.length+(s==c.w.length?' ✅':'')+'</small>'+bar(s,c.w.length,"#7d8fb3")+'</button>'}).join("")+'</div>'+
  '<button class="parbtn" data-go="gate">👨‍👩‍👧 '+t("parb")+'<small>'+t("pars")+'</small></button></div>'}
 function panel(w,l,main){var m=w[l=="ru"?2:3],sy=sylL(m,l),letters=m.replace(/[ -]/g,"").split("");
- return '<div class="lp'+(main?' main':'')+'"><div class="lh"><i>'+FL(l)+'</i><span class="lw">'+(main?'<b>'+m.charAt(0).toUpperCase()+'</b>'+m.slice(1):m)+'</span><button class="sp" data-sp="'+esc(m)+'" data-l="'+l+'">🔤</button><button class="ls" data-say="'+esc(m)+'" data-l="'+l+'">🔊</button></div>'+
+ return '<div class="lp'+(main?' main':'')+'"><div class="lh"><i>'+FL(l)+'</i><span class="lw">'+(main?'<b>'+m.charAt(0).toUpperCase()+'</b>'+m.slice(1):m)+'</span></div>'+
  '<div class="syl">'+sy.map(function(x,i){return x==" "?'<span class="gap"></span>':(i&&sy[i-1]!=" "?'<span class="d">·</span>':'')+'<span>'+x+'</span>'}).join("")+'</div>'+
- '<div class="ltr">'+letters.map(function(c){return '<em>'+c+'</em>'}).join("")+'</div></div>'}
+ '<div class="ltr">'+letters.map(function(c){return '<em>'+c+'</em>'}).join("")+'</div><div class="lb"><button class="sp" data-sp="'+esc(m)+'" data-l="'+l+'">🔤 '+(L()=="ru"?"По буквам":"Spell")+'</button><button class="ls" data-say="'+esc(m)+'" data-l="'+l+'">'+t("listen")+'</button></div></div>'}
 function card(){var c=CATS[S.c],w=c.w[S.i];D.seen[w[1]]=1;act();
  app.innerHTML=hd(c.e+" "+c[L()],"",1)+'<div class="wrap"><div class="card"><span class="big">'+w[0]+'</span>'+panel(w,L(),1)+(SET.tr?panel(w,O(),0):'')+'</div>'+
  '<div class="cnt">'+(S.i+1)+' / '+c.w.length+'</div><div class="swh">'+t("swipe")+'</div></div>'}
