@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ky"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Mektep — мектеп платформасы</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#2f8f83">
+<style>
+:root{--g:#2f8f83;--g2:#3fa99b;--gl:#e3f3f0;--bg:#eef4f3;--tx:#11302c;--mut:#6b8380;--y:#f2c94c;--r:#e5534b;--o:#ff9f43;--card:#fff}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--tx)}
+button{font-family:inherit;cursor:pointer}
+.app{display:grid;grid-template-columns:230px 1fr;min-height:100vh}
+.side{background:var(--g);color:#fff;padding:22px 16px;display:flex;flex-direction:column;gap:6px;position:sticky;top:0;height:100vh}
+.logo{display:flex;align-items:center;gap:10px;font-weight:900;font-size:22px;margin-bottom:18px;padding:0 8px}
+.logo i{font-style:normal;width:38px;height:38px;border-radius:12px;background:#fff;color:var(--g);display:grid;place-items:center;font-size:20px}
+.nav{border:0;background:none;color:#fff;text-align:left;padding:11px 12px;border-radius:12px;font-size:14.5px;display:flex;gap:10px;opacity:.85}
+.nav.on{background:#fff;color:var(--g);opacity:1;font-weight:800}
+.sup{margin-top:auto;background:rgba(255,255,255,.14);border-radius:16px;padding:14px;font-size:13px;line-height:1.4}.sup b{display:block;font-size:14.5px}
+.main{padding:20px 26px 90px;min-width:0}
+.hd{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.roles{display:flex;gap:6px;background:#fff;padding:5px;border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+.roles button{border:0;background:none;padding:9px 14px;border-radius:10px;font-weight:800;font-size:13.5px;color:var(--mut)}
+.roles button.on{background:var(--g);color:#fff}
+.me{display:flex;align-items:center;gap:10px;font-size:13.5px;color:var(--mut)}
+.av{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-weight:900;color:#fff;font-size:14px;flex:none}
+h1{font-size:24px;font-weight:900;margin:18px 0 4px}.lead{color:var(--mut);font-size:14px;margin-bottom:16px}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
+.c{background:var(--card);border-radius:22px;padding:18px;box-shadow:0 4px 18px rgba(17,48,44,.05);min-width:0}
+.c h3{font-size:15.5px;font-weight:900;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+.c h3 small{font-size:12px;color:var(--mut);font-weight:600;background:var(--gl);padding:4px 9px;border-radius:99px}
+.s3{grid-column:span 3}.s4{grid-column:span 4}.s5{grid-column:span 5}.s6{grid-column:span 6}.s7{grid-column:span 7}.s8{grid-column:span 8}.s12{grid-column:span 12}
+.kpi b{font-size:30px;font-weight:900;display:block}.kpi span{color:var(--mut);font-size:13px}.kpi i{font-style:normal;font-size:22px;float:right}
+.studs{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px}
+.st{flex:none;width:92px;background:var(--gl);border-radius:18px;padding:12px 6px;text-align:center;font-size:12.5px;font-weight:700;position:relative}
+.st .av{margin:0 auto 6px;width:46px;height:46px;font-size:16px}
+.st .dot{position:absolute;top:10px;right:14px;width:9px;height:9px;border-radius:50%;background:#2ecc71;border:2px solid #fff}
+.st.sp{background:#fff4e0}
+.att{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid #eef2f1;font-size:14px;gap:8px}
+.att .who{display:flex;align-items:center;gap:10px}.att .av{width:32px;height:32px;font-size:12px}
+.seg{display:flex;gap:4px}.seg button{border:0;padding:7px 10px;border-radius:9px;font-size:12px;font-weight:800;background:#f1f5f4;color:var(--mut)}
+.seg .p.on{background:#2ecc71;color:#fff}.seg .l.on{background:var(--y);color:#3a2a00}.seg .a.on{background:var(--r);color:#fff}
+table{width:100%;border-collapse:collapse;font-size:13.5px}th{text-align:left;color:var(--mut);font-weight:700;font-size:12px;padding:8px 6px;border-bottom:1px solid #eef2f1}
+td{padding:9px 6px;border-bottom:1px solid #f2f5f4}
+.tag{font-size:11.5px;font-weight:800;padding:4px 9px;border-radius:8px;display:inline-block}
+.ok{background:#e3f8ea;color:#15803d}.no{background:#fde8e7;color:#c0392b}.wt{background:#fff4dc;color:#a76b00}
+.gr{border:0;width:30px;height:30px;border-radius:9px;font-weight:900;font-size:13.5px}
+.g5{background:#e3f8ea;color:#15803d}.g4{background:#e6f1ff;color:#1d5fd1}.g3{background:#fff4dc;color:#a76b00}.g2{background:#fde8e7;color:#c0392b}.g0{background:#f1f5f4;color:#b5c3c0}
+.ring{position:relative;width:150px;height:150px;margin:6px auto}.ring b{position:absolute;inset:0;display:grid;place-items:center;font-size:32px;font-weight:900}
+.list div{padding:10px 0;border-bottom:1px dashed #e3ebe9;font-size:14px}.list small{display:block;color:var(--mut);font-size:12.5px;margin-top:2px}
+.btn{border:0;background:var(--g);color:#fff;font-weight:800;padding:11px 16px;border-radius:12px;font-size:14px}
+.btn.lt{background:var(--gl);color:var(--g)}
+.in{width:100%;border:2px solid #e3ebe9;border-radius:12px;padding:10px 12px;font-size:14px;font-family:inherit;margin-bottom:8px}
+.sch div{display:flex;gap:12px;align-items:center;padding:10px 12px;border-radius:14px;margin-bottom:8px;background:#f6faf9;font-size:14px}
+.sch div.now{background:var(--g);color:#fff}.sch b{min-width:46px}
+.ntf{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid #eef2f1;font-size:14px}.ntf i{font-style:normal;font-size:20px}
+.ntf small{display:block;color:var(--mut);font-size:12px}
+.chat{height:230px;overflow:auto;display:flex;flex-direction:column;gap:8px;padding:6px 2px 10px}
+.msg{max-width:78%;padding:9px 12px;border-radius:14px;font-size:14px;line-height:1.35}.msg.t{background:#f1f5f4;align-self:flex-start}.msg.m{background:var(--g);color:#fff;align-self:flex-end}
+.cr{display:flex;gap:8px}.cr .in{margin:0}
+.child{display:flex;gap:14px;align-items:center}.child .av{width:58px;height:58px;font-size:20px}
+.tt{display:grid;grid-template-columns:60px repeat(5,1fr);gap:4px;font-size:12px}.tt div{padding:7px 5px;border-radius:8px;background:#f6faf9;text-align:center}.tt .h{background:none;font-weight:800;color:var(--mut)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#11302c;color:#fff;padding:12px 18px;border-radius:12px;font-size:14px;opacity:0;transition:.3s;pointer-events:none;z-index:9}.toast.on{opacity:1}
+.mnav{display:none}
+@media(max-width:860px){
+ .app{grid-template-columns:1fr}.side{display:none}.main{padding:14px 14px 90px}
+ .s3,.s4,.s5,.s6,.s7,.s8{grid-column:span 12}.s3.kpi{grid-column:span 6}
+ .roles{width:100%;overflow-x:auto}.roles button{flex:1;padding:9px 6px;font-size:12.5px}.me{display:none}
+ .mnav{display:flex;position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid #e3ebe9;padding:8px 6px calc(8px + env(safe-area-inset-bottom));justify-content:space-around;z-index:5}
+ .mnav button{border:0;background:none;font-size:11px;color:var(--mut);display:flex;flex-direction:column;align-items:center;gap:2px;font-weight:700}.mnav button.on{color:var(--g)}.mnav i{font-style:normal;font-size:20px}
+}
+@media print{.side,.roles,.mnav,.btn{display:none}.app{display:block}}
+</style></head><body>
+<div class="app">
+<aside class="side">
+ <div class="logo"><i>📖</i>Mektep</div>
+ <button class="nav" data-r="t">👩‍🏫 Мугалим</button><button class="nav" data-r="s">🎒 Окуучу</button><button class="nav" data-r="p">👨‍👩‍👧 Ата-эне</button><button class="nav" data-r="a">🏫 Администрация</button>
+ <div style="height:14px"></div>
+ <button class="nav" data-x="res">📚 Ресурстар</button><button class="nav" data-x="set">⚙️ Жөндөөлөр</button>
+ <div class="sup"><b>Колдоо кызматы</b>Суроо болсо, каалаган убакта жазыңыз 💬</div>
+</aside>
+<main class="main" id="m"></main>
+</div>
+<nav class="mnav"><button data-r="t"><i>👩‍🏫</i>Мугалим</button><button data-r="s"><i>🎒</i>Окуучу</button><button data-r="p"><i>👨‍👩‍👧</i>Ата-эне</button><button data-r="a"><i>🏫</i>Админ</button></nav>
+<div class="toast" id="toast"></div>
+<script>
+var COL=["#2f8f83","#e5534b","#f2994a","#9b51e0","#2d9cdb","#27ae60","#eb5757","#f2c94c","#56ccf2","#bb6bd9"];
+var ST=[["Айбек Асанов",1],["Айпери Токтогулова",1],["Бекзат Мамытов",0],["Нурай Жумабаева",1],["Эрлан Осмонов",1],["Асель Каримова",1],["Тилек Абдыкадыров",0],["Жибек Сатыбалдиева",1],["Мирлан Турдубаев",1],["Аружан Бакирова",1]];
+var att=ST.map(function(s,i){return i==2?"a":i==6?"l":"p"});
+var SUB=["Математика","Кыргыз тили","Англис тили","Физика","Тарых"];
+var grades=ST.map(function(_,i){return SUB.map(function(_,j){return [5,4,5,3,4,5,4,3,5,4][(i+j*3)%10]})});
+var HW=[["17.11","Математика","§12, 1–10 мисалдар",["wt","ok","no","ok","wt"]],["16.11","Англис тили","Illusion — эссе (5–7 сүйлөм)",["ok","wt","ok","ok","ok"]],["15.11","Физика","Ньютондун мыйзамдары, тест",["no","ok","ok","no","ok"]],["14.11","Кыргыз тили","«Манас» эпосу — кыскача баяндама",["ok","ok","wt","ok","ok"]]];
+var CHAT=[["t","Саламатсызбы! Айбек бүгүн математикадан 5 алды 👏"],["m","Рахмат, эжеке! Үй тапшырмасын бүгүн бүтүрөбүз."],["t","Жума күнү ата-энелер жыйналышы саат 18:00дө болот."]];
+var R=new URLSearchParams(location.search).get("r")||"t";
+function av(n,i){var p=n.split(" ");return '<div class="av" style="background:'+COL[i%COL.length]+'">'+p[0][0]+(p[1]?p[1][0]:"")+'</div>'}
+function toast(t){var e=document.getElementById("toast");e.textContent=t;e.classList.add("on");setTimeout(function(){e.classList.remove("on")},1800)}
+function bars(vals,labels,colors,h){h=h||150;var w=100/vals.length,mx=Math.max.apply(null,vals);
+ return '<svg viewBox="0 0 '+vals.length*40+' '+(h+34)+'" width="100%" height="'+(h+34)+'">'+vals.map(function(v,i){var bh=v/mx*h*.86;return '<text x="'+(i*40+20)+'" y="'+(h-bh-6)+'" text-anchor="middle" font-size="11" fill="#6b8380" font-weight="700">'+v+'</text><rect x="'+(i*40+11)+'" y="'+(h-bh)+'" width="18" height="'+bh+'" rx="9" fill="'+colors[i]+'"/><text x="'+(i*40+20)+'" y="'+(h+20)+'" text-anchor="middle" font-size="11" fill="#6b8380">'+labels[i]+'</text>'}).join("")+'</svg>'}
+function ring(p,c){var r=62,C=2*Math.PI*r;return '<div class="ring"><svg width="150" height="150"><circle cx="75" cy="75" r="'+r+'" stroke="#e3f3f0" stroke-width="14" fill="none"/><circle cx="75" cy="75" r="'+r+'" stroke="'+(c||"#2f8f83")+'" stroke-width="14" fill="none" stroke-linecap="round" stroke-dasharray="'+C*p/100+' '+C+'" transform="rotate(-90 75 75)"/></svg><b>'+p+'%</b></div>'}
+function hdr(t,l,who){return '<div class="hd"><div class="roles">'+[["t","Мугалим"],["s","Окуучу"],["p","Ата-эне"],["a","Админ"]].map(function(x){return '<button data-r="'+x[0]+'" class="'+(R==x[0]?"on":"")+'">'+x[1]+'</button>'}).join("")+'</div><div class="me">🔔 &nbsp; '+who+'</div></div><h1>'+t+'</h1><div class="lead">'+l+'</div>'}
+function teacher(){
+ var present=att.filter(function(a){return a=="p"}).length;
+ return hdr("Саламатсызбы, Гүлнара эже 👋","8-«А» класс · Англис тили · Бүгүн 18-ноябрь, шаршемби",'Гүлнара Асанова')+
+ '<div class="grid">'+
+ '<div class="c s8"><h3>Окуучулар <small>'+present+' / '+ST.length+' бүгүн келди</small></h3><div class="studs">'+ST.map(function(s,i){return '<div class="st'+(i==6?" sp":"")+'">'+(att[i]=="p"?'<span class="dot"></span>':'')+av(s[0],i)+s[0].split(" ")[0]+(i==6?'<div style="font-size:10.5px;color:#a76b00;margin-top:3px">⭐ көңүл буруу</div>':'')+'</div>'}).join("")+'</div></div>'+
+ '<div class="c s4"><h3>Программа <small>1-чейрек</small></h3>'+ring(78)+'<div class="list"><div>Өткөн сабак<small>Illusion — writing</small></div><div>Кийинки сабак<small>The Downsides of the Internet</small></div></div></div>'+
+ '<div class="c s5"><h3>Бүгүнкү катышуу <small>бир басуу</small></h3>'+ST.map(function(s,i){return '<div class="att"><div class="who">'+av(s[0],i)+s[0]+'</div><div class="seg"><button class="p'+(att[i]=="p"?" on":"")+'" data-att="'+i+':p">Келди</button><button class="l'+(att[i]=="l"?" on":"")+'" data-att="'+i+':l">Кеч</button><button class="a'+(att[i]=="a"?" on":"")+'" data-att="'+i+':a">Жок</button></div></div>'}).join("")+'</div>'+
+ '<div class="c s7"><h3>Жумалык катышуу <small>11–18-ноябрь</small></h3>'+bars([10,9,10,9,10,8,present],["Дш","Шй","Шр","Бш","Жм","Иш","Бүг"],["#2f8f83","#f2c94c","#2f8f83","#f2c94c","#2f8f83","#e5534b","#3fa99b"])+
+ '<h3 style="margin-top:14px">Үй тапшырмалары <button class="btn lt" data-x="addhw">+ Жаңы</button></h3><div id="hwf"></div><div style="overflow-x:auto"><table><tr><th>Күнү</th><th>Предмет</th><th>Тапшырма</th><th>Аткаруу</th></tr>'+HW.map(function(h){var ok=h[3].filter(function(x){return x=="ok"}).length;return '<tr><td>'+h[0]+'</td><td>'+h[1]+'</td><td>'+h[2]+'</td><td><span class="tag '+(ok==5?"ok":ok>=3?"wt":"no")+'">'+ok*2+' / 10</span></td></tr>'}).join("")+'</table></div></div>'+
+ '<div class="c s12"><h3>Баалар журналы <small>басып баа коюңуз</small></h3><div style="overflow-x:auto"><table><tr><th>Окуучу</th>'+SUB.map(function(s){return '<th>'+s+'</th>'}).join("")+'<th>Орточо</th></tr>'+ST.map(function(s,i){var g=grades[i],a=(g.reduce(function(x,y){return x+y},0)/g.length).toFixed(1);return '<tr><td>'+s[0]+'</td>'+g.map(function(v,j){return '<td><button class="gr g'+v+'" data-g="'+i+':'+j+'">'+v+'</button></td>'}).join("")+'<td><b>'+a+'</b></td></tr>'}).join("")+'</table></div></div>'+
+ '<div class="c s12" style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><div><b>📝 Сабак планы</b><div style="color:#6b8380;font-size:13.5px;margin-top:3px">Теманы жазыңыз — 4MAT форматындагы план 1 мүнөттө даяр болот</div></div><button class="btn" data-x="plan">⚡ План түзүү</button></div>'+
+ '</div>'}
+function student(){
+ var g=grades[0],a=(g.reduce(function(x,y){return x+y},0)/g.length).toFixed(1);
+ return hdr("Салам, Айбек! 🎒","8-«А» класс · Бүгүн 5 сабак","Айбек Асанов")+
+ '<div class="grid"><div class="c s3 kpi"><i>⭐</i><b>'+a+'</b><span>Орточо баа</span></div><div class="c s3 kpi"><i>✅</i><b>96%</b><span>Катышуу</span></div><div class="c s3 kpi"><i>📚</i><b>2</b><span>Аткарыла элек тапшырма</span></div><div class="c s3 kpi"><i>🏆</i><b>3-орун</b><span>Класста</span></div>'+
+ '<div class="c s5"><h3>Бүгүнкү сабактар</h3><div class="sch">'+[["08:00","Математика","каб. 12"],["08:55","Кыргыз тили","каб. 7"],["09:50","Англис тили","каб. 21"],["10:55","Физика","каб. 15"],["11:50","Тарых","каб. 9"]].map(function(x,i){return '<div class="'+(i==2?"now":"")+'"><b>'+x[0]+'</b><span style="flex:1">'+x[1]+'</span><small>'+x[2]+'</small></div>'}).join("")+'</div></div>'+
+ '<div class="c s7"><h3>Үй тапшырмалары</h3>'+HW.map(function(h,i){var s=h[3][0];return '<div class="att"><div><b>'+h[1]+'</b><div style="color:#6b8380;font-size:13px">'+h[2]+' · '+h[0]+'</div></div>'+(s=="ok"?'<span class="tag ok">✓ Тапшырылды</span>':'<button class="btn" data-sub="'+i+'">Тапшыруу</button>')+'</div>'}).join("")+'</div>'+
+ '<div class="c s6"><h3>Менин бааларым</h3><table>'+SUB.map(function(s,j){return '<tr><td>'+s+'</td><td style="text-align:right"><span class="gr g'+g[j]+'" style="display:inline-grid;place-items:center">'+g[j]+'</span></td></tr>'}).join("")+'</table></div>'+
+ '<div class="c s6"><h3>Онлайн тест <small>жаңы</small></h3><div style="font-size:15px;font-weight:800">Англис тили: Illusion — vocabulary</div><div style="color:#6b8380;font-size:13.5px;margin:6px 0 14px">10 суроо · 10 мүнөт · мөөнөтү: 20-ноябрь</div><button class="btn" data-x="test">▶ Тестти баштоо</button></div>'+
+ '</div>'}
+function parent(){
+ return hdr("Саламатсызбы, Асан байке 👋","Айбектин бүгүнкү абалы","Асан Асанов")+
+ '<div class="grid"><div class="c s5"><div class="child">'+av("Айбек Асанов",0)+'<div><b style="font-size:18px">Айбек Асанов</b><div style="color:#6b8380;font-size:13.5px">8-«А» класс · Класс жетекчи: Гүлнара Асанова</div></div></div>'+
+ '<div class="grid" style="margin-top:14px;gap:10px"><div class="c s4 kpi" style="background:#e3f8ea;box-shadow:none;padding:12px"><b style="font-size:22px">✓</b><span>Бүгүн келди</span></div><div class="c s4 kpi" style="background:#e6f1ff;box-shadow:none;padding:12px"><b style="font-size:22px">4.6</b><span>Орточо баа</span></div><div class="c s4 kpi" style="background:#fff4dc;box-shadow:none;padding:12px"><b style="font-size:22px">1</b><span>Тапшырма калды</span></div></div></div>'+
+ '<div class="c s7"><h3>Билдирүүлөр</h3>'+[["🟢","Айбек сабакка келди","08:02"],["⭐","Математикадан 5 алды","09:40"],["📚","Жаңы үй тапшырма: Физика — тест","11:15"],["📢","Жума күнү ата-энелер жыйналышы, 18:00","Кечээ"]].map(function(x){return '<div class="ntf"><i>'+x[0]+'</i><div>'+x[1]+'<small>'+x[2]+'</small></div></div>'}).join("")+'</div>'+
+ '<div class="c s7"><h3>Мугалим менен чат <small>Гүлнара эже</small></h3><div class="chat" id="chat">'+CHAT.map(function(m){return '<div class="msg '+m[0]+'">'+m[1]+'</div>'}).join("")+'</div><div class="cr"><input class="in" id="cin" placeholder="Билдирүү жазыңыз..."><button class="btn" data-x="send">➤</button></div></div>'+
+ '<div class="c s5"><h3>Мектептин жарыялары</h3><div class="list"><div>🎄 Жаңы жылдык майрам<small>27-декабрь · акт залы</small></div><div>💰 Класс фонду: 500 сом<small>Төлөгөндөр: 21 / 30</small></div><div>🏖 Кышкы каникул<small>29-декабрь – 11-январь</small></div></div></div>'+
+ '</div>'}
+function admin(){
+ var cls=["5-А","5-Б","6-А","6-Б","7-А","7-Б","8-А","8-Б","9-А","10-А","11-А"],v=[97,94,92,95,90,93,95,88,91,94,96];
+ return hdr("Мектептин башкаруу панели 🏫","№12 орто мектеп · 18-ноябрь","Директор")+
+ '<div class="grid"><div class="c s3 kpi"><i>🎒</i><b>642</b><span>Окуучулар</span></div><div class="c s3 kpi"><i>👩‍🏫</i><b>38</b><span>Мугалимдер</span></div><div class="c s3 kpi"><i>✅</i><b>93%</b><span>Бүгүнкү катышуу</span></div><div class="c s3 kpi"><i>⭐</i><b>4.1</b><span>Орточо баа</span></div>'+
+ '<div class="c s8"><h3>Класстар боюнча катышуу, % <small>бүгүн</small></h3>'+bars(v,cls,v.map(function(x){return x>=94?"#2f8f83":x>=91?"#f2c94c":"#e5534b"}),170)+'</div>'+
+ '<div class="c s4"><h3>Отчеттор</h3><div class="list"><div>📊 Айлык катышуу<small>Ноябрь</small></div><div>📈 Чейректик баалар<small>1-чейрек</small></div><div>👩‍🏫 Мугалимдердин жүктөмү<small>Апта сайын</small></div></div><button class="btn" style="margin-top:12px;width:100%" data-x="pdf">⬇ PDF отчет</button></div>'+
+ '<div class="c s6"><h3>Мугалимдер</h3><table><tr><th>Аты-жөнү</th><th>Предмет</th><th>Саат/апта</th></tr>'+[["Гүлнара Асанова","Англис тили",22],["Бакыт Жээнбеков","Математика",24],["Чолпон Исакова","Кыргыз тили",20],["Нурлан Сыдыков","Физика",18],["Айгүл Мамбетова","Тарых",16]].map(function(t){return '<tr><td>'+t[0]+'</td><td>'+t[1]+'</td><td><span class="tag '+(t[2]>22?"wt":"ok")+'">'+t[2]+'</span></td></tr>'}).join("")+'</table></div>'+
+ '<div class="c s6"><h3>Расписание <small>8-«А»</small></h3><div class="tt"><div class="h"></div>'+["Дш","Шй","Шр","Бш","Жм"].map(function(d){return '<div class="h">'+d+'</div>'}).join("")+["08:00","08:55","09:50","10:55"].map(function(t,i){return '<div class="h">'+t+'</div>'+[0,1,2,3,4].map(function(d){return '<div>'+["Мат","Кырг","Англ","Физ","Тар"][(i+d)%5]+'</div>'}).join("")}).join("")+'</div></div>'+
+ '</div>'}
+function render(){var m=document.getElementById("m");m.innerHTML=R=="t"?teacher():R=="s"?student():R=="p"?parent():admin();
+ document.querySelectorAll(".nav[data-r],.mnav button").forEach(function(b){b.classList.toggle("on",b.dataset.r==R)});var c=document.getElementById("chat");if(c)c.scrollTop=9999}
+document.addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;
+ if(b.dataset.r){R=b.dataset.r;render();window.scrollTo(0,0);return}
+ if(b.dataset.att){var p=b.dataset.att.split(":");att[+p[0]]=p[1];render();toast(p[1]=="a"?"📩 Ата-энеге билдирүү кетти":"✓ Белгиленди");return}
+ if(b.dataset.g){var q=b.dataset.g.split(":"),v=grades[+q[0]][+q[1]];grades[+q[0]][+q[1]]=v<=2?5:v-1;render();return}
+ if(b.dataset.sub){HW[+b.dataset.sub][3][0]="ok";render();toast("✓ Тапшырма жиберилди");return}
+ var x=b.dataset.x;
+ if(x=="addhw"){document.getElementById("hwf").innerHTML='<input class="in" id="hws" placeholder="Предмет"><input class="in" id="hwt" placeholder="Тапшырма"><button class="btn" data-x="savehw" style="margin-bottom:10px">Сактоо</button>';return}
+ if(x=="savehw"){var s=document.getElementById("hws").value||"Англис тили",t=document.getElementById("hwt").value||"Жаңы тапшырма";HW.unshift(["18.11",s,t,["wt","wt","wt","wt","wt"]]);render();toast("📚 Окуучуларга жана ата-энелерге жиберилди");return}
+ if(x=="send"){var i=document.getElementById("cin");if(i.value.trim()){CHAT.push(["m",i.value.trim()]);render();setTimeout(function(){CHAT.push(["t","Жакшы, рахмат! 🙏"]);render()},1200)}return}
+ if(x=="pdf"){window.print();return}
+ if(x=="plan"){toast("📝 Сабак планы түзүлүүдө…");return}
+ if(x=="test"){toast("▶ Тест ачылууда…");return}
+ if(x=="res"||x=="set"){toast("Бул бөлүм жакында ачылат");return}
+});
+document.addEventListener("keydown",function(e){if(e.key=="Enter"&&e.target.id=="cin"){document.querySelector('[data-x="send"]').click()}});
+render();
+</script></body></html>
