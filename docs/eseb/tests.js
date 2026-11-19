@@ -65,4 +65,10 @@ var Tx=C.tax({stmts:[st],tx:[],loads:[],trips:[],status:"single",stBp:0},2026);e
 var Sf={stmts:[Object.assign({},st,{fuel:[]})],tx:[{id:"f1",kind:"exp",d:"2026-11-05",a:120050,c:"diesel",v:"Pilot",gal:30000,paidBy:"card"}],loads:[]};
 var Tf=C.totals(Sf,["2026-11-02","2026-11-08"]);eq("fuel cost = statement fuel only",Tf.fuelCost,383983);eq("gallons from card receipt kept",Tf.dieselGal,30000);eq("fuel savings 476.62",Tf.fuelSaved,47662);
 eq("fuel cost per mile",Tf.perMile(Tf.fuelCost),Math.round(383983/2266));
+
+// same statement uploaded twice without number (old version) → detected by week/money
+var a1={id:"a",d:"2026-11-08",p0:"2026-11-02",p1:"2026-11-08",gross:1395000,ded:[{c:"toll",a:2565}],loads:[]},b1={id:"b",company:"X",num:"1",d:"2026-11-10",p0:"2026-11-02",p1:"2026-11-08",gross:1395000,ded:[{c:"toll",a:2565},{c:"parking",a:2000}],loads:[]};
+eq("dup by same week",!!C.stmtDup(b1,{stmts:[a1]}),true);eq("dupPairs finds",C.dupPairs({stmts:[a1,b1]}).length,1);
+var mg=C.mergeStmt(a1,b1);eq("merge no double deductions",C.sum(mg.ded,"a"),4565);eq("merge keeps gross",mg.gross,1395000);
+eq("different weeks not dup",!!C.stmtDup({id:"c",p0:"2026-11-09",p1:"2026-11-15",gross:900000,d:"2026-11-15"},{stmts:[a1]}),false);
 console.log("\nPASS "+pass+"  FAIL "+fail);process.exit(fail?1:0);

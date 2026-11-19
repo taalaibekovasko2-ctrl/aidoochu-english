@@ -88,7 +88,19 @@ C.findDups=function(t,S){ /* returns [{type:'tx'|'stline'|'stfuel', id, score, .
  out.sort(function(a,b){return b.score-a.score});return out};
 C.stHasFuelLines=function(S,id){var r=false;(S.stmts||[]).forEach(function(s){if(s.id===id&&(s.fuel||[]).some(function(f){return f.gal}))r=true});return r};
 C.stDay=function(st){return st.p1||st.d}; /* statement belongs to the week it covers */
-C.stmtDup=function(st,S){var k=C.key(st);if(!k)return null;var f=null;(S.stmts||[]).forEach(function(o){if(o.id!==st.id&&C.key(o)===k)f=o});return f};
+C.stmtDup=function(st,S){ /* same company+number, or same covered week, or same money → same statement */
+ var k=C.key(st),f=null;(S.stmts||[]).forEach(function(o){if(f||o.id===st.id)return;
+  if(k&&C.key(o)===k){f=o;return}
+  var sameWeek=(st.p1&&o.p1&&Math.abs(C.days(st.p1,o.p1))<=1)||(st.p0&&o.p0&&st.p0===o.p0);
+  var sameMoney=(st.gross&&st.gross===o.gross)||(st.net!=null&&o.net!=null&&st.net===o.net);
+  if(sameWeek||sameMoney&&Math.abs(C.days(C.stDay(st),C.stDay(o)))<=10)f=o});return f};
+C.dupPairs=function(S){var out=[],a=S.stmts||[];for(var i=0;i<a.length;i++)for(var j=i+1;j<a.length;j++){var x=C.stmtDup(a[j],{stmts:[a[i]]});if(x)out.push([a[i],a[j]])}return out};
+C.mergeStmt=function(a,b){ /* add b's loads/deductions that a does not already have */
+ var o=JSON.parse(JSON.stringify(a));function has(list,x,keys){return list.some(function(y){return keys.every(function(k){return y[k]===x[k]})})}
+ (b.loads||[]).forEach(function(l){if(!has(o.loads,l,["g","f","t"]))o.loads.push(l)});(b.ded||[]).forEach(function(d){if(!has(o.ded,d,["c","a"]))o.ded.push(d)});(b.fuel||[]).forEach(function(f){o.fuel=o.fuel||[];if(!has(o.fuel,f,["a","d"]))o.fuel.push(f)});
+ ["company","num","p0","p1","rate","earn","fee","net","dedTotal","fuelRetail","fuelInvoice"].forEach(function(k){if(o[k]==null&&b[k]!=null)o[k]=b[k]});
+ ["adv","reimb","other"].forEach(function(k){if(!o[k]&&b[k])o[k]=b[k]});
+ var lg=C.sum(o.loads,"g");if(!o.gross||(b.gross&&b.gross>o.gross))o.gross=Math.max(o.gross||0,b.gross||0,lg);return o};
 C.key=function(st){if(!st.num)return null;return String(st.company||"").toUpperCase().replace(/[^A-Z0-9]/g,"")+"#"+String(st.num).toUpperCase().replace(/[^A-Z0-9]/g,"")};
 
 /* ---------- dates ---------- */

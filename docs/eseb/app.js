@@ -13,7 +13,7 @@ company:"Компания",num:"Settlement №",stDate:"Стейтмент да�
 loads:"Рейстер",ded:"Кармоолор",unk:"Түшүнүксүз саптар — текшериңиз",ignore:"Эсепке кошпоо",addRow:"+ сап",
 rec:"Салыштыруу (Reconciliation)",recSt:"Компаниянын Net Pay",recCalc:"Платформа эсептеген",recDiff:"Айырма",recOk:"Дал келет ✓",recWhy:"Айырманын себеби",whyDed:"Кармоолордун суммасы стейтменттеги Total'дон айырмаланат",whyEarn:"Driver Earnings пайызга туура келбейт",whyUnk:"Себеби белгисиз — саптарды текшериңиз",noRate:"Пайыз же Driver Earnings жок — комиссия 0 деп алынды",
 save:"Сактоо",del:"Өчүрүү",cancel:"Жокко чыгаруу",edit:"Өзгөртүү",close:"Жабуу",
-dupSt:"Бул стейтмент мурда жүктөлгөн (ошол эле компания жана №).",dupReplace:"Эскисин жаңыртуу",dupKeep:"Баары бир кошуу",
+dupSt:"Бул аптанын стейтменти мурда жүктөлгөн. Эки жолу эсептелбеши үчүн тандаңыз:",dupReplace:"Жаңысы менен алмаштыруу",dupKeep:"Баары бир кошуу",
 amt:"Сумма, $",date:"Дата",cat:"Категория",vendor:"Дүкөн / компания",note:"Эскертүү",gal:"Галлон",ret:"Retail баасы, $",inv:"Invoice (төлөнгөн), $",state:"Штат",ref:"Транзакция №",
 paidBy:"Ким төлөдү?",card:"💳 Компаниянын fuel картасы / компания төлөдү (стейтментте кармалат)",own:"💵 Өз акчам / өз картам",
 cardNote:"Бул чек чыгашага кошулбайт — ал стейтменттен кармалат. Галлон, баа жана MPG үчүн гана сакталат.",
@@ -31,6 +31,7 @@ report:"📄 Бухгалтерге отчет",csv:"📊 Excel (CSV)",backup:"�
 hist:"Өзгөртүүлөрдүн тарыхы",privacy:"🔒 Маалымат ушул телефондо гана сакталат, эч жакка жөнөтүлбөйт. Телефон алмаштырсаңыз — «Резерв көчүрмө» жасаңыз.",settings:"Жөндөөлөр",
 saved_:"Сакталды ✓",deleted:"Өчүрүлдү",restored:"Калыбына келди ✓",badFile:"Файл туура эмес",need:"Сумманы жазыңыз",linked:"Бир жолу эсептелет ✓",
 noSt:"Стейтмент жок. Башкы беттен «Стейтмент жүктөө» басыңыз.",stmtsN:"стейтмент",loadsN:"рейс",perDays:"күн",custFrom:"Башы",custTo:"Аягы",apply:"Көрсөтүү",
+t_home:"Башкы",t_loads:"Рейстер",t_exps:"Чыгашалар",t_prof:"Профиль",t_net:"Таза киреше",t_biz:"Бизнес киреше",t_exp:"Чыгашалар",t_miles:"Миль",t_addLoad:"Рейс кошуу",t_upSt:"Стейтмент",t_addExp:"Чыгаша кошуу",t_scan:"Чек тартуу",all2:"Баары",biz:"Бизнес",pers:"Жеке",taxSum:"Салык",estBiz:"Бизнес кирешенин баасы",afterDed:"чегерүүлөрдөн кийин",daysTrip:"Рейстеги күндөр",dupBan:"Бир стейтмент эки жолу кошулган",fix:"Оңдоо",dupBanQ:"Бул экөө бир эле стейтмент окшойт. Эмне кылалы?",mergeOne:"Бирөө кылуу (бириктирүү)",keepNew:"Жаңысын калтырып, эскисин өчүрүү",notSame:"Бул эки башка стейтмент",dataT:"Маалымат",more2:"Дагы маалымат",netChk:"Net Pay текшерүү",page2:"Бул ошол стейтменттин 2-бети — кошуу",
 counted:"эсепке кирет",notCounted:"эсепке кирбейт",fromSt:"стейтменттен",dupMark:"кайталанма",linkMark:"стейтментке тиркелген",cardMark:"компания картасы"},
 ru:{}};
 /* Russian strings */
@@ -44,7 +45,7 @@ company:"Компания",num:"Settlement №",stDate:"Дата стейтме�
 loads:"Рейсы",ded:"Удержания",unk:"Непонятные строки — проверьте",ignore:"Не учитывать",addRow:"+ строка",
 rec:"Сверка (Reconciliation)",recSt:"Net Pay компании",recCalc:"Расчёт платформы",recDiff:"Разница",recOk:"Совпадает ✓",recWhy:"Причина разницы",whyDed:"Сумма удержаний отличается от Total в стейтменте",whyEarn:"Driver Earnings не совпадает с процентом",whyUnk:"Причина неизвестна — проверьте строки",noRate:"Нет процента или Driver Earnings — комиссия принята 0",
 save:"Сохранить",del:"Удалить",cancel:"Отмена",edit:"Изменить",close:"Закрыть",
-dupSt:"Этот стейтмент уже загружен (та же компания и №).",dupReplace:"Обновить старый",dupKeep:"Всё равно добавить",
+dupSt:"Стейтмент за эту неделю уже загружен. Чтобы не посчитать дважды, выберите:",dupReplace:"Заменить новым",dupKeep:"Всё равно добавить",
 amt:"Сумма, $",date:"Дата",cat:"Категория",vendor:"Магазин / компания",note:"Заметка",gal:"Галлоны",ret:"Retail цена, $",inv:"Invoice (оплачено), $",state:"Штат",ref:"№ транзакции",
 paidBy:"Кто оплатил?",card:"💳 Топливная карта компании / оплатила компания (удержат в стейтменте)",own:"💵 Мои деньги / моя карта",
 cardNote:"Этот чек не добавляется в расходы — его удержат в стейтменте. Хранится для галлонов, цены и MPG.",
@@ -62,7 +63,7 @@ report:"📄 Отчёт для бухгалтера",csv:"📊 Excel (CSV)",back
 hist:"История изменений",privacy:"🔒 Данные хранятся только на этом телефоне и никуда не отправляются. При смене телефона сделайте «Резервную копию».",settings:"Настройки",
 saved_:"Сохранено ✓",deleted:"Удалено",restored:"Восстановлено ✓",badFile:"Неверный файл",need:"Введите сумму",linked:"Будет учтено один раз ✓",
 noSt:"Стейтментов нет. На главной нажмите «Загрузить стейтмент».",stmtsN:"стейтм.",loadsN:"рейс.",perDays:"дн.",custFrom:"С",custTo:"По",apply:"Показать",
-counted:"учитывается",notCounted:"не учитывается",fromSt:"из стейтмента",dupMark:"дубликат",linkMark:"привязан к стейтменту",cardMark:"карта компании"};T.ru=r})();
+t_home:"Главная",t_loads:"Рейсы",t_exps:"Расходы",t_prof:"Профиль",t_net:"Чистый доход",t_biz:"Бизнес-доход",t_exp:"Расходы",t_miles:"Мили",t_addLoad:"Добавить рейс",t_upSt:"Стейтмент",t_addExp:"Добавить расход",t_scan:"Снять чек",all2:"Все",biz:"Рабочее",pers:"Личное",taxSum:"Налоговая сводка",estBiz:"Оценка Business Income",afterDed:"после учтённых вычетов",daysTrip:"Дни в рейсе",dupBan:"Один стейтмент добавлен дважды",fix:"Исправить",dupBanQ:"Похоже, это один и тот же стейтмент. Что сделать?",mergeOne:"Сделать одним (объединить)",keepNew:"Оставить новый, удалить старый",notSame:"Это разные стейтменты",dataT:"Данные",more2:"Ещё данные",netChk:"Проверка Net Pay",page2:"Это 2-я страница того же стейтмента — добавить",counted:"учитывается",notCounted:"не учитывается",fromSt:"из стейтмента",dupMark:"дубликат",linkMark:"привязан к стейтменту",cardMark:"карта компании"};T.ru=r})();
 
 /* ---------- state ---------- */
 var S=loadS();
@@ -94,59 +95,62 @@ function rLabel(){var r=R();if(V.per=="all")return L("all");if(V.per=="year")ret
 function shift(k){if(V.per=="today")V.ref=C.addDays(V.ref,k);else if(V.per=="week")V.ref=C.addDays(V.ref,7*k);else if(V.per=="month"){var p=V.ref.split("-"),m=+p[1]-1+k,y=+p[0]+Math.floor(m/12);m=((m%12)+12)%12;V.ref=y+"-"+C.p2(m+1)+"-01"}else if(V.per=="year")V.ref=(+V.ref.slice(0,4)+k)+"-01-01";render()}
 
 /* ---------- render ---------- */
-function nav(){var t=[["home","🏠"],["stmts","📄"],["exps","🧾"],["tax","🏛"],["more","⚙️"]];$("nav").innerHTML=t.map(function(x){return '<div data-tab="'+x[0]+'" class="'+(V.tab==x[0]?"on":"")+'"><i>'+x[1]+'</i>'+L(x[0])+'</div>'}).join("")}
-function head(){return '<div class="top"><div class="logo">🚛</div><h1>'+L("app")+'<small>'+L("tag")+' · '+L("free")+'</small></h1><div class="lng"><b data-lang="kg" class="'+(S.lang=="kg"?"on":"")+'">KG</b><b data-lang="ru" class="'+(S.lang=="ru"?"on":"")+'">RU</b></div></div>'}
-function perBar(){var h='<div class="seg sc">'+["today","week","month","year","all","custom"].map(function(p){return '<b data-per="'+p+'" class="'+(V.per==p?"on":"")+'">'+L(p)+'</b>'}).join("")+'</div>';
- if(V.per=="custom"){var r=R();h+='<div class="row" style="margin-bottom:10px"><div><label>'+L("custFrom")+'</label><input type="date" id="c0" value="'+r[0]+'"></div><div><label>'+L("custTo")+'</label><input type="date" id="c1" value="'+r[1]+'"></div><div style="flex:.7;align-self:flex-end"><button class="btn" data-act="cust">'+L("apply")+'</button></div></div>'}
- else if(V.per!="all")h+='<div class="per"><b data-sh="-1">‹</b><span>'+rLabel()+'</span><b data-sh="1">›</b></div>';return h}
-function render(){nav();var h=head();if(V.tab=="home")h+=homeV();else if(V.tab=="stmts")h+=stmtsV();else if(V.tab=="exps")h+=expsV();else if(V.tab=="tax")h+=taxV();else h+=moreV();
- h+='<div class="foot">'+L("app")+' · '+L("free")+' · <a href="https://instagram.com/sayt_usta" target="_blank" rel="noopener">@sayt_usta</a></div>';$("app").innerHTML=h;var s=$("stS");if(s)s.value=S.status;var ro=$("roS");if(ro)ro.value=S.role;var pt=$("ptS");if(pt)pt.value=S.pay.type}
-function kpi(lbl,val,cls,key,sub){return '<div class="card'+(key?" tap":"")+'"'+(key?' data-src="'+key+'"':'')+'><div class="lbl">'+lbl+'</div><div class="v '+(cls||"")+'">'+val+'</div>'+(sub?'<div class="note">'+sub+'</div>':'')+'</div>'}
-function pm(t,c){var v=t.perMile(c);return v==null?'<span class="nd">'+L("noData")+'</span>':M(v)}
-function homeV(){var t=C.totals(S,R());V.last=t;
- var h=perBar()+'<div class="btns"><button class="btn ac big2" data-act="stmt">📄 '+L("upSt")+'<small>'+L("upStSub")+'</small></button><button class="btn big2" data-act="scan">⛽ '+L("receipt")+'<small>&nbsp;</small></button></div>'+
- '<div class="btns"><button class="btn gh" data-act="manual">＋ '+L("manual")+'</button></div>'+
- '<div class="card hero tap" data-src="profit"><div class="lbl">💰 '+L("profit")+'</div><div class="big">'+M(t.profit)+'</div><div class="lbl" style="margin-top:4px">'+L("net")+': <b>'+M(t.net)+'</b></div></div>'+
- '<div class="grid">'+kpi("🚚 "+L("gross"),M(t.gross),"","gross",t.loadCount+" "+L("loadsN")+" · "+t.stCount+" "+L("stmtsN"))+kpi("🏢 "+L("fee"),M(t.fee),"neg","fee")+
- kpi("👤 "+L("earn"),M(t.earn),"","earn")+kpi("🧾 "+L("exp"),M(t.exp),"neg","exp")+
- kpi("📄 "+L("net"),M(t.net),"","net",t.adv?L("adv")+": "+M(t.adv):"")+kpi("💰 "+L("profit"),M(t.profit),t.profit>=0?"pos":"neg","profit")+
- kpi("🛣 "+L("loaded"),t.miles?C.fmt(t.loaded*100,true).replace("$","")+" mi":'<span class="nd">'+L("noData")+'</span>')+kpi("↩️ "+L("empty"),t.miles?C.fmt(t.empty*100,true).replace("$","")+" mi":'<span class="nd">'+L("noData")+'</span>')+
- kpi("📈 "+L("gpm"),pm(t,t.gross))+kpi("💵 "+L("npm"),pm(t,t.profit),t.profit>=0?"pos":"neg")+'</div>';
- if(t.fuelCost||t.dieselGal){h+='<h2>⛽ '+L("fuelT")+'</h2><div class="card">'+tl(L("exp"),M(t.fuelCost))+tl(L("dGal"),t.dieselGal?(t.dieselGal/100).toFixed(1):"—")+tl(L("defGal"),t.defGal?(t.defGal/100).toFixed(1):"—")+
-  tl(L("avgP"),t.dieselGal?M(Math.round(t.dieselCost*100/t.dieselGal)):'<span class="nd">'+L("noData")+'</span>')+tl(L("saved"),t.fuelSaved?M(t.fuelSaved):"—")+tl(L("fpm"),pm(t,t.fuelCost))+tl(L("mpg"),t.mpg!=null?t.mpg:'<span class="nd">'+L("noData")+'</span>')+'</div>'}
- h+=groupsV(t);if(!t.stCount&&!t.loadCount&&!t.exp)h+='<div class="empty">'+L("empty0")+'</div>';return h}
+function nav(){var t=[["home","🏠"],["loads","🚚"],["exps","🧾"],["prof","👤"]];$("nav").innerHTML=t.map(function(x){return '<div data-tab="'+x[0]+'" class="'+(V.tab==x[0]?"on":"")+'"><i>'+x[1]+'</i>'+L("t_"+x[0])+'</div>'}).join("")}
+function head(){return '<div class="top"><div class="logo">🚛</div><h1>'+L("app")+'<small>'+L("free")+'</small></h1><div class="lng"><b data-lang="kg" class="'+(S.lang=="kg"?"on":"")+'">KG</b><b data-lang="ru" class="'+(S.lang=="ru"?"on":"")+'">RU</b></div></div>'}
+function perBar(){if(["week","month","year"].indexOf(V.per)<0)V.per="week";return '<div class="seg">'+["week","month","year"].map(function(p){return '<b data-per="'+p+'" class="'+(V.per==p?"on":"")+'">'+L(p)+'</b>'}).join("")+'</div><div class="per"><b data-sh="-1">‹</b><span>'+rLabel()+'</span><b data-sh="1">›</b></div>'}
+function render(){nav();var h=head();if(V.tab=="home")h+=homeV();else if(V.tab=="loads")h+=loadsV();else if(V.tab=="exps")h+=expsV();else h+=profV();
+ $("app").innerHTML=h;var s=$("stS");if(s)s.value=S.status;var ro=$("roS");if(ro)ro.value=S.role;var pt=$("ptS");if(pt)pt.value=S.pay.type}
+function kpi(lbl,val,cls,key,sub,wide){return '<div class="card tap'+(wide?" wide":"")+'" data-src="'+key+'"><div class="lbl">'+lbl+'</div><div class="v '+(cls||"")+'">'+val+'</div>'+(sub?'<div class="note">'+sub+'</div>':'')+'</div>'}
+function pm(t,c){var v=t.perMile(c);return v==null?'<span class="nd">—</span>':M(v)}
+function mi(n){return String(n).replace(/\B(?=(\d{3})+(?!\d))/g,",")+" mi"}
+function dupBanner(){var d=C.dupPairs(S);if(!d.length)return "";return '<div class="warn tap" data-act="fixdup">⚠️ '+L("dupBan")+' ('+d.length+') — <b>'+L("fix")+'</b></div>'}
+function homeV(){var t=C.totals(S,R());
+ return perBar()+dupBanner()+
+ '<div class="card hero tap" data-src="profit"><div class="lbl">💰 '+L("t_net")+'</div><div class="big">'+M(t.profit)+'</div></div>'+
+ '<div class="grid">'+kpi("💼 "+L("t_biz"),M(t.earn),"","earn",t.fee?L("fee")+": "+M0(t.fee):"")+kpi("🧾 "+L("t_exp"),M(t.exp),"neg","exp")+
+ kpi("🚚 Gross",M(t.gross),"","gross",t.loadCount+" "+L("loadsN"))+kpi("🛣 "+L("t_miles"),t.miles?mi(t.miles):'<span class="nd">—</span>',"","gross")+
+ kpi("↩️ Deadhead",t.miles?mi(t.empty):'<span class="nd">—</span>',"","gross")+kpi("📈 Gross/mile",pm(t,t.gross),"","gross")+'</div>'+
+ '<div class="card tap row2" data-src="profit"><span class="lbl" style="margin:0">📊 Net/mile</span><b class="v '+(t.profit>=0?"pos":"neg")+'">'+pm(t,t.profit)+'</b></div>'+
+ '<div class="btns"><button class="btn" data-act="addLoad">＋ '+L("t_addLoad")+'</button><button class="btn o" data-act="stmt">📄 '+L("t_upSt")+'</button></div>'}
 function tl(a,b){return '<div class="tl"><span>'+a+'</span><b>'+b+'</b></div>'}
-function groupsV(t){var g={};Object.keys(t.byCat).forEach(function(c){if(c=="pers")return;var k=C.catGroup(c);g[k]=(g[k]||0)+t.byCat[c]});var ks=Object.keys(g).sort(function(a,b){return g[b]-g[a]});if(!ks.length)return "";var tot=0;ks.forEach(function(k){tot+=g[k]});
- return '<h2>'+L("groups")+'</h2>'+ks.map(function(k){return '<div class="it" data-grp="'+k+'"><div class="ic">'+gi(k)+'</div><div class="m"><b>'+gn(k).replace(/^\S+\s/,"")+'</b><div class="bar"><i style="width:'+Math.max(3,Math.round(g[k]*100/tot))+'%"></i></div></div><div class="r">'+M0(g[k])+'</div></div>'}).join("")}
-function stmtsV(){var r=R(),xs=S.stmts.filter(function(s){return V.per=="all"||C.inR(C.stDay(s),r)}).sort(function(a,b){return C.stDay(a)<C.stDay(b)?1:-1});
- var h=perBar()+'<div class="btns"><button class="btn ac" data-act="stmt">📄 '+L("upSt")+'</button></div>';if(!xs.length)return h+'<div class="empty">'+L("noSt")+'</div>';
- return h+xs.map(function(s){var k=C.stmtCalc(s),ok=k.rec.diff===0,b=k.rec.diff==null?'':'<span class="bd '+(ok?"ok":"bad")+'">'+(ok?L("recOk"):L("recDiff")+" "+M(k.rec.diff))+'</span>';
-  return '<div class="it" data-st="'+s.id+'"><div class="ic">📄</div><div class="m"><b>'+esc(s.company||L("stmt"))+(s.num?' #'+esc(s.num):'')+'</b><small>'+fd(s.p0)+' – '+fd(s.p1||s.d)+' · '+(s.loads||[]).length+' '+L("loadsN")+'</small><div>'+b+'</div></div><div class="r">'+M0(k.net)+'<small class="note" style="display:block">Net</small></div></div>'}).join("")}
-function expsV(){var r=R(),rows=[];
- S.stmts.forEach(function(s){if(!C.inR(C.stDay(s),r))return;(s.ded||[]).forEach(function(x,i){rows.push({d:C.stDay(s),a:x.a,c:x.c,v:x.v||cn(x.c),k:"stded",id:s.id,i:i,cnt:1,tag:L("fromSt")})})});
- S.tx.forEach(function(t){if(!C.inR(t.d,r)||t.kind=="income")return;var cnt=t.kind=="exp"&&C.counts(t),tag=t.kind=="reimb"?L("kReimb"):t.dupOf?L("dupMark"):t.link?L("linkMark"):t.paidBy=="card"?L("cardMark"):"";rows.push({d:t.d,a:t.kind=="reimb"?-t.a:t.a,c:t.c||"other",v:t.v||cn(t.c),k:"tx",id:t.id,cnt:cnt,tag:tag,ph:t.ph})});
- rows.sort(function(a,b){return a.d<b.d?1:-1});var tot=0;rows.forEach(function(x){if(x.cnt)tot+=x.a});
- var h=perBar()+'<div class="card"><div class="lbl">'+L("exp")+'</div><div class="big">'+M(tot)+'</div></div><div class="btns"><button class="btn ac" data-act="scan">⛽ '+L("receipt")+'</button><button class="btn" data-act="manual">＋ '+L("manual")+'</button></div>';
+function allLoads(r){var out=[];S.stmts.forEach(function(s){if(!C.inR(C.stDay(s),r))return;(s.loads||[]).forEach(function(l){out.push({d:l.pd||C.stDay(s),f:l.f,t:l.t,g:l.g,mi:l.mi||0,dh:l.dh||0,st:s.id})})});
+ S.loads.forEach(function(l){if(C.inR(l.d,r))out.push({d:l.d,f:l.f,t:l.t,g:l.g,mi:l.mi||0,dh:l.dh||0,id:l.id})});return out.sort(function(a,b){return a.d<b.d?1:-1})}
+function loadsV(){var r=R(),t=C.totals(S,r),xs=allLoads(r),sts=S.stmts.filter(function(s){return C.inR(C.stDay(s),r)});
+ var h=perBar()+'<div class="card">'+tl("Gross",M(t.gross))+tl("Total Miles",t.miles?mi(t.miles):"—")+tl(L("t_loads"),t.loadCount)+'</div>'+
+ '<div class="btns"><button class="btn" data-act="addLoad">＋ '+L("t_addLoad")+'</button><button class="btn o" data-act="stmt">📄 '+L("t_upSt")+'</button></div>';
+ if(sts.length)h+='<div class="chips" style="margin-bottom:10px">'+sts.map(function(s){var k=C.stmtCalc(s);return '<b data-st="'+s.id+'">📄 '+fd(s.p0||C.stDay(s)).replace(/ \d{4}$/,"")+'–'+fd(s.p1||s.d)+' · '+M0(k.gross)+'</b>'}).join("")+'</div>';
+ if(!xs.length)return h+'<div class="empty">'+L("empty0")+'</div>';
+ return h+xs.map(function(l){var m=l.mi+l.dh;return '<div class="card tap" '+(l.st?'data-st="'+l.st+'"':'data-load="'+l.id+'"')+'><div class="lbl">📅 '+fd(l.d)+(l.f||l.t?' · '+esc(l.f||"?")+' → '+esc(l.t||"?"):'')+'</div><div class="row"><div><div class="note">Gross</div><b class="v">'+M(l.g)+'</b></div><div><div class="note">Miles</div><b class="v">'+(l.mi?mi(l.mi):"—")+'</b></div></div><div class="row" style="margin-top:6px"><div><div class="note">Gross/Mile</div><b>'+(m?M(Math.round(l.g/m)):"—")+'</b></div><div><div class="note">Deadhead</div><b>'+(l.dh?mi(l.dh):"—")+'</b></div></div></div>'}).join("")}
+function expsV(){var r=R(),rows=[],f=V.ef||"all";
+ S.stmts.forEach(function(s){if(!C.inR(C.stDay(s),r))return;(s.ded||[]).forEach(function(x){rows.push({d:C.stDay(s),a:x.a,c:x.c,v:x.v||cn(x.c),st:s.id,cnt:1,tag:L("fromSt")})})});
+ S.tx.forEach(function(t){if(!C.inR(t.d,r)||t.kind!="exp")return;var tag=t.dupOf?L("dupMark"):t.link?L("linkMark"):t.paidBy=="card"?L("cardMark"):"";rows.push({d:t.d,a:t.a,c:t.c||"other",v:t.v||cn(t.c),id:t.id,cnt:C.counts(t)||t.c=="pers"&&!t.dupOf,tag:tag,ph:t.ph})});
+ var biz=0,pers=0;rows.forEach(function(x){if(!x.cnt)return;if(x.c=="pers")pers+=x.a;else biz+=x.a});
+ rows=rows.filter(function(x){return f=="all"||(f=="pers"?x.c=="pers":x.c!="pers")}).sort(function(a,b){return a.d<b.d?1:-1});
+ var h=perBar()+'<div class="card"><div class="lbl">'+L("t_exp")+'</div><div class="big">'+M(biz+pers)+'</div><div class="row" style="margin-top:8px"><div><div class="note">'+L("biz")+'</div><b>'+M(biz)+'</b></div><div><div class="note">'+L("pers")+'</div><b>'+M(pers)+'</b></div></div></div>'+
+ '<div class="seg">'+[["all","all2"],["biz","biz"],["pers","pers"]].map(function(x){return '<b data-ef="'+x[0]+'" class="'+(f==x[0]?"on":"")+'">'+L(x[1])+'</b>'}).join("")+'</div>'+
+ '<div class="btns"><button class="btn" data-act="addExp">＋ '+L("t_addExp")+'</button><button class="btn o" data-act="scan">📷 '+L("t_scan")+'</button></div>';
  if(!rows.length)return h+'<div class="empty">'+L("empty0")+'</div>';
- return h+rows.map(function(x){return '<div class="it'+(x.cnt?"":" dim")+'" '+(x.k=="tx"?'data-tx="'+x.id+'"':'data-st="'+x.id+'"')+'><div class="ic"'+(x.ph?' data-th="'+x.ph+'"':'')+'>'+gi(C.catGroup(x.c))+'</div><div class="m"><b>'+esc(x.v)+'</b><small>'+fd(x.d)+' · '+cn(x.c)+(x.tag?' · <i>'+x.tag+'</i>':'')+'</small></div><div class="r '+(x.cnt?"neg":"")+'">'+M(x.a)+'</div></div>'}).join("")}
-function taxV(){var y=+(V.per=="all"?today():R()[1]).slice(0,4),c=C.tax(S,y);
- var h='<div class="per"><b data-ys="-1">‹</b><span>'+L("tax")+' '+y+'</span><b data-ys="1">›</b></div>';
- if(S.role=="company")return h+'<div class="warn">'+L("w2")+'</div>';
- var due=[y+"-04-15",y+"-06-15",y+"-09-15",(y+1)+"-01-15"],passed=0;due.forEach(function(d){if(today()>d)passed++});var q=Math.ceil(c.left/Math.max(1,4-Math.min(3,passed)));
- h+='<div class="card hero"><div class="lbl">🏛 '+L("taxT")+' '+y+'</div><div class="big">'+M0(c.tot)+'</div><div class="lbl">'+L("left")+': '+M0(c.left)+'</div></div><div class="warn">'+L("disc")+'</div>'+
- '<div class="card">'+tl(L("profit"),M(c.t.profit))+tl("− "+L("pd")+" ("+c.days+" "+L("perDays")+")",M(c.pdd))+tl("= "+L("sc"),M(c.sc))+'</div>'+
- '<div class="card">'+tl(L("se"),M(c.se))+tl(L("fed"),M(c.fed))+tl(L("st")+" ("+(S.stBp/100)+"%)",M(c.st))+tl(L("total"),M(c.tot))+tl(L("paid"),M(c.paid))+'</div>'+
- '<div class="card"><div class="q">'+due.map(function(d,i){return '<div><small>Q'+(i+1)+'</small><b>'+fd(d)+'</b></div>'}).join("")+'</div>'+tl("~ Q",M0(q))+'</div>'+
- '<h2>'+L("tripDays")+'</h2>'+S.trips.filter(function(t){return t.b>=y+"-01-01"&&t.a<=y+"-12-31"}).map(function(t){return '<div class="it" data-trip="'+t.id+'"><div class="ic">📅</div><div class="m"><b>'+fd(t.a)+' – '+fd(t.b)+'</b></div><div class="r">'+(C.days(t.a,t.b)+1)+' '+L("perDays")+'</div></div>'}).join("")+
- '<div class="btns"><button class="btn o" data-act="addTrip">'+L("addDays")+'</button></div><div class="btns"><button class="btn ac" data-act="report">'+L("report")+'</button></div>';return h}
-function moreV(){return '<div class="card"><div class="note" style="font-size:14px">'+L("privacy")+'</div></div><h2>⚙️ '+L("settings")+'</h2><div class="card">'+
+ return h+rows.map(function(x){return '<div class="it'+(x.cnt?"":" dim")+'" '+(x.st?'data-st="'+x.st+'"':'data-tx="'+x.id+'"')+'><div class="ic"'+(x.ph?' data-th="'+x.ph+'"':'')+'>'+gi(C.catGroup(x.c))+'</div><div class="m"><b>'+esc(x.v)+'</b><small>'+fd(x.d)+' · '+cn(x.c)+(x.tag?' · <i>'+x.tag+'</i>':'')+'</small></div><div class="r">'+M(x.a)+'</div></div>'}).join("")}
+function profV(){var y=+R()[1].slice(0,4),c=C.tax(S,y),t=c.t;
+ var h='<div class="per"><b data-ys="-1">‹</b><span>'+L("taxSum")+' '+y+'</span><b data-ys="1">›</b></div>';
+ if(S.role!="company")h+='<div class="card hero"><div class="lbl">📊 '+L("estBiz")+'</div><div class="note" style="color:#dbe7ff">'+L("afterDed")+'</div><div class="big">'+M(c.sc)+'</div></div>'+
+  '<div class="grid">'+kpi("💼 "+L("t_biz"),M(t.earn+t.other),"","earn")+kpi("🧾 "+L("t_exp"),M(t.exp),"neg","exp")+kpi("📅 "+L("daysTrip"),c.days,"","profit")+kpi("🍽 Per diem",M(c.pdd),"","profit","$80 × "+c.days+" × 80%")+'</div>'+
+  '<div class="card">'+tl(L("se"),M(c.se))+tl(L("fed"),M(c.fed))+tl(L("st"),M(c.st))+tl("<b>"+L("total")+"</b>","<b>"+M(c.tot)+"</b>")+'</div><div class="note" style="margin:0 2px 12px">'+L("disc")+'</div>';
+ else h+='<div class="warn">'+L("w2")+'</div>';
+ h+='<div class="btns"><button class="btn ac" data-act="report">'+L("report")+'</button></div><div class="btns"><button class="btn gh" data-act="csv">'+L("csv")+'</button><button class="btn gh" data-act="addTrip">📅 '+L("addDays")+'</button></div>'+
+ '<details class="card"><summary>⚙️ '+L("settings")+'</summary>'+
  '<label>'+L("role")+'</label><select id="roS"><option value="oo">'+L("oo")+'</option><option value="own">'+L("own_")+'</option><option value="company">'+L("company_")+'</option></select>'+
  '<div class="row"><div><label>'+L("payType")+'</label><select id="ptS"><option value="pct">'+L("pPct")+'</option><option value="mile">'+L("pMile")+'</option><option value="load">'+L("pLoad")+'</option><option value="day">'+L("pDay")+'</option><option value="flat">'+L("pFlat")+'</option></select></div><div style="flex:.6"><label>'+L("payRate")+'</label><input id="prI" inputmode="decimal" value="'+(S.pay.type=="pct"?S.pay.rate/100:cin(S.pay.rate))+'"></div></div>'+
  '<label>'+L("status")+'</label><select id="stS"><option value="single">'+L("single")+'</option><option value="mfj">'+L("mfj")+'</option><option value="hoh">'+L("hoh")+'</option></select>'+
- '<div class="row"><div><label>'+L("stRate")+'</label><input id="stR" inputmode="decimal" value="'+S.stBp/100+'"></div><div><label>'+L("paidAmt")+'</label><input id="stP" inputmode="decimal" value="'+cin(S.paid[today().slice(0,4)]||0)+'"></div></div>'+
- '<div class="btns" style="margin-top:12px"><button class="btn" data-act="saveSet">'+L("save")+'</button></div></div>'+
- ['report','csv','backup','restore','hist'].map(function(a){return '<div class="btns"><button class="btn '+(a=="report"?"ac":"gh")+'" data-act="'+a+'">'+(a=="hist"?"🕘 "+L("hist"):L(a))+'</button></div>'}).join("")+
- '<div class="btns" style="margin-top:24px"><button class="btn rd" data-act="wipe">'+L("wipe")+'</button></div>'}
+ '<div class="row"><div><label>'+L("stRate")+'</label><input id="stR" inputmode="decimal" value="'+S.stBp/100+'"></div><div><label>'+L("paidAmt")+'</label><input id="stP" inputmode="decimal" value="'+cin(S.paid[y]||0)+'"></div></div>'+
+ '<div class="btns" style="margin-top:12px"><button class="btn" data-act="saveSet">'+L("save")+'</button></div></details>'+
+ '<details class="card"><summary>💾 '+L("dataT")+'</summary><div class="note" style="margin:8px 0">'+L("privacy")+'</div><div class="btns"><button class="btn gh" data-act="backup">'+L("backup")+'</button></div><div class="btns"><button class="btn gh" data-act="restore">'+L("restore")+'</button></div><div class="btns"><button class="btn gh" data-act="hist">🕘 '+L("hist")+'</button></div><div class="btns"><button class="btn rd" data-act="wipe">'+L("wipe")+'</button></div></details>'+
+ '<div class="foot">'+L("app")+' · '+L("free")+' · <a href="https://instagram.com/sayt_usta" target="_blank" rel="noopener">@sayt_usta</a></div>';return h}
+function fixDup(){var d=C.dupPairs(S);if(!d.length)return;var p=d[0],a=p[0],b=p[1],ka=C.stmtCalc(a),kb=C.stmtCalc(b);
+ sheet("⚠️ "+L("dupBan"),'<div class="note" style="margin-bottom:10px">'+L("dupBanQ")+'</div>'+[a,b].map(function(s,i){var k=i?kb:ka;return '<div class="card">'+tl("<b>"+(i+1)+". "+esc(s.company||L("stmt"))+(s.num?" #"+esc(s.num):"")+"</b>",fd(s.p0)+" – "+fd(s.p1||s.d))+tl("Gross",M(k.gross))+tl(L("t_exp"),M(k.ded))+tl(L("loads"),(s.loads||[]).length)+'</div>'}).join("")+
+  '<div class="btns"><button class="btn" id="k1">✅ '+L("keepNew")+'</button></div><div class="btns"><button class="btn gh" id="mG">📄+📄 '+L("page2")+'</button></div><div class="btns"><button class="btn gh" data-x="1">'+L("notSame")+'</button></div>');
+ $("mG").onclick=function(){var m=C.mergeStmt(b,a);m.id=b.id;S.stmts=S.stmts.filter(function(x){return x.id!=a.id}).map(function(x){return x.id==b.id?m:x});log("stmt.merge",a.id+"+"+b.id);save();close();toast(L("saved_"));render()};
+ $("k1").onclick=function(){S.stmts=S.stmts.filter(function(x){return x.id!=a.id});log("stmt.delete.dup",a.id);save();close();toast(L("deleted"));render()}}
 
 /* ---------- sheets ---------- */
 function sheet(title,body){close();var o=document.createElement("div");o.className="ov";o.id="ov";o.innerHTML='<div class="sh"><h3>'+title+'<b data-x="1">×</b></h3>'+body+'</div>';document.body.appendChild(o);o.addEventListener("click",function(e){if(e.target===o||(e.target.getAttribute&&e.target.getAttribute("data-x")))close()})}
@@ -184,16 +188,15 @@ function onStatements(files){sheet("📄 "+L("stmt"),'<div id="stP" class="ocr" 
 function review(r,editId){var R0=r;
  function inp(id,lbl,v,type){return '<div><label>'+lbl+'</label><input id="'+id+'" '+(type=="d"?'type="date"':'inputmode="decimal"')+' value="'+(type=="d"?(v||""):type=="t"?esc(v||""):cin(v))+'"'+(type=="t"?'':'')+(v==null&&type!="t"&&type!="d"?' class="miss"':'')+'></div>'}
  var h='<div class="ocr">'+L("review")+'</div>'+
- '<div class="row">'+inp("rCo",L("company"),r.company,"t")+inp("rNum",L("num"),r.num,"t")+'</div>'+
- '<div class="row">'+inp("rP0",L("p0"),r.p0,"d")+inp("rP1",L("p1"),r.p1,"d")+'</div><div class="row">'+inp("rD",L("stDate"),r.d,"d")+'<div><label>'+L("days")+'</label><input id="rDays" inputmode="numeric" value="'+(r.days==null?6:r.days)+'"></div></div>'+
- '<div class="row">'+inp("rG",L("gross"),r.gross)+'<div><label>'+L("rate")+'</label><input id="rRate" inputmode="decimal" value="'+(r.rate==null?"":r.rate/100)+'"'+(r.rate==null&&r.earn==null?' class="miss"':'')+'></div></div>'+
- '<div class="row">'+inp("rE",L("earnL"),r.earn)+inp("rNet",L("netSt"),r.net)+'</div>'+
- '<div class="row">'+inp("rAdv",L("adv"),r.adv||0)+inp("rRe",L("reimb"),r.reimb||0)+'</div><div class="row">'+inp("rOt",L("other"),r.other||0)+inp("rDT",L("dedTot"),r.dedTotal)+'</div>'+
- '<div class="row">'+inp("rFR",L("fuelRet"),r.fuelRetail)+inp("rFI",L("fuelInv"),r.fuelInvoice)+'</div>'+
- '<h2>🚚 '+L("loads")+'</h2><div id="rL">'+r.loads.map(loadRow).join("")+'</div><button class="btn gh sm" data-add="L">'+L("addRow")+'</button>'+
+ '<div class="row">'+inp("rP0",L("p0"),r.p0,"d")+inp("rP1",L("p1"),r.p1,"d")+'</div>'+
+ '<div class="row">'+inp("rG","Gross, $",r.gross)+'<div><label>'+L("rate")+'</label><input id="rRate" inputmode="decimal" value="'+(r.rate==null?"":r.rate/100)+'"'+(r.rate==null&&r.earn==null?' class="miss"':'')+'></div></div>'+
  '<h2>🧾 '+L("ded")+'</h2><div id="rDd">'+r.ded.map(dedRow).join("")+'</div><button class="btn gh sm" data-add="D">'+L("addRow")+'</button>'+
+ '<h2>🚚 '+L("loads")+'</h2><div id="rL">'+r.loads.map(loadRow).join("")+'</div><button class="btn gh sm" data-add="L">'+L("addRow")+'</button>'+
  (r.unknown&&r.unknown.length?'<h2>❓ '+L("unk")+'</h2><div id="rU">'+r.unknown.map(function(u,i){return '<div class="row ur"><div style="flex:2"><div class="note">'+esc(u.v)+'</div>'+catSelX('data-uc="'+i+'"',"other")+'</div><div><input data-ua="'+i+'" inputmode="decimal" value="'+cin(u.a)+'" style="padding:9px"><label style="margin:4px 0;display:flex;gap:6px;align-items:center"><input type="checkbox" data-ui="'+i+'" checked style="width:18px;height:18px">'+L("ignore")+'</label></div></div>'}).join("")+'</div>':'')+
- '<h2>⚖️ '+L("rec")+'</h2><div class="card" id="rRec"></div>'+
+ '<div class="card" id="rRec" style="margin-top:12px"></div>'+
+ '<details class="card"><summary>'+L("more2")+'</summary>'+
+ '<div class="row">'+inp("rCo",L("company"),r.company,"t")+inp("rNum",L("num"),r.num,"t")+'</div><div class="row">'+inp("rD",L("stDate"),r.d,"d")+'<div><label>'+L("days")+'</label><input id="rDays" inputmode="numeric" value="'+(r.days==null?6:r.days)+'"></div></div>'+
+ '<div class="row">'+inp("rE",L("earnL"),r.earn)+inp("rNet",L("netSt"),r.net)+'</div><div class="row">'+inp("rAdv",L("adv"),r.adv||0)+inp("rRe",L("reimb"),r.reimb||0)+'</div><div class="row">'+inp("rOt",L("other"),r.other||0)+inp("rDT",L("dedTot"),r.dedTotal)+'</div><div class="row">'+inp("rFR",L("fuelRet"),r.fuelRetail)+inp("rFI",L("fuelInv"),r.fuelInvoice)+'</div></details>'+
  '<div class="btns" style="margin-top:14px"><button class="btn" id="rSave">'+L("save")+'</button>'+(editId?'<button class="btn rd" id="rDel">'+L("del")+'</button>':'')+'</div>';
  sheet("📄 "+L("stmt"),h);
  function collect(){var st={id:editId||("s"+uid()),company:$("rCo").value.trim()||null,num:$("rNum").value.trim()||null,p0:$("rP0").value||null,p1:$("rP1").value||null,d:$("rD").value||$("rP1").value||today(),
@@ -204,9 +207,8 @@ function review(r,editId){var R0=r;
   Array.prototype.forEach.call(q("[data-dr]"),function(e){var a=C.cents(e.querySelector(".da").value);if(!a)return;st.ded.push({c:e.querySelector(".dc").value,a:a,v:e.getAttribute("data-v")||""})});
   Array.prototype.forEach.call(q("[data-ua]"),function(e){var i=e.getAttribute("data-ua");if(document.querySelector('[data-ui="'+i+'"]').checked)return;var a=C.cents(e.value);if(a)st.ded.push({c:document.querySelector('[data-uc="'+i+'"]').value,a:a,v:R0.unknown[i].v})});
   if(!st.gross&&st.loads.length)st.gross=C.sum(st.loads,"g");return st}
- function recalc(){var st=collect(),k=C.stmtCalc(st),h=tl(L("gross"),M(k.gross))+tl("− "+L("fee"),M(k.fee))+tl("= "+L("earn"),M(k.earn))+tl("− "+L("ded"),M(k.ded))+(k.reimb?tl("+ "+L("reimb"),M(k.reimb)):"")+(k.other?tl("+ "+L("other"),M(k.other)):"")+(k.adv?tl("− "+L("adv"),M(k.adv)):"")+tl("= "+L("recCalc"),M(k.net));
-  if(k.rec.stated!=null){h+=tl(L("recSt"),M(k.rec.stated))+'<div class="tl"><span>'+L("recDiff")+'</span><b class="'+(k.rec.diff===0?"pos":"neg")+'">'+(k.rec.diff===0?L("recOk"):M(k.rec.diff))+'</b></div>';
-   if(k.rec.diff)h+='<div class="warn" style="margin-top:8px"><b>'+L("recWhy")+':</b><br>'+k.rec.why.map(function(w){return w.k=="dedTotal"?L("whyDed")+": "+M(w.stated)+" ≠ "+M(w.calc):w.k=="earnMismatch"?L("whyEarn")+": "+M(w.exp)+" ≠ "+M(w.got):L("whyUnk")}).join("<br>")+'</div>'}
+ function recalc(){var st=collect(),k=C.stmtCalc(st),h=tl("Gross",M(k.gross))+(k.fee?tl("− "+L("fee"),M(k.fee)):"")+tl("− "+L("ded"),M(k.ded))+tl("<b>Net Pay</b>","<b>"+M(k.net)+"</b>");
+  if(k.rec.stated!=null){h+=k.rec.diff===0?'<div class="ok2">✅ '+L("recSt")+' '+M(k.rec.stated)+' — '+L("recOk")+'</div>':'<div class="warn" style="margin:8px 0 0">⚠️ '+L("recSt")+': '+M(k.rec.stated)+' · '+L("recDiff")+': '+M(k.rec.diff)+'<br>'+k.rec.why.map(function(w){return w.k=="dedTotal"?L("whyDed")+": "+M(w.stated)+" ≠ "+M(w.calc):w.k=="earnMismatch"?L("whyEarn"):L("whyUnk")}).join("<br>")+'</div>'}
   if(k.warn.some(function(w){return w.k=="noRate"}))h+='<div class="note" style="margin-top:6px">⚠️ '+L("noRate")+'</div>';$("rRec").innerHTML=h}
  recalc();$("ov").addEventListener("input",recalc);$("ov").addEventListener("change",recalc);
  $("ov").addEventListener("click",function(e){var a=e.target.getAttribute&&e.target.getAttribute("data-add");if(a=="L"){$("rL").insertAdjacentHTML("beforeend",loadRow({}))}else if(a=="D"){$("rDd").insertAdjacentHTML("beforeend",dedRow({c:"other"}))}else if(e.target.getAttribute&&e.target.getAttribute("data-rm")){var p=e.target.parentNode;while(p&&!p.getAttribute("data-dr")&&!p.getAttribute("data-lr"))p=p.parentNode;if(p)p.parentNode.removeChild(p);recalc()}});
@@ -214,8 +216,8 @@ function review(r,editId){var R0=r;
   function put(replaceId){if(replaceId){S.stmts=S.stmts.map(function(x){return x.id==replaceId?(st.id=replaceId,st):x})}else S.stmts.push(st);
    if(R0.shot)phPut(st.id,R0.shot);if(st.days)S.wd=st.days;log(editId||replaceId?"stmt.update":"stmt.add",(st.company||"")+" #"+(st.num||"")+" "+C.fmt(C.stmtCalc(st).net));save();close();toast(L("saved_"));V.per="week";V.ref=C.stDay(st);V.tab="home";render()}
   if(editId)return put(editId);
-  if(d){sheet("⚠️ "+L("stmt"),'<div class="warn">'+L("dupSt")+'<br><b>'+esc(d.company||"")+' #'+esc(d.num||"")+'</b> · '+fd(C.stDay(d))+'</div><div class="btns"><button class="btn" id="dR">'+L("dupReplace")+'</button></div><div class="btns"><button class="btn gh" id="dK">'+L("dupKeep")+'</button></div><div class="btns"><button class="btn rd" data-x="1">'+L("cancel")+'</button></div>');
-   $("dR").onclick=function(){put(d.id)};$("dK").onclick=function(){put(null)};return}
+  if(d){sheet("⚠️ "+L("stmt"),'<div class="warn">'+L("dupSt")+'<br><b>'+esc(d.company||"")+' #'+esc(d.num||"")+'</b> · '+fd(C.stDay(d))+'</div><div class="btns"><button class="btn" id="dR">✅ '+L("dupReplace")+'</button></div><div class="btns"><button class="btn gh" id="dM">📄+📄 '+L("page2")+'</button></div><div class="btns"><button class="btn gh" id="dK">'+L("dupKeep")+'</button></div><div class="btns"><button class="btn rd" data-x="1">'+L("cancel")+'</button></div>');
+   $("dR").onclick=function(){put(d.id)};$("dK").onclick=function(){put(null)};$("dM").onclick=function(){var m=C.mergeStmt(d,st);m.id=d.id;st=m;put(d.id)};return}
   put(null)};
  if(editId)$("rDel").onclick=function(){if(!confirm(L("del")+"?"))return;S.stmts=S.stmts.filter(function(x){return x.id!=editId});log("stmt.delete",editId);save();close();toast(L("deleted"));render()}}
 function loadRow(l){return '<div class="card lrow" data-lr="1" data-num="'+esc(l.num||"")+'" data-pd="'+esc(l.pd||"")+'"><div class="row"><div><input class="lf" placeholder="'+L("from")+'" value="'+esc(l.f||"")+'"></div><div><input class="lt" placeholder="'+L("to")+'" value="'+esc(l.t||"")+'"></div><b class="rm" data-rm="1">×</b></div><div class="row" style="margin-top:6px"><div><input class="lg" inputmode="decimal" placeholder="$" value="'+cin(l.g)+'"></div><div><input class="lm" inputmode="numeric" placeholder="mi" value="'+(l.mi||"")+'"></div><div><input class="ld" inputmode="numeric" placeholder="DH" value="'+(l.dh||"")+'"></div></div></div>'}
@@ -300,14 +302,14 @@ function histSheet(){sheet("🕘 "+L("hist"),S.log.slice().reverse().slice(0,200
 function thumbs(){var els=document.querySelectorAll("[data-th]");for(var i=0;i<els.length;i++)(function(e){phGet(e.getAttribute("data-th"),function(d){if(d)e.innerHTML='<img src="'+d+'" alt="">'})})(els[i])}
 
 /* ---------- events ---------- */
-var ATTR=["data-tab","data-act","data-per","data-sh","data-ys","data-lang","data-src","data-grp","data-st","data-tx","data-load","data-trip","data-mk"];
+var ATTR=["data-ef","data-tab","data-act","data-per","data-sh","data-ys","data-lang","data-src","data-grp","data-st","data-tx","data-load","data-trip","data-mk"];
 document.addEventListener("click",function(e){if($("ov")&&$("ov").contains(e.target)&&!e.target.closest(".sh [data-st],.sh [data-tx],.sh [data-load],.sh [data-mk]"))return;
  var t=e.target,k=null;while(t&&t!==document){for(var i=0;i<ATTR.length;i++)if(t.getAttribute&&t.getAttribute(ATTR[i])!=null){k=ATTR[i];break}if(k)break;t=t.parentNode}if(!k)return;var v=t.getAttribute(k);
- if(k=="data-tab"){V.tab=v;render();window.scrollTo(0,0)}else if(k=="data-lang"){S.lang=v;save();document.documentElement.lang=v=="ru"?"ru":"ky";render()}
+ if(k=="data-ef"){V.ef=v;render()}else if(k=="data-tab"){V.tab=v;render();window.scrollTo(0,0)}else if(k=="data-lang"){S.lang=v;save();document.documentElement.lang=v=="ru"?"ru":"ky";render()}
  else if(k=="data-per"){V.per=v;if(v=="custom"&&!V.c0){var r=C.range("month",V.ref);V.c0=r[0];V.c1=r[1]}render()}else if(k=="data-sh")shift(+v);else if(k=="data-ys"){V.per="year";V.ref=(+R()[0].slice(0,4)+(+v))+"-01-01";render()}
  else if(k=="data-src")srcSheet(v);else if(k=="data-grp")grpSheet(v);else if(k=="data-st")stDetail(v);else if(k=="data-tx"){pend=null;var tx=find(S.tx,v);txForm(v,null,tx&&tx.kind)}else if(k=="data-load")loadForm(v);else if(k=="data-trip")tripForm(v);
  else if(k=="data-mk"){if(v=="load")loadForm();else{pend=null;txForm(null,null,v)}}
- else if(k=="data-act"){if(v=="stmt")$("stIn").click();else if(v=="scan"){pend=null;V.ed={};$("fileIn").click()}else if(v=="manual")manualMenu();else if(v=="addTrip")tripForm();else if(v=="csv")csv();else if(v=="report")report();else if(v=="backup")backup();else if(v=="restore")$("bkIn").click();else if(v=="hist")histSheet();
+ else if(k=="data-act"){if(v=="addLoad")loadForm();else if(v=="addExp"){pend=null;txForm(null,null,"exp")}else if(v=="fixdup")fixDup();else if(v=="stmt")$("stIn").click();else if(v=="scan"){pend=null;V.ed={};$("fileIn").click()}else if(v=="manual")manualMenu();else if(v=="addTrip")tripForm();else if(v=="csv")csv();else if(v=="report")report();else if(v=="backup")backup();else if(v=="restore")$("bkIn").click();else if(v=="hist")histSheet();
   else if(v=="cust"){V.c0=$("c0").value;V.c1=$("c1").value;if(V.c1<V.c0){var z=V.c0;V.c0=V.c1;V.c1=z}render()}
   else if(v=="saveSet"){S.role=$("roS").value;S.pay.type=$("ptS").value;var pr=$("prI").value;S.pay.rate=S.pay.type=="pct"?(C.bp(pr)||0):(C.cents(pr)||0);S.status=$("stS").value;S.stBp=Math.max(0,Math.min(2000,C.bp($("stR").value)||0));S.paid[today().slice(0,4)]=Math.max(0,C.cents($("stP").value)||0);log("settings","");save();toast(L("saved_"));render()}
   else if(v=="wipe"){if(confirm(L("wipeQ"))){try{localStorage.setItem(LS+"_backup_before_wipe",JSON.stringify(S))}catch(e){}var lg=S.lang;localStorage.removeItem(LS);S=loadS();S.lang=lg;log("wipe","");save();render()}}}

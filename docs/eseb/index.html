@@ -105,6 +105,10 @@ img,video{max-width:100%}
 .chips.col{flex-direction:column}.chips.col b{border-radius:12px;padding:12px}
 .shake{animation:sh .3s}@keyframes sh{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 optgroup{color:#000}
+.row2{display:flex;justify-content:space-between;align-items:center}
+.ok2{margin-top:8px;color:#5df0a0;font-weight:700;font-size:14px}
+details.card summary{font-weight:800;cursor:pointer;list-style:none;padding:2px 0}details.card summary::-webkit-details-marker{display:none}details.card summary:after{content:" ▾";color:var(--mu)}details[open].card summary{margin-bottom:6px}
+.chips b{white-space:nowrap}
 </style>
 </head><body>
 <div id="app"></div>
@@ -112,6 +116,6 @@ optgroup{color:#000}
 <input type="file" id="fileIn" accept="image/*" capture="environment" style="display:none">
 <input type="file" id="stIn" accept="image/*,application/pdf,.pdf" multiple style="display:none">
 <input type="file" id="bkIn" accept=".json,application/json" style="display:none">
-<script src="core.js?v=2"></script>
-<script src="app.js?v=2"></script>
+<script src="core.js?v=3"></script>
+<script src="app.js?v=3"></script>
 </body></html>
