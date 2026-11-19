@@ -241,20 +241,21 @@ function hd(title,sub,back){return '<div class="top"><div class="row">'+(back?'<
  '<div class="lang"><button data-lg="ru" class="'+(L()=="ru"?"on":"")+'">🇷🇺 RU</button><button data-lg="en" class="'+(L()=="en"?"on":"")+'">🇺🇸 EN</button></div><div class="stars">⭐ '+D.st+'</div></div>'+
  (title?'<div class="ttl">'+title+'</div>':'')+(sub?'<div class="sub">'+sub+'</div>':'')+'</div>'}
 function bar(a,b,col){var p=b?Math.round(a/b*100):0;return '<div class="pb"><span style="width:'+p+'%;background:'+(col||"#6fcf97")+'"></span></div>'}
-var VIS=0,VREQ=0;
-function setVis(n){VIS=n;var e=document.getElementById("vis");if(e)e.innerHTML="👀 Посещений: <b>"+n.toLocaleString("ru-RU")+"</b>"}
-function visits(){if(VREQ)return;VREQ=1;var up=0;try{if(!sessionStorage.getItem("bp_v")){sessionStorage.setItem("bp_v","1");up=1}}catch(e){}
- function get(u){if(!window.fetch)return Promise.reject(0);var c=window.AbortController?new AbortController():null;if(c)setTimeout(function(){c.abort()},6000);return fetch(u,c?{signal:c.signal}:{}).then(function(r){if(!r.ok)throw 0;return r.json()})}
- var A="https://abacus.jasoncameron.dev/"+(up?"hit":"get")+"/sayt-usta-balapan/visits";
- get(A).then(function(j){if(typeof j.value=="number")setVis(j.value);else throw 0})
- .catch(function(){if(!up)return get("https://abacus.jasoncameron.dev/hit/sayt-usta-balapan/visits").then(function(j){setVis(j.value)})})
- .catch(function(){})}
+var VIS=0,VREQ=0;try{VIS=+localStorage.getItem("bp_vis")||0}catch(e){}
+function setVis(n){if(!(n>0))return;if(n<VIS&&VIS-n<1000000)n=VIS;VIS=n;try{localStorage.setItem("bp_vis",String(n))}catch(e){}var e=document.getElementById("vis");if(e)e.innerHTML="👀 Посещений: <b>"+n.toLocaleString("ru-RU")+"</b>"}
+function visits(){if(VREQ){setVis(VIS);return}VREQ=1;var up=0;try{if(!sessionStorage.getItem("bp_v")){sessionStorage.setItem("bp_v","1");up=1}}catch(e){}
+ setVis(VIS);
+ function get(u){if(!window.fetch)return Promise.reject(0);var c=window.AbortController?new AbortController():null;if(c)setTimeout(function(){c.abort()},12000);return fetch(u,c?{signal:c.signal,cache:"no-store"}:{cache:"no-store"}).then(function(r){if(!r.ok)throw 0;return r.json()})}
+ var B="https://abacus.jasoncameron.dev/";
+ function tryA(n){return get(B+(up?"hit":"get")+"/sayt-usta-balapan/visits").then(function(j){if(typeof j.value=="number")setVis(j.value);else throw 0})
+  .catch(function(){if(n>0)return new Promise(function(r){setTimeout(r,2500)}).then(function(){return tryA(n-1)});if(!up)return get(B+"hit/sayt-usta-balapan/visits").then(function(j){setVis(j.value)});throw 0})}
+ tryA(2).catch(function(){})}
 function home(){var k=kid();app.innerHTML=hd("","")+'<div class="wrap"><div class="hero"><svg class="hl2"><use href="#logo"/></svg><div><div class="ht">'+(L()=="ru"?"Балапан":"Balapan")+'</div><div class="hs">'+(L()=="ru"?"Учимся играя! 🚀<br>800+ слов, 5 игр и прописи":"Learn by playing! 🚀<br>800+ words, 5 games & tracing")+'</div><div class="hk">'+k.a+' '+t("hi",{n:esc(k.n)})+'</div></div></div>'+
  '<h2 style="margin-top:4px">🎮 '+t("games")+'</h2><div class="gt"><button class="game" style="background:#ff6b6b;color:#fff" data-go="pop"><i>🎈</i>'+t("pop")+'</button><button class="game" style="background:#9775fa;color:#fff" data-go="mem"><i>🍒</i>'+t("mem")+'</button><button class="game" style="background:#ffa94d;color:#fff" data-go="bld"><i>🧩</i>'+t("build")+'</button></div><div class="games"><button class="game" style="background:#4dabf7;color:#fff" data-go="g1"><i>👀</i>'+t("g1")+'</button><button class="game" style="background:#20c997;color:#fff" data-go="g2"><i>📖</i>'+t("g2")+'</button><button class="game" style="background:#51cf66;color:#fff;grid-column:span 2" data-go="abc"><i>✍️</i>'+t("abc")+'</button></div>'+
  '<button class="bodyt" data-go="body"><i>🧍</i><span>'+t("body")+'<small>'+t("bodys")+'</small></span></button>'+
  '<h2>'+t("dict")+' · '+allW().length+' '+t("words")+'</h2><div class="cats">'+CATS.map(function(c,i){var s=c.w.filter(function(w){return D.seen[w[1]]}).length;return '<button class="cat" style="background:'+KID[i%KID.length]+'" data-cat="'+i+'"><i>'+c.e+'</i>'+c[L()]+'<small>'+s+' / '+c.w.length+(s==c.w.length?' ✅':'')+'</small>'+bar(s,c.w.length,"#7d8fb3")+'</button>'}).join("")+'</div>'+
  '<button class="parbtn" data-go="gate">👨‍👩‍👧 '+t("parb")+'<small>'+t("pars")+'</small></button>'+
- '<div class="foot"><a href="https://www.instagram.com/sayt_usta/" target="_blank" rel="noopener">📸 Instagram: <b>@sayt_usta</b></a><span id="vis">'+(VIS?'👀 '+VIS.toLocaleString("ru-RU"):'')+'</span></div></div>';visits()}
+ '<div class="foot"><a href="https://www.instagram.com/sayt_usta/" target="_blank" rel="noopener">📸 Instagram: <b>@sayt_usta</b></a><span id="vis">'+(VIS?'👀 Посещений: <b>'+VIS.toLocaleString("ru-RU")+'</b>':'')+'</span></div></div>';visits()}
 function panel(w,l,main){var m=w[l=="ru"?2:3],sy=sylL(m,l),letters=m.replace(/[ -]/g,"").split("");
  return '<div class="lp'+(main?' main':'')+'"><div class="lh"><i>'+FL(l)+'</i><span class="lw" style="'+(m.length>13?'font-size:24px':m.length>9?'font-size:30px':'')+'">'+(main?'<b>'+m.charAt(0).toUpperCase()+'</b>'+m.slice(1):m)+'</span></div>'+
  '<div class="syl">'+sy.map(function(x,i){return x==" "?'<span class="gap"></span>':(i&&sy[i-1]!=" "?'<span class="d">·</span>':'')+'<span>'+x+'</span>'}).join("")+'</div>'+
