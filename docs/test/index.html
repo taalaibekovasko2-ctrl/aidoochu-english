@@ -1,0 +1,18 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Үн текшерүү</title>
+<style>body{font-family:system-ui,sans-serif;padding:20px;max-width:520px;margin:auto;background:#fff8ef}h1{font-size:22px}button{display:block;width:100%;font-size:20px;font-weight:800;padding:18px;border:0;border-radius:16px;background:#ff8a00;color:#fff;margin:12px 0}pre{background:#fff;border:1px solid #eee;border-radius:12px;padding:12px;white-space:pre-wrap;font-size:13px}</style></head><body>
+<h1>🔊 Үн текшерүү</h1><p>Баскычты басып, үн чыкканын угуңуз. Анан ылдыйдагы жазуунун скриншотун жибериңиз.</p>
+<button id="b1">1. Англисче айт</button><button id="b2" style="background:#1c7ed6">2. Үнсүз режимди айланып өтүү + айт</button>
+<pre id="o"></pre>
+<script>
+var o=document.getElementById("o");function log(s){o.textContent+=s+"\n"}
+var ua=navigator.userAgent;log("UA: "+ua);log("standalone: "+(navigator.standalone||matchMedia("(display-mode: standalone)").matches));
+var ok=("speechSynthesis" in window)&&("SpeechSynthesisUtterance" in window);log("speechSynthesis бар: "+ok);
+function voices(){try{var v=speechSynthesis.getVoices();var en=v.filter(function(x){return /^en/i.test(x.lang)});log("Үндөр: "+v.length+", англисче: "+en.length+(en[0]?" ("+en[0].name+")":""))}catch(e){log("getVoices ката: "+e)}}
+if(ok){voices();speechSynthesis.onvoiceschanged=voices}
+function say(){if(!ok){log("❌ Бул браузерде үн функциясы жок");return}
+ var u=new SpeechSynthesisUtterance("Can I see your logbook?");u.lang="en-US";u.rate=.9;
+ u.onstart=function(){log("✅ onstart — үн башталды")};u.onend=function(){log("✅ onend — бүттү")};u.onerror=function(e){log("❌ onerror: "+(e.error||e))};
+ try{speechSynthesis.cancel()}catch(e){}speechSynthesis.speak(u);log("speak() чакырылды");setTimeout(function(){log("2 сек кийин: speaking="+speechSynthesis.speaking+" pending="+speechSynthesis.pending)},2000)}
+document.getElementById("b1").onclick=say;
+document.getElementById("b2").onclick=function(){try{if(navigator.audioSession){navigator.audioSession.type="playback";log("audioSession=playback")}else log("audioSession жок")}catch(e){log("audioSession ката "+e)}say()};
+</script></body></html>
