@@ -246,10 +246,13 @@ function setVis(n){if(!(n>0))return;if(n<VIS&&VIS-n<1000000)n=VIS;VIS=n;try{loca
 function visits(){if(VREQ){setVis(VIS);return}VREQ=1;var up=0;try{if(!sessionStorage.getItem("bp_v")){sessionStorage.setItem("bp_v","1");up=1}}catch(e){}
  setVis(VIS);
  function get(u){if(!window.fetch)return Promise.reject(0);var c=window.AbortController?new AbortController():null;if(c)setTimeout(function(){c.abort()},12000);return fetch(u,c?{signal:c.signal,cache:"no-store"}:{cache:"no-store"}).then(function(r){if(!r.ok)throw 0;return r.json()})}
- var B="https://abacus.jasoncameron.dev/";
- function tryA(n){return get(B+(up?"hit":"get")+"/sayt-usta-balapan/visits").then(function(j){if(typeof j.value=="number")setVis(j.value);else throw 0})
-  .catch(function(){if(n>0)return new Promise(function(r){setTimeout(r,2500)}).then(function(){return tryA(n-1)});if(!up)return get(B+"hit/sayt-usta-balapan/visits").then(function(j){setVis(j.value)});throw 0})}
- tryA(2).catch(function(){})}
+ var SBU="https://ecfuobsggznwierzsgux.supabase.co/rest/v1/rpc/visit_hit",SBK="sb_publishable_SzZgKSXOMNvDtcmPGc8Kvw_X8w9QvZg";
+ function sb(){if(!window.fetch)return Promise.reject(0);var c=window.AbortController?new AbortController():null;if(c)setTimeout(function(){c.abort()},12000);
+  var o={method:"POST",headers:{apikey:SBK,"Content-Type":"application/json"},body:JSON.stringify({p_site:"balapan",p_up:!!up})};if(c)o.signal=c.signal;
+  return fetch(SBU,o).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(n){n=+n;if(n>0)setVis(n);else throw 0})}
+ function tryS(n){return sb().catch(function(){if(n>0)return new Promise(function(r){setTimeout(r,2500)}).then(function(){return tryS(n-1)});throw 0})}
+ tryS(2).catch(function(){})}
+
 function home(){var k=kid();app.innerHTML=hd("","")+'<div class="wrap"><div class="hero"><svg class="hl2"><use href="#logo"/></svg><div><div class="ht">'+(L()=="ru"?"Балапан":"Balapan")+'</div><div class="hs">'+(L()=="ru"?"Учимся играя! 🚀<br>800+ слов, 5 игр и прописи":"Learn by playing! 🚀<br>800+ words, 5 games & tracing")+'</div><div class="hk">'+k.a+' '+t("hi",{n:esc(k.n)})+'</div></div></div>'+
  '<h2 style="margin-top:4px">🎮 '+t("games")+'</h2><div class="gt"><button class="game" style="background:#ff6b6b;color:#fff" data-go="pop"><i>🎈</i>'+t("pop")+'</button><button class="game" style="background:#9775fa;color:#fff" data-go="mem"><i>🍒</i>'+t("mem")+'</button><button class="game" style="background:#ffa94d;color:#fff" data-go="bld"><i>🧩</i>'+t("build")+'</button></div><div class="games"><button class="game" style="background:#4dabf7;color:#fff" data-go="g1"><i>👀</i>'+t("g1")+'</button><button class="game" style="background:#20c997;color:#fff" data-go="g2"><i>📖</i>'+t("g2")+'</button><button class="game" style="background:#51cf66;color:#fff;grid-column:span 2" data-go="abc"><i>✍️</i>'+t("abc")+'</button></div>'+
  '<button class="bodyt" data-go="body"><i>🧍</i><span>'+t("body")+'<small>'+t("bodys")+'</small></span></button>'+
