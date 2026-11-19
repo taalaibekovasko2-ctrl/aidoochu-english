@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ky"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>ОРТ Даяр — ЖРТга даярдануу платформасы (демо)</title>
+<title>ОРТ Даяр — бекер ОРТга даярдануу (демо)</title>
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#4c3fd1">
 <style>
@@ -72,8 +72,8 @@ var SUBJ=[["🧬","Биология","Биология"],["⚗️","Химия",
 var S={v:"home",lng:"ky"},app=document.getElementById("app");
 function t(k){return T[S.lng][k]}
 function nm(o){return o[S.lng]}
-function hd(title,sub,back,right){return '<div class="top"><div class="row">'+(back?'<button class="back" data-go="'+back+'">‹</button>':'<div class="logo"><i>ОРТ</i>Даяр</div>')+(right||'<div class="lng"><button data-l="ky" class="'+(S.lng=="ky"?"on":"")+'">KG</button><button data-l="ru" class="'+(S.lng=="ru"?"on":"")+'">RU</button></div>')+'</div>'+(title?'<h1>'+title+'</h1>':'')+(sub?'<p>'+sub+'</p>':'')+'</div>'}
-function tabs(){var a=[["home","🏠",t("home")],["prac","📚",t("prac")],["mock","📝",t("test")],["rank","🏆",t("rank")],["price","⭐",t("prem")]];
+function hd(title,sub,back,right){return '<div class="top"><div class="row">'+(back?'<button class="back" data-go="'+back+'">‹</button>':'<div class="logo"><i>ОРТ</i>Даяр <span style="background:#20b26b;color:#fff;font-size:11px;padding:3px 8px;border-radius:8px">'+(S.lng=="ky"?"БЕКЕР":"БЕСПЛАТНО")+'</span></div>')+(right||'<div class="lng"><button data-l="ky" class="'+(S.lng=="ky"?"on":"")+'">KG</button><button data-l="ru" class="'+(S.lng=="ru"?"on":"")+'">RU</button></div>')+'</div>'+(title?'<h1>'+title+'</h1>':'')+(sub?'<p>'+sub+'</p>':'')+'</div>'}
+function tabs(){var a=[["home","🏠",t("home")],["prac","📚",t("prac")],["mock","📝",t("test")],["rank","🏆",t("rank")],["price","🎁",(S.lng=="ky"?"Бекер":"Бесплатно")]];
  return '<div class="pad"></div><div class="tabs">'+a.map(function(x){return '<button data-go="'+x[0]+'" class="'+(S.v==x[0]?"on":"")+'"><i>'+x[1]+'</i>'+x[2]+'</button>'}).join("")+'</div>'}
 function bar(p){return '<div class="pb"><span style="width:'+p+'%"></span></div>'}
 function home(){
@@ -103,10 +103,11 @@ function res(){clearInterval(S.tm);var z=S.qz,ok=0,by={};z.list.forEach(function
  '<button class="big" data-again="1">🔁 '+t("again")+'</button><div style="height:10px"></div><button class="big w" data-go="home">'+t("homeB")+'</button></div>'}
 function rank(){var L=[["Айпери","Нарын",231],["Бекзат","Ош",224],["Нурай","Бишкек",219],["Эрмек","Талас",205],["Айбек (сиз)","Бишкек",154,1],["Сезим","Каракол",148],["Темирлан","Баткен",139]];
  app.innerHTML=hd(t("rank"),S.lng=="ky"?"Ушул жуманын мыктылары · демо":"Лучшие этой недели · демо")+'<div class="wrap"><div class="card">'+L.map(function(x,i){return '<div class="lb'+(x[3]?" me":"")+'"><b>'+(i<3?["🥇","🥈","🥉"][i]:i+1)+'</b><span>'+x[0]+'<br><small style="color:var(--sub)">'+x[1]+'</small></span>'+x[2]+'</div>'}).join("")+'</div></div>'+tabs()}
-function price(){app.innerHTML=hd(t("prem"),S.lng=="ky"?"Бизнес-модель мисалы":"Пример бизнес-модели")+'<div class="wrap"><div class="price">'+
- '<div class="pr"><h3>'+t("free")+'</h3><div class="p">0 с</div><ul><li>✅ Күндүн 5 суроосу</li><li>✅ 1 сынак тест</li><li>✅ Рейтинг</li></ul></div>'+
- '<div class="pr hot"><span class="tag">⭐ '+(S.lng=="ky"?"Сунушталат":"Рекомендуем")+'</span><h3 style="margin-top:6px">'+t("pro")+'</h3><div class="p">— с/ай</div><ul><li>✅ Бардык суроолор</li><li>✅ Чексиз сынак тесттер</li><li>✅ Түшүндүрмө + видео</li><li>✅ Ата-эне отчёту</li><li>✅ Предметтик тесттер</li></ul></div></div>'+
- '<div class="card" style="margin-top:12px"><b>🏫 '+(S.lng=="ky"?"Мектептер жана курстар үчүн":"Для школ и курсов")+'</b><p class="note" style="text-align:left">'+(S.lng=="ky"?"Мугалим панели: класстын жыйынтыгы, тапшырма берүү, алсыз темалар.":"Панель учителя: результаты класса, задания, слабые темы.")+'</p></div></div>'+tabs()}
+function price(){var ky=S.lng=="ky";app.innerHTML=hd(ky?"Биз жөнүндө":"О нас",ky?"Платформа толугу менен бекер":"Платформа полностью бесплатна")+'<div class="wrap">'+
+ '<div class="card score"><div style="font-size:64px">🎁</div><div style="font-size:28px;font-weight:900;margin-top:8px;color:var(--ok)">'+(ky?"100% БЕКЕР":"100% БЕСПЛАТНО")+'</div><p class="note">'+(ky?"Төлөм жок, жазылуу жок, жарнама жок. Ар бир окуучу ОРТго бирдей даярдана алышы керек.":"Без оплаты, подписок и рекламы. Каждый ученик должен иметь равные шансы подготовиться к ОРТ.")+'</p></div>'+
+ '<div class="card"><b>✅ '+(ky?"Бардыгы бекер":"Всё бесплатно")+'</b>'+(ky?["Бардык бөлүмдөр жана суроолор","Чексиз сынак тесттер","Түшүндүрмөлөр","Рейтинг жана прогресс","Предметтик тесттер (жакында)"]:["Все разделы и вопросы","Безлимитные пробные тесты","Объяснения","Рейтинг и прогресс","Предметные тесты (скоро)"]).map(function(x){return '<div class="bar" style="justify-content:flex-start;gap:8px">✔️ '+x+'</div>'}).join("")+'</div>'+
+ '<div class="card"><b>🤝 '+(ky?"Кантип жардам берсе болот?":"Как помочь проекту?")+'</b><p class="note" style="text-align:left">'+(ky?"📤 Досторуңузга бөлүшүңүз<br>👩‍🏫 Мугалимсизби? Суроо кошуп бериңиз<br>💬 Ката тапсаңыз — бизге жазыңыз":"📤 Поделитесь с друзьями<br>👩‍🏫 Вы учитель? Помогите добавить вопросы<br>💬 Нашли ошибку — напишите нам")+'</p></div>'+
+ '<div class="card"><b>🏫 '+(ky?"Мектептер жана мугалимдер үчүн":"Для школ и учителей")+'</b><p class="note" style="text-align:left">'+(ky?"Мугалим панели да бекер: класстын жыйынтыгы, тапшырма берүү, алсыз темалар.":"Панель учителя тоже бесплатна: результаты класса, задания, слабые темы.")+'</p></div></div>'+tabs()}
 function allQ(){var a=[];SEC.forEach(function(s){s.qs.forEach(function(q){a.push({s:s,q:q})})});return a}
 function shuf(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),x=a[i];a[i]=a[j];a[j]=x}return a}
 function render(){window.scrollTo(0,0);({home:home,prac:prac,quiz:quiz,res:res,rank:rank,price:price}[S.v]||home)()}
