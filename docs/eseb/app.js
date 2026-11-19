@@ -5,7 +5,7 @@ var C=window.JE,LS="jolesep_v1";
 var T={
 kg:{app:"Жол Эсеп",tag:"Тракисттин эсеби",free:"100% бекер",today:"Бүгүн",week:"Апта",month:"Ай",year:"Жыл",all:"Баары",custom:"Тандоо",
 home:"Башкы",stmts:"Стейтмент",exps:"Чыгашалар",tax:"Салык",more:"Дагы",
-gross:"Gross (жүктүн баасы)",fee:"Компаниянын комиссиясы",earn:"Айдоочунун кирешеси",exp:"Жалпы чыгашалар",net:"Стейтмент боюнча Net Pay",profit:"Чыныгы бизнес пайда",loaded:"Жүктүү миль",empty:"Бош миль (deadhead)",gpm:"Gross / миль",npm:"Пайда / миль",fpm:"Май / миль",mpg:"MPG",noData:"Маалымат жетишсиз",
+gross:"Gross (жүктүн баасы)",fee:"Компаниянын комиссиясы",earn:"Айдоочунун кирешеси",exp:"Жалпы чыгашалар",net:"Стейтмент боюнча Net Pay",profit:"Чыныгы бизнес пайда",loaded:"Жүктүү миль",empty:"Бош миль (deadhead)",gpm:"Gross / миль",npm:"Пайда / миль",fpm:"Май / миль",mpg:"MPG",noData:"Маалымат жок",
 upSt:"Стейтмент жүктөө",upStSub:"скриншот же PDF",receipt:"Чек тартуу",manual:"Кол менен кошуу",
 stmt:"Стейтмент",stRead:"Окулуп жатат…",stWait:"Бир нече скриншот болсо, баарын бирден тандаңыз. PDF да болот. 10–40 секунд.",stNone:"Эч нерсе табылган жок. Скриншот даана болушу керек.",
 review:"Текшерип, «Сактоо» басыңыз. Табылбаган сумма бош калат — өзүңүз толтуруңуз. Мен эч нерсени ойлоп таппайм.",
@@ -31,13 +31,13 @@ report:"📄 Бухгалтерге отчет",csv:"📊 Excel (CSV)",backup:"�
 hist:"Өзгөртүүлөрдүн тарыхы",privacy:"🔒 Маалымат ушул телефондо гана сакталат, эч жакка жөнөтүлбөйт. Телефон алмаштырсаңыз — «Резерв көчүрмө» жасаңыз.",settings:"Жөндөөлөр",
 saved_:"Сакталды ✓",deleted:"Өчүрүлдү",restored:"Калыбына келди ✓",badFile:"Файл туура эмес",need:"Сумманы жазыңыз",linked:"Бир жолу эсептелет ✓",
 noSt:"Стейтмент жок. Башкы беттен «Стейтмент жүктөө» басыңыз.",stmtsN:"стейтмент",loadsN:"рейс",perDays:"күн",custFrom:"Башы",custTo:"Аягы",apply:"Көрсөтүү",
-t_home:"Башкы",t_loads:"Рейстер",t_exps:"Чыгашалар",t_prof:"Профиль",t_net:"Таза киреше",t_biz:"Бизнес киреше",t_exp:"Чыгашалар",t_miles:"Миль",t_addLoad:"Рейс кошуу",t_upSt:"Стейтмент",t_addExp:"Чыгаша кошуу",t_scan:"Чек тартуу",all2:"Баары",biz:"Бизнес",pers:"Жеке",taxSum:"Салык",estBiz:"Бизнес кирешенин баасы",afterDed:"чегерүүлөрдөн кийин",daysTrip:"Рейстеги күндөр",dupBan:"Бир стейтмент эки жолу кошулган",fix:"Оңдоо",dupBanQ:"Бул экөө бир эле стейтмент окшойт. Эмне кылалы?",mergeOne:"Бирөө кылуу (бириктирүү)",keepNew:"Жаңысын калтырып, эскисин өчүрүү",notSame:"Бул эки башка стейтмент",dataT:"Маалымат",more2:"Дагы маалымат",netChk:"Net Pay текшерүү",page2:"Бул ошол стейтменттин 2-бети — кошуу",ocrFix:"Скриншотто $ белгиси 8 же 5 болуп окулуп калган сумма Total Deductions боюнча оңдолду",
+t_home:"Башкы",t_loads:"Рейстер",t_exps:"Чыгашалар",t_prof:"Профиль",t_net:"Таза киреше",t_biz:"Бизнес киреше",t_exp:"Чыгашалар",t_miles:"Миль",t_addLoad:"Рейс кошуу",t_upSt:"Стейтмент",t_addExp:"Чыгаша кошуу",t_scan:"Чек тартуу",all2:"Баары",biz:"Бизнес",pers:"Жеке",taxSum:"Салык",estBiz:"Бизнес кирешенин баасы",afterDed:"чегерүүлөрдөн кийин",daysTrip:"Рейстеги күндөр",dupBan:"Бир стейтмент эки жолу кошулган",fix:"Оңдоо",dupBanQ:"Бул экөө бир эле стейтмент окшойт. Эмне кылалы?",mergeOne:"Бирөө кылуу (бириктирүү)",keepNew:"Жаңысын калтырып, эскисин өчүрүү",notSame:"Бул эки башка стейтмент",dataT:"Маалымат",more2:"Дагы маалымат",netChk:"Net Pay текшерүү",page2:"Бул ошол стейтменттин 2-бети — кошуу",moreCats:"Башка категориялар",linkedN:"Сакталды ✓ Кол менен жазылган N чыгаша стейтментте бар экен — бир жолу эсептелди",ocrFix:"Скриншотто $ белгиси 8 же 5 болуп окулуп калган сумма Total Deductions боюнча оңдолду",
 counted:"эсепке кирет",notCounted:"эсепке кирбейт",fromSt:"стейтменттен",dupMark:"кайталанма",linkMark:"стейтментке тиркелген",cardMark:"компания картасы"},
 ru:{}};
 /* Russian strings */
 (function(){var r={app:"Жол Эсеп",tag:"Учёт тракиста",free:"100% бесплатно",today:"Сегодня",week:"Неделя",month:"Месяц",year:"Год",all:"Всё время",custom:"Даты",
 home:"Главная",stmts:"Стейтменты",exps:"Расходы",tax:"Налог",more:"Ещё",
-gross:"Gross (стоимость грузов)",fee:"Комиссия компании",earn:"Доход водителя",exp:"Все расходы",net:"Net Pay по стейтменту",profit:"Реальная прибыль бизнеса",loaded:"Мили с грузом",empty:"Пустые мили (deadhead)",gpm:"Gross / миля",npm:"Прибыль / миля",fpm:"Топливо / миля",mpg:"MPG",noData:"Недостаточно данных",
+gross:"Gross (стоимость грузов)",fee:"Комиссия компании",earn:"Доход водителя",exp:"Все расходы",net:"Net Pay по стейтменту",profit:"Реальная прибыль бизнеса",loaded:"Мили с грузом",empty:"Пустые мили (deadhead)",gpm:"Gross / миля",npm:"Прибыль / миля",fpm:"Топливо / миля",mpg:"MPG",noData:"Нет данных",
 upSt:"Загрузить стейтмент",upStSub:"скриншот или PDF",receipt:"Сфотографировать чек",manual:"Добавить вручную",
 stmt:"Стейтмент",stRead:"Читаю…",stWait:"Если скриншотов несколько — выберите все сразу. PDF тоже можно. 10–40 секунд.",stNone:"Ничего не найдено. Скриншот должен быть чётким.",
 review:"Проверьте и нажмите «Сохранить». Не найденная сумма остаётся пустой — заполните сами. Я ничего не выдумываю.",
@@ -63,7 +63,7 @@ report:"📄 Отчёт для бухгалтера",csv:"📊 Excel (CSV)",back
 hist:"История изменений",privacy:"🔒 Данные хранятся только на этом телефоне и никуда не отправляются. При смене телефона сделайте «Резервную копию».",settings:"Настройки",
 saved_:"Сохранено ✓",deleted:"Удалено",restored:"Восстановлено ✓",badFile:"Неверный файл",need:"Введите сумму",linked:"Будет учтено один раз ✓",
 noSt:"Стейтментов нет. На главной нажмите «Загрузить стейтмент».",stmtsN:"стейтм.",loadsN:"рейс.",perDays:"дн.",custFrom:"С",custTo:"По",apply:"Показать",
-t_home:"Главная",t_loads:"Рейсы",t_exps:"Расходы",t_prof:"Профиль",t_net:"Чистый доход",t_biz:"Бизнес-доход",t_exp:"Расходы",t_miles:"Мили",t_addLoad:"Добавить рейс",t_upSt:"Стейтмент",t_addExp:"Добавить расход",t_scan:"Снять чек",all2:"Все",biz:"Рабочее",pers:"Личное",taxSum:"Налоговая сводка",estBiz:"Оценка Business Income",afterDed:"после учтённых вычетов",daysTrip:"Дни в рейсе",dupBan:"Один стейтмент добавлен дважды",fix:"Исправить",dupBanQ:"Похоже, это один и тот же стейтмент. Что сделать?",mergeOne:"Сделать одним (объединить)",keepNew:"Оставить новый, удалить старый",notSame:"Это разные стейтменты",dataT:"Данные",more2:"Ещё данные",netChk:"Проверка Net Pay",page2:"Это 2-я страница того же стейтмента — добавить",ocrFix:"Сумма, где $ прочитался как 8 или 5, исправлена по Total Deductions",counted:"учитывается",notCounted:"не учитывается",fromSt:"из стейтмента",dupMark:"дубликат",linkMark:"привязан к стейтменту",cardMark:"карта компании"};T.ru=r})();
+t_home:"Главная",t_loads:"Рейсы",t_exps:"Расходы",t_prof:"Профиль",t_net:"Чистый доход",t_biz:"Бизнес-доход",t_exp:"Расходы",t_miles:"Мили",t_addLoad:"Добавить рейс",t_upSt:"Стейтмент",t_addExp:"Добавить расход",t_scan:"Снять чек",all2:"Все",biz:"Рабочее",pers:"Личное",taxSum:"Налоговая сводка",estBiz:"Оценка Business Income",afterDed:"после учтённых вычетов",daysTrip:"Дни в рейсе",dupBan:"Один стейтмент добавлен дважды",fix:"Исправить",dupBanQ:"Похоже, это один и тот же стейтмент. Что сделать?",mergeOne:"Сделать одним (объединить)",keepNew:"Оставить новый, удалить старый",notSame:"Это разные стейтменты",dataT:"Данные",more2:"Ещё данные",netChk:"Проверка Net Pay",page2:"Это 2-я страница того же стейтмента — добавить",moreCats:"Другие категории",linkedN:"Сохранено ✓ N расход(а), введённых вручную, есть в стейтменте — учтены один раз",ocrFix:"Сумма, где $ прочитался как 8 или 5, исправлена по Total Deductions",counted:"учитывается",notCounted:"не учитывается",fromSt:"из стейтмента",dupMark:"дубликат",linkMark:"привязан к стейтменту",cardMark:"карта компании"};T.ru=r})();
 
 /* ---------- state ---------- */
 var S=loadS();
@@ -91,7 +91,7 @@ function cin(c){return c==null?"":(c/100).toFixed(2)}
 /* ---------- period ---------- */
 var V={tab:"home",per:"week",ref:today(),c0:null,c1:null};
 function R(){return C.range(V.per,V.ref,V.c0,V.c1)}
-function rLabel(){var r=R();if(V.per=="all")return L("all");if(V.per=="year")return r[0].slice(0,4);if(V.per=="today")return fd(r[0]);return fd(r[0])+" – "+fd(r[1])}
+function rLabel(){if(V.per=="week"){var w=R(),a=w[0].split("-"),b=w[1].split("-"),MF=S.lang=="ru"?["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"]:["январь","февраль","март","апрель","май","июнь","июль","август","сентябрь","октябрь","ноябрь","декабрь"];return a[1]==b[1]?(+a[2])+"–"+(+b[2])+" "+MF[+b[1]-1]+" "+b[0]:(+a[2])+" "+MF[+a[1]-1].slice(0,3)+" – "+(+b[2])+" "+MF[+b[1]-1].slice(0,3)+" "+b[0]}var r=R();if(V.per=="all")return L("all");if(V.per=="year")return r[0].slice(0,4);if(V.per=="today")return fd(r[0]);return fd(r[0])+" – "+fd(r[1])}
 function shift(k){if(V.per=="today")V.ref=C.addDays(V.ref,k);else if(V.per=="week")V.ref=C.addDays(V.ref,7*k);else if(V.per=="month"){var p=V.ref.split("-"),m=+p[1]-1+k,y=+p[0]+Math.floor(m/12);m=((m%12)+12)%12;V.ref=y+"-"+C.p2(m+1)+"-01"}else if(V.per=="year")V.ref=(+V.ref.slice(0,4)+k)+"-01-01";render()}
 
 /* ---------- render ---------- */
@@ -101,36 +101,33 @@ function perBar(){if(["week","month","year"].indexOf(V.per)<0)V.per="week";retur
 function render(){nav();var h=head();if(V.tab=="home")h+=homeV();else if(V.tab=="loads")h+=loadsV();else if(V.tab=="exps")h+=expsV();else h+=profV();
  $("app").innerHTML=h;var s=$("stS");if(s)s.value=S.status;var ro=$("roS");if(ro)ro.value=S.role;var pt=$("ptS");if(pt)pt.value=S.pay.type}
 function kpi(lbl,val,cls,key,sub,wide){return '<div class="card tap'+(wide?" wide":"")+'" data-src="'+key+'"><div class="lbl">'+lbl+'</div><div class="v '+(cls||"")+'">'+val+'</div>'+(sub?'<div class="note">'+sub+'</div>':'')+'</div>'}
-function pm(t,c){var v=t.perMile(c);return v==null?'<span class="nd">—</span>':M(v)}
+function pm(t,c){var v=t.perMile(c);return v==null?'<span class="nd">'+L("noData")+'</span>':M(v)}
 function mi(n){return String(n).replace(/\B(?=(\d{3})+(?!\d))/g,",")+" mi"}
 function dupBanner(){var d=C.dupPairs(S);if(!d.length)return "";return '<div class="warn tap" data-act="fixdup">⚠️ '+L("dupBan")+' ('+d.length+') — <b>'+L("fix")+'</b></div>'}
 function homeV(){var t=C.totals(S,R());
  return perBar()+dupBanner()+
  '<div class="card hero tap" data-src="profit"><div class="lbl">💰 '+L("t_net")+'</div><div class="big">'+M(t.profit)+'</div></div>'+
- '<div class="grid">'+kpi("💼 "+L("t_biz"),M(t.earn),"","earn",t.fee?L("fee")+": "+M0(t.fee):"")+kpi("🧾 "+L("t_exp"),M(t.exp),"neg","exp")+
- kpi("🚚 Gross",M(t.gross),"","gross",t.loadCount+" "+L("loadsN"))+kpi("🛣 "+L("t_miles"),t.miles?mi(t.miles):'<span class="nd">—</span>',"","gross")+
- kpi("↩️ Deadhead",t.miles?mi(t.empty):'<span class="nd">—</span>',"","gross")+kpi("📈 Gross/mile",pm(t,t.gross),"","gross")+'</div>'+
+ '<div class="grid">'+kpi("💼 "+L("t_biz"),M(t.earn),"","earn",t.fee?L("fee")+": "+M0(t.fee):"")+kpi("🧾 "+L("t_exp"),M(t.exp),"neg","exp",t.pers?L("pers")+": "+M0(t.pers):"")+
+ kpi("🚚 Gross",M(t.gross),"","gross",t.loadCount+" "+L("loadsN"))+kpi("🛣 "+L("t_miles"),t.miles?mi(t.miles):'<span class="nd">'+L("noData")+'</span>',"","gross")+
+ kpi("↩️ Deadhead",t.miles?mi(t.empty):'<span class="nd">'+L("noData")+'</span>',"","gross")+kpi("📈 Gross/mile",pm(t,t.gross),"","gross")+'</div>'+
  '<div class="card tap row2" data-src="profit"><span class="lbl" style="margin:0">📊 Net/mile</span><b class="v '+(t.profit>=0?"pos":"neg")+'">'+pm(t,t.profit)+'</b></div>'+
  '<div class="btns"><button class="btn" data-act="addLoad">＋ '+L("t_addLoad")+'</button><button class="btn o" data-act="stmt">📄 '+L("t_upSt")+'</button></div>'}
 function tl(a,b){return '<div class="tl"><span>'+a+'</span><b>'+b+'</b></div>'}
 function allLoads(r){var out=[];S.stmts.forEach(function(s){if(!C.inR(C.stDay(s),r))return;(s.loads||[]).forEach(function(l){out.push({d:l.pd||C.stDay(s),f:l.f,t:l.t,g:l.g,mi:l.mi||0,dh:l.dh||0,st:s.id})})});
  S.loads.forEach(function(l){if(C.inR(l.d,r))out.push({d:l.d,f:l.f,t:l.t,g:l.g,mi:l.mi||0,dh:l.dh||0,id:l.id})});return out.sort(function(a,b){return a.d<b.d?1:-1})}
 function loadsV(){var r=R(),t=C.totals(S,r),xs=allLoads(r),sts=S.stmts.filter(function(s){return C.inR(C.stDay(s),r)});
- var h=perBar()+'<div class="card">'+tl("Gross",M(t.gross))+tl("Total Miles",t.miles?mi(t.miles):"—")+tl(L("t_loads"),t.loadCount)+'</div>'+
+ var h=perBar()+'<div class="card">'+tl("Gross",M(t.gross))+tl("Total Miles",t.miles?mi(t.miles):L("noData"))+tl(L("t_loads"),t.loadCount)+'</div>'+
  '<div class="btns"><button class="btn" data-act="addLoad">＋ '+L("t_addLoad")+'</button><button class="btn o" data-act="stmt">📄 '+L("t_upSt")+'</button></div>';
  if(sts.length)h+='<div class="chips" style="margin-bottom:10px">'+sts.map(function(s){var k=C.stmtCalc(s);return '<b data-st="'+s.id+'">📄 '+fd(s.p0||C.stDay(s)).replace(/ \d{4}$/,"")+'–'+fd(s.p1||s.d)+' · '+M0(k.gross)+'</b>'}).join("")+'</div>';
  if(!xs.length)return h+'<div class="empty">'+L("empty0")+'</div>';
  return h+xs.map(function(l){var m=l.mi+l.dh;return '<div class="card tap" '+(l.st?'data-st="'+l.st+'"':'data-load="'+l.id+'"')+'><div class="lbl">📅 '+fd(l.d)+(l.f||l.t?' · '+esc(l.f||"?")+' → '+esc(l.t||"?"):'')+'</div><div class="row"><div><div class="note">Gross</div><b class="v">'+M(l.g)+'</b></div><div><div class="note">Miles</div><b class="v">'+(l.mi?mi(l.mi):"—")+'</b></div></div><div class="row" style="margin-top:6px"><div><div class="note">Gross/Mile</div><b>'+(m?M(Math.round(l.g/m)):"—")+'</b></div><div><div class="note">Deadhead</div><b>'+(l.dh?mi(l.dh):"—")+'</b></div></div></div>'}).join("")}
-function expsV(){var r=R(),rows=[],f=V.ef||"all";
- S.stmts.forEach(function(s){if(!C.inR(C.stDay(s),r))return;(s.ded||[]).forEach(function(x){rows.push({d:C.stDay(s),a:x.a,c:x.c,v:x.v||cn(x.c),st:s.id,cnt:1,tag:L("fromSt")})})});
- S.tx.forEach(function(t){if(!C.inR(t.d,r)||t.kind!="exp")return;var tag=t.dupOf?L("dupMark"):t.link?L("linkMark"):t.paidBy=="card"?L("cardMark"):"";rows.push({d:t.d,a:t.a,c:t.c||"other",v:t.v||cn(t.c),id:t.id,cnt:C.counts(t)||t.c=="pers"&&!t.dupOf,tag:tag,ph:t.ph})});
- var biz=0,pers=0;rows.forEach(function(x){if(!x.cnt)return;if(x.c=="pers")pers+=x.a;else biz+=x.a});
- rows=rows.filter(function(x){return f=="all"||(f=="pers"?x.c=="pers":x.c!="pers")}).sort(function(a,b){return a.d<b.d?1:-1});
- var h=perBar()+'<div class="card"><div class="lbl">'+L("t_exp")+'</div><div class="big">'+M(biz+pers)+'</div><div class="row" style="margin-top:8px"><div><div class="note">'+L("biz")+'</div><b>'+M(biz)+'</b></div><div><div class="note">'+L("pers")+'</div><b>'+M(pers)+'</b></div></div></div>'+
+function expsV(){var r=R(),f=V.ef||"all",X=C.expRows(S,r),rows=X.rows.filter(function(x){return f=="all"||(f=="pers"?x.pers:!x.pers)});
+ var h=perBar()+'<div class="card"><div class="lbl">'+L("t_exp")+'</div><div class="big">'+M(f=="pers"?X.pers:f=="biz"?X.biz:X.biz+X.pers)+'</div><div class="row" style="margin-top:8px"><div><div class="note">'+L("biz")+'</div><b>'+M(X.biz)+'</b></div><div><div class="note">'+L("pers")+'</div><b>'+M(X.pers)+'</b></div></div></div>'+
  '<div class="seg">'+[["all","all2"],["biz","biz"],["pers","pers"]].map(function(x){return '<b data-ef="'+x[0]+'" class="'+(f==x[0]?"on":"")+'">'+L(x[1])+'</b>'}).join("")+'</div>'+
  '<div class="btns"><button class="btn" data-act="addExp">＋ '+L("t_addExp")+'</button><button class="btn o" data-act="scan">📷 '+L("t_scan")+'</button></div>';
  if(!rows.length)return h+'<div class="empty">'+L("empty0")+'</div>';
- return h+rows.map(function(x){return '<div class="it'+(x.cnt?"":" dim")+'" '+(x.st?'data-st="'+x.st+'"':'data-tx="'+x.id+'"')+'><div class="ic"'+(x.ph?' data-th="'+x.ph+'"':'')+'>'+gi(C.catGroup(x.c))+'</div><div class="m"><b>'+esc(x.v)+'</b><small>'+fd(x.d)+' · '+cn(x.c)+(x.tag?' · <i>'+x.tag+'</i>':'')+'</small></div><div class="r">'+M(x.a)+'</div></div>'}).join("")}
+ return h+rows.map(function(x){var t=x.t||{},tag=x.src=="st"?L("fromSt"):t.dupOf?L("dupMark"):t.link?L("linkMark"):t.paidBy=="card"?L("cardMark"):x.pers?L("pers"):"";
+  return '<div class="it'+(x.cnt?"":" dim")+'" '+(x.src=="st"?'data-st="'+x.id+'"':'data-tx="'+x.id+'"')+'><div class="ic"'+(t.ph?' data-th="'+t.ph+'"':'')+'>'+gi(C.catGroup(x.c))+'</div><div class="m"><b>'+esc(x.v||cn(x.c))+'</b><small>'+fd(x.d)+' · '+cn(x.c)+(tag?' · <i>'+tag+'</i>':'')+'</small></div><div class="r">'+M(x.a)+'</div></div>'}).join("")}
 function profV(){var y=+R()[1].slice(0,4),c=C.tax(S,y),t=c.t;
  var h='<div class="per"><b data-ys="-1">‹</b><span>'+L("taxSum")+' '+y+'</span><b data-ys="1">›</b></div>';
  if(S.role!="company")h+='<div class="card hero"><div class="lbl">📊 '+L("estBiz")+'</div><div class="note" style="color:#dbe7ff">'+L("afterDed")+'</div><div class="big">'+M(c.sc)+'</div></div>'+
@@ -155,8 +152,10 @@ function fixDup(){var d=C.dupPairs(S);if(!d.length)return;var p=d[0],a=p[0],b=p[
 /* ---------- sheets ---------- */
 function sheet(title,body){close();var o=document.createElement("div");o.className="ov";o.id="ov";o.innerHTML='<div class="sh"><h3>'+title+'<b data-x="1">×</b></h3>'+body+'</div>';document.body.appendChild(o);o.addEventListener("click",function(e){if(e.target===o||(e.target.getAttribute&&e.target.getAttribute("data-x")))close()})}
 function close(){var o=$("ov");if(o)o.parentNode.removeChild(o)}
-function catSel(id,v){return '<select id="'+id+'">'+C.GROUPS.map(function(g){return '<optgroup label="'+gn(g[0])+'">'+C.CATS.filter(function(c){return c[1]==g[0]}).map(function(c){return '<option value="'+c[0]+'"'+(c[0]==v?" selected":"")+'>'+cn(c[0])+'</option>'}).join("")+'</optgroup>'}).join("")+'</select>'}
-function catSelX(attr,v){return '<select '+attr+' style="padding:9px">'+C.CATS.map(function(c){return '<option value="'+c[0]+'"'+(c[0]==v?" selected":"")+'>'+cn(c[0])+'</option>'}).join("")+'</select>'}
+function catOpts(v){var main=C.MAIN.map(function(c){return '<option value="'+c+'"'+(c==v?" selected":"")+'>'+cn(c)+'</option>'}).join("");
+ var rest=C.CATS.filter(function(c){return C.MAIN.indexOf(c[0])<0}).map(function(c){return '<option value="'+c[0]+'"'+(c[0]==v?" selected":"")+'>'+cn(c[0])+'</option>'}).join("");return main+'<optgroup label="'+L("moreCats")+'">'+rest+'</optgroup>'}
+function catSel(id,v){return '<select id="'+id+'">'+catOpts(v)+'</select>'}
+function catSelX(attr,v){return '<select '+attr+' style="padding:9px">'+catOpts(v)+'</select>'}
 
 /* drill-down */
 function srcSheet(key){var t=C.totals(S,R()),list=[];
@@ -216,7 +215,8 @@ function review(r,editId){var R0=r;
  $("ov").addEventListener("click",function(e){var a=e.target.getAttribute&&e.target.getAttribute("data-add");if(a=="L"){$("rL").insertAdjacentHTML("beforeend",loadRow({}))}else if(a=="D"){$("rDd").insertAdjacentHTML("beforeend",dedRow({c:"other"}))}else if(e.target.getAttribute&&e.target.getAttribute("data-rm")){var p=e.target.parentNode;while(p&&!p.getAttribute("data-dr")&&!p.getAttribute("data-lr"))p=p.parentNode;if(p)p.parentNode.removeChild(p);recalc()}});
  $("rSave").onclick=function(){var st=collect(),d=C.stmtDup(st,S);
   function put(replaceId){if(replaceId){S.stmts=S.stmts.map(function(x){return x.id==replaceId?(st.id=replaceId,st):x})}else S.stmts.push(st);
-   if(R0.shot)phPut(st.id,R0.shot);if(st.days)S.wd=st.days;log(editId||replaceId?"stmt.update":"stmt.add",(st.company||"")+" #"+(st.num||"")+" "+C.fmt(C.stmtCalc(st).net));save();close();toast(L("saved_"));V.per="week";V.ref=C.stDay(st);V.tab="home";render()}
+   var lk=C.linkMatching(st,S);if(lk.length)log("tx.link",lk.join(","));
+   if(R0.shot)phPut(st.id,R0.shot);if(st.days)S.wd=st.days;log(editId||replaceId?"stmt.update":"stmt.add",(st.company||"")+" #"+(st.num||"")+" "+C.fmt(C.stmtCalc(st).net));save();close();toast(lk.length?L("linkedN").replace("N",lk.length):L("saved_"));V.per="week";V.ref=C.stDay(st);V.tab="home";render()}
   if(editId)return put(editId);
   if(d){sheet("⚠️ "+L("stmt"),'<div class="warn">'+L("dupSt")+'<br><b>'+esc(d.company||"")+' #'+esc(d.num||"")+'</b> · '+fd(C.stDay(d))+'</div><div class="btns"><button class="btn" id="dR">✅ '+L("dupReplace")+'</button></div><div class="btns"><button class="btn gh" id="dM">📄+📄 '+L("page2")+'</button></div><div class="btns"><button class="btn gh" id="dK">'+L("dupKeep")+'</button></div><div class="btns"><button class="btn rd" data-x="1">'+L("cancel")+'</button></div>');
    $("dR").onclick=function(){put(d.id)};$("dK").onclick=function(){put(null)};$("dM").onclick=function(){var m=C.mergeStmt(d,st);m.id=d.id;st=m;put(d.id)};return}
@@ -235,17 +235,18 @@ function manualMenu(){sheet("＋ "+L("manual"),[["exp","🧾",L("kExp")],["load"
 function txForm(id,pre,kind){var t=id?JSON.parse(JSON.stringify(find(S.tx,id)||{})):{kind:kind||"exp",d:today(),c:"diesel",paidBy:null};if(pre)for(var k in pre)if(pre[k]!=null&&pre[k]!=="")t[k]=pre[k];
  var isExp=t.kind=="exp",h=(isExp?'<button class="btn ac" id="phB" style="width:100%">'+L("photo")+'</button><img id="phI" class="prev" style="display:none" alt=""><div id="ocrS" class="ocr"></div>':'')+
  '<div class="row"><div><label>'+L("amt")+'</label><input id="tA" inputmode="decimal" value="'+cin(t.a)+'"></div><div><label>'+L("date")+'</label><input id="tD" type="date" value="'+(t.d||today())+'"></div></div>'+
- (isExp?'<label>'+L("cat")+'</label>'+catSel("tC",t.c)+'<label>'+L("paidBy")+'</label><div class="chips col" id="tP"><b data-p="card" class="'+(t.paidBy=="card"?"on":"")+'">'+L("card")+'</b><b data-p="own" class="'+(t.paidBy=="own"?"on":"")+'">'+L("own")+'</b></div><div id="cardN" class="note" style="margin-top:6px;'+(t.paidBy=="card"?"":"display:none")+'">'+L("cardNote")+'</div>'+
+ (isExp?'<div class="seg" id="tBP" style="margin-top:12px"><b data-bp="0" class="'+(C.isPers(t)?"":"on")+'">'+L("biz")+'</b><b data-bp="1" class="'+(C.isPers(t)?"on":"")+'">'+L("pers")+'</b></div><label>'+L("cat")+'</label>'+catSel("tC",t.c=="pers"?"other":t.c)+'<label>'+L("paidBy")+'</label><div class="chips col" id="tP"><b data-p="card" class="'+(t.paidBy=="card"?"on":"")+'">'+L("card")+'</b><b data-p="own" class="'+(t.paidBy=="own"?"on":"")+'">'+L("own")+'</b></div><div id="cardN" class="note" style="margin-top:6px;'+(t.paidBy=="card"?"":"display:none")+'">'+L("cardNote")+'</div>'+
  '<div id="fuelF" style="'+(C.catGroup(t.c)=="fuel"?"":"display:none")+'"><div class="row"><div><label>'+L("gal")+'</label><input id="tG" inputmode="decimal" value="'+(t.gal?(t.gal/100).toFixed(2):"")+'"></div><div><label>'+L("state")+'</label><input id="tS" maxlength="2" value="'+esc(t.state||"")+'" style="text-transform:uppercase"></div></div><div class="row"><div><label>'+L("ret")+'</label><input id="tR" inputmode="decimal" value="'+cin(t.ret)+'"></div><div><label>'+L("inv")+'</label><input id="tI" inputmode="decimal" value="'+cin(t.inv)+'"></div></div></div>':'')+
  '<label>'+L("vendor")+'</label><input id="tV" value="'+esc(t.v||"")+'"><div class="row"><div><label>'+L("ref")+'</label><input id="tF" value="'+esc(t.ref||"")+'"></div><div><label>'+L("note")+'</label><input id="tN" value="'+esc(t.n||"")+'"></div></div>'+
  '<div class="btns" style="margin-top:14px"><button class="btn" id="tSv">'+L("save")+'</button>'+(id?'<button class="btn rd" id="tDl">'+L("del")+'</button>':'')+'</div>';
  sheet((isExp?"🧾 "+L("kExp"):t.kind=="reimb"?"↩️ "+L("kReimb"):"➕ "+L("kInc")),h);
  if(isExp){var img=$("phI");if(pend){img.src=pend;img.style.display="block"}else if(t.ph)phGet(t.ph,function(d){if(d){img.src=d;img.style.display="block"}});
   $("phB").onclick=function(){V.ed={id:id,kind:"exp"};$("fileIn").click()};
+  t.pers=C.isPers(t);$("tBP").onclick=function(e){var b=e.target.getAttribute&&e.target.getAttribute("data-bp");if(b==null)return;t.pers=b=="1";var bs=this.querySelectorAll("b");for(var i=0;i<bs.length;i++)bs[i].className=bs[i].getAttribute("data-bp")==b?"on":""};
   $("tC").onchange=function(){$("fuelF").style.display=C.catGroup(this.value)=="fuel"?"":"none"};
   $("tP").onclick=function(e){var b=e.target.closest?e.target.closest("[data-p]"):null;if(!b)return;t.paidBy=b.getAttribute("data-p");var bs=this.querySelectorAll("b");for(var i=0;i<bs.length;i++)bs[i].className=bs[i].getAttribute("data-p")==t.paidBy?"on":"";$("cardN").style.display=t.paidBy=="card"?"":"none"}}
  $("tSv").onclick=function(){var a=cv("tA");if(!a){toast(L("need"));return}if(isExp&&!t.paidBy){toast(L("paidBy"));$("tP").className+=" shake";return}
-  var o={id:t.id||("t"+uid()),kind:t.kind,d:$("tD").value||today(),a:a,c:isExp?$("tC").value:null,v:$("tV").value.trim(),ref:$("tF").value.trim()||null,n:$("tN").value.trim(),paidBy:isExp?t.paidBy:null,link:t.link||null,dupOf:t.dupOf||null,ph:t.ph||""};
+  var o={id:t.id||("t"+uid()),kind:t.kind,d:$("tD").value||today(),a:a,c:isExp?$("tC").value:null,v:$("tV").value.trim(),ref:$("tF").value.trim()||null,n:$("tN").value.trim(),paidBy:isExp?t.paidBy:null,pers:isExp?!!t.pers:false,link:t.link||null,dupOf:t.dupOf||null,ph:t.ph||""};
   if(isExp&&C.catGroup(o.c)=="fuel"){var g=$("tG").value;o.gal=g?Math.round(parseFloat(g)*100):null;o.state=$("tS").value.toUpperCase()||null;o.ret=cv("tR");o.inv=cv("tI");if(o.inv==null)o.inv=null}
   function fin(){if(id)S.tx=S.tx.map(function(x){return x.id==id?o:x});else S.tx.push(o);log(id?"tx.update":"tx.add",(o.v||cn(o.c))+" "+C.fmt(o.a)+(o.dupOf?" dup":"")+(o.link?" link":""));pend=null;save();close();toast(o.dupOf||o.link?L("linked"):L("saved_"));render()}
   function store(){if(pend){o.ph=o.ph||("p"+o.id);phPut(o.ph,pend,fin)}else fin()}

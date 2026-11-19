@@ -90,4 +90,28 @@ try{var RT=require("fs").readFileSync("/tmp/stp/s.txt","utf8");var RR=C.parseSta
  eq("real: fuel retail/invoice",[RR.fuelRetail,RR.fuelInvoice],[431645,383983]);eq("real: fuel rows",RR.fuel.length,8);eq("real: net diff 0",[KR.net,KR.rec.diff],[757552,0]);
  var TT=C.totals({stmts:[Object.assign({id:"r",miles:2900},RR)],tx:[],loads:[]},["2026-11-02","2026-11-08"]);eq("real: diesel gal / def gal",[TT.dieselGal,TT.defGal],[64728,2504]);eq("real: savings",TT.fuelSaved,47662);eq("real: fuel cost",TT.fuelCost,383983);
 }catch(e){console.log("(real statement fixture not present)",e.message)}
+
+// === spec #2 test ===
+var SP={id:"sp",d:"2026-11-10",p0:"2026-11-02",p1:"2026-11-08",gross:1395000,rate:8800,ded:[{c:"diesel",a:383983},{c:"toll",a:2565},{c:"ifta_eld",a:13500},{c:"truck_ins",a:36000},{c:"bobtail",a:10000},{c:"trailer",a:20000},{c:"prepass",a:2000},{c:"parking",a:2000}],loads:[{g:160000},{g:360000},{g:225000},{g:650000}]};
+var SS={stmts:[SP],tx:[],loads:[]},W=["2026-11-02","2026-11-08"],TS=C.totals(SS,W);
+eq("spec: gross/fee/biz/exp/net",[TS.gross,TS.fee,TS.earn,TS.exp,TS.profit],[1395000,167400,1227600,470048,757552]);
+eq("spec: loads count 4",TS.loadCount,4);
+eq("spec: no miles → null per-mile (no divide by zero)",[TS.perMile(TS.gross),TS.perMile(TS.profit)],[null,null]);
+// same numbers on every screen (single source)
+eq("home expenses == expenses screen",C.expRows(SS,W).biz,TS.exp);
+// manual entry BEFORE statement → linked, counted once
+var SM={stmts:[],loads:[],tx:[{id:"m1",kind:"exp",d:"2026-11-05",a:2565,c:"toll",paidBy:"own"},{id:"m2",kind:"exp",d:"2026-11-06",a:9999,c:"truck_repair",paidBy:"own"}]};
+var lk=C.linkMatching(SP,SM);SM.stmts.push(SP);eq("manual toll linked to statement",lk,["m1"]);eq("expenses = statement + unrelated repair",C.totals(SM,W).exp,470048+9999);
+// personal does not reduce profit, shown separately
+var SPp={stmts:[SP],loads:[],tx:[{id:"p1",kind:"exp",d:"2026-11-04",a:5000,c:"other",pers:true,paidBy:"own"}]};var TP=C.totals(SPp,W);
+eq("personal not in profit",[TP.profit,TP.pers],[757552,5000]);eq("expenses screen split",[C.expRows(SPp,W).biz,C.expRows(SPp,W).pers],[470048,5000]);
+// refund (negative) reduces expenses
+var SR={stmts:[SP],loads:[],tx:[{id:"r1",kind:"exp",d:"2026-11-04",a:-1500,c:"truck_repair",paidBy:"own"}]};eq("refund reduces expenses",C.totals(SR,W).exp,470048-1500);
+eq("statement refund line negative",C.parseStatement("Fuel rebate credit $15.00").ded[0].a,-1500);
+// week boundaries: Monday–Sunday, Nov 2–8
+eq("week of Nov 5 is Nov 2–8",C.range("week","2026-11-05"),["2026-11-02","2026-11-08"]);eq("week of Nov 8 (Sun)",C.range("week","2026-11-08"),["2026-11-02","2026-11-08"]);
+// statement stays in its week even if paid next week
+eq("statement counted in its period week, not pay date",C.totals(SS,["2026-11-09","2026-11-15"]).gross,0);
+// float trap
+eq("0.1+0.2 style sums exact",C.sum([{a:C.cents("0.10")},{a:C.cents("0.20")}],"a"),30);
 console.log("\nPASS "+pass+"  FAIL "+fail);process.exit(fail?1:0);

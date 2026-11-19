@@ -34,6 +34,7 @@ C.CATS=[
  ["truck_repair","maint","Truck Repair","Трак ремонту","Ремонт трака"],["trailer_repair","maint","Trailer Repair","Трейлер ремонту","Ремонт трейлера"],["pm","maint","Maintenance / PM Service","Тейлөө / PM","ТО / PM сервис"],["parts","maint","Parts / Tires","Тетиктер / дөңгөлөк","Запчасти / шины"],
  ["dispatch","fees","Dispatch Fee","Диспетчер акысы","Оплата диспетчеру"],["factoring","fees","Factoring Fee","Факторинг акысы","Факторинг"],
  ["other","other","Other Expenses","Башка чыгым","Прочие расходы"],["pers","other","Personal (not business)","Жеке (бизнеске кирбейт)","Личное (не бизнес)"]];
+C.MAIN=["diesel","toll","ifta_eld","truck_ins","bobtail","trailer","prepass","parking","truck_repair","other"];
 C.CAT={};C.CATS.forEach(function(c){C.CAT[c[0]]={id:c[0],g:c[1],en:c[2],kg:c[3],ru:c[4]}});
 C.catGroup=function(c){return (C.CAT[c]||C.CAT.other).g};
 
@@ -74,7 +75,9 @@ C.stmtCalc=function(st){
   3) paidBy=="card" (company fuel card / company paid) never counts by itself — the statement deduction already covers it.
      Such receipts are kept for gallons, prices, MPG and as proof.
   4) Reimbursements received reduce out-of-pocket cost; advances are not expenses. */
-C.counts=function(t){return t.kind!="income"&&t.paidBy=="own"&&!t.link&&!t.dupOf&&t.c!="pers"};
+C.isPers=function(t){return !!t.pers||t.c==="pers"};
+C.counts=function(t){return t.kind!="income"&&t.kind!="reimb"&&t.paidBy=="own"&&!t.link&&!t.dupOf&&!C.isPers(t)};
+C.persCounts=function(t){return t.kind=="exp"&&C.isPers(t)&&!t.dupOf};
 C.sameish=function(a,b,days){ /* candidate duplicate test */
  if(!a||!b||a===b)return 0;if(Math.abs((a.a||0)-(b.a||0))>1)return 0;var dd=Math.abs(C.days(a.d,b.d));if(dd>(days==null?1:days))return 0;
  var s=2;if(a.v&&b.v){var x=String(a.v).toUpperCase().replace(/[^A-Z]/g,"").slice(0,5),y=String(b.v).toUpperCase().replace(/[^A-Z]/g,"").slice(0,5);if(x&&y&&x===y)s++}
@@ -120,7 +123,7 @@ C.inR=function(d,r){return !!d&&d>=r[0]&&d<=r[1]};
 
 /* ---------- period totals ---------- */
 C.totals=function(S,r){
- var o={gross:0,fee:0,earn:0,stDed:0,oop:0,reimb:0,other:0,adv:0,net:0,profit:0,loaded:0,empty:0,
+ var o={pers:0,gross:0,fee:0,earn:0,stDed:0,oop:0,reimb:0,other:0,adv:0,net:0,profit:0,loaded:0,empty:0,
   dieselGal:0,defGal:0,dieselCost:0,fuelCost:0,retail:0,invoice:0,src:{gross:[],fee:[],earn:[],exp:[],net:[],profit:[]},byCat:{},stCount:0,loadCount:0,days:0};
  function addCat(c,a,src){o.byCat[c]=(o.byCat[c]||0)+a;o.src.exp.push(src)}
  (S.stmts||[]).forEach(function(st){if(!C.inR(C.stDay(st),r))return;var k=C.stmtCalc(st);o.stCount++;
@@ -136,7 +139,7 @@ C.totals=function(S,r){
   if(t.kind=="reimb"){o.reimb+=t.a;return}
   if(t.kind=="income"){o.other+=t.a;return}
   if(t.c&&C.catGroup(t.c)==="fuel"&&!t.dupOf&&!(t.link&&C.stHasFuelLines(S,t.link)))fuelAdd(t);
-  if(C.counts(t)){o.oop+=t.a;addCat(t.c,t.a,{t:"tx",id:t.id,a:t.a,c:t.c})}});
+  if(C.counts(t)){o.oop+=t.a;addCat(t.c,t.a,{t:"tx",id:t.id,a:t.a,c:t.c})}else if(C.persCounts(t))o.pers=(o.pers||0)+t.a});
  function fuelAdd(f){var cost=f.inv!=null?f.inv:(f.a||0);if(f.c==="def"){o.defGal+=f.gal||0}else if(f.gal){o.dieselGal+=f.gal;o.dieselCost+=cost}
   if(f.ret!=null&&f.inv!=null){o.retail+=f.ret;o.invoice+=f.inv}}
  o.exp=o.stDed+o.oop;o.fuelSaved=o.retail&&o.invoice?o.retail-o.invoice:0;
@@ -147,6 +150,16 @@ C.totals=function(S,r){
  o.mpg=o.miles>0&&o.dieselGal>0?Math.round(o.miles*10000/o.dieselGal)/100:null; /* gal stored as hundredths */
  return o};
 
+/* one source for the Expenses screen: every row and whether it counts */
+C.expRows=function(S,r){var rows=[];
+ (S.stmts||[]).forEach(function(s){if(!C.inR(C.stDay(s),r))return;(s.ded||[]).forEach(function(x,i){rows.push({src:"st",id:s.id,i:i,d:C.stDay(s),a:x.a,c:x.c,v:x.v,pers:false,cnt:true})})});
+ (S.tx||[]).forEach(function(t){if(t.kind!=="exp"||!C.inR(t.d,r))return;var p=C.isPers(t);rows.push({src:"tx",id:t.id,d:t.d,a:t.a,c:t.c||"other",v:t.v,pers:p,cnt:p?C.persCounts(t):C.counts(t),t:t})});
+ rows.sort(function(a,b){return a.d<b.d?1:a.d>b.d?-1:0});var biz=0,pers=0;rows.forEach(function(x){if(!x.cnt)return;if(x.pers)pers+=x.a;else biz+=x.a});return {rows:rows,biz:biz,pers:pers}};
+/* statement saved after manual entries: own-money entries equal to a statement line are linked (counted once) */
+C.linkMatching=function(st,S){var ids=[];(S.tx||[]).forEach(function(t){if(t.kind!=="exp"||t.link||t.dupOf||C.isPers(t))return;
+  var inP=st.p0&&st.p1?(t.d>=C.addDays(st.p0,-7)&&t.d<=C.addDays(st.p1,1)):Math.abs(C.days(t.d,C.stDay(st)))<=7;if(!inP)return;
+  var hit=(st.ded||[]).some(function(x){return Math.abs(x.a-t.a)<=1&&(x.c===t.c||C.catGroup(x.c)===C.catGroup(t.c))})||(st.fuel||[]).some(function(f){return Math.abs((f.inv!=null?f.inv:f.a)-t.a)<=1&&C.catGroup(t.c)==="fuel"});
+  if(hit){t.link=st.id;ids.push(t.id)}});return ids};
 /* ---------- tax estimate 2026 (owner-operator, Schedule C + SE). Estimates only. ---------- */
 C.TAX={BR:{single:[[1240000,1000],[5040000,1200],[10570000,2200],[20177500,2400],[25622500,3200],[64060000,3500],[1e15,3700]],
  mfj:[[2480000,1000],[10080000,1200],[21140000,2200],[40355000,2400],[51245000,3200],[76870000,3500],[1e15,3700]],
@@ -229,7 +242,7 @@ C.parseStatement=function(txt){
   if(/DETENTION|LAYOVER|BONUS|STOP PAY|EXTRA STOP|TARP|OTHER PAY|ACCESSORIAL/.test(u)&&!/DEDUCT/.test(u)){R.other=(R.other||0)+Math.abs(a);return}
   if(/ESCROW|SAVINGS|MAINT(ENANCE)? (FUND|RESERVE)/.test(u)){R.unknown.push({v:l,a:Math.abs(a),hint:"escrow"});return}
   var c=C.guessCat(u);var lab=l.replace(C.MONEY,"").replace(/\d{1,2}[\/\-.]\d{1,2}[\/\-.]\d{2,4}/g,"").replace(/\s+/g," ").trim().slice(0,48);
-  if(c&&!/TOTAL|SUBTOTAL/.test(u)){R.ded.push({c:c,a:Math.abs(a),v:lab,raw:(l.match(C.MONEY)||[]).pop()||""});return}
+  if(c&&!/TOTAL|SUBTOTAL/.test(u)){R.ded.push({c:c,a:/REFUND|REBATE|CREDIT|RETURN/.test(u)?-Math.abs(a):Math.abs(a),v:lab,raw:(l.match(C.MONEY)||[]).pop()||""});return}
   if(!/TOTAL|SUBTOTAL|BALANCE|PAGE/.test(u))R.unknown.push({v:lab||l.slice(0,48),a:Math.abs(a)});
  });
  C.collapseFuel(R);C.fixOcrDollar(R);
