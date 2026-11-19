@@ -130,7 +130,7 @@ C.totals=function(S,r){
   o.gross+=k.gross;o.fee+=k.fee;o.earn+=k.earn;o.stDed+=k.ded;o.reimb+=k.reimb;o.other+=k.other;o.adv+=k.adv;o.net+=k.net;o.days+=st.days||0;
   o.src.gross.push({t:"st",id:st.id,a:k.gross});o.src.fee.push({t:"st",id:st.id,a:k.fee});o.src.earn.push({t:"st",id:st.id,a:k.earn});o.src.net.push({t:"st",id:st.id,a:k.net});
   (st.ded||[]).forEach(function(x,i){addCat(x.c,x.a,{t:"stded",id:st.id,i:i,a:x.a,c:x.c})});
-  var lm=0;(st.loads||[]).forEach(function(l){lm+=l.mi||0;o.empty+=l.dh||0;o.loadCount++});o.loaded+=st.miles?st.miles:lm;if(st.dh)o.empty+=st.dh;
+  var lm=0;(st.loads||[]).forEach(function(l){lm+=l.mi||0;o.empty+=l.dh||0;o.loadCount++});o.loaded+=st.miles?st.miles:lm;if(st.dh)o.empty+=st.dh;if(st.milesAuto)o.autoMi=true;
   (st.fuel||[]).forEach(function(f){fuelAdd(f)});
   if(st.fuelRetail!=null&&st.fuelInvoice!=null&&!(st.fuel||[]).some(function(f){return f.ret!=null})){o.retail+=st.fuelRetail;o.invoice+=st.fuelInvoice}});
  (S.loads||[]).forEach(function(l){if(!C.inR(l.d,r))return;var e=l.earn!=null?l.earn:l.g;o.gross+=l.g;o.earn+=e;o.fee+=l.g-e;o.loaded+=l.mi||0;o.empty+=l.dh||0;o.loadCount++;
