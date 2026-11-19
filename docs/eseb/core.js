@@ -127,7 +127,7 @@ C.totals=function(S,r){
   o.gross+=k.gross;o.fee+=k.fee;o.earn+=k.earn;o.stDed+=k.ded;o.reimb+=k.reimb;o.other+=k.other;o.adv+=k.adv;o.net+=k.net;o.days+=st.days||0;
   o.src.gross.push({t:"st",id:st.id,a:k.gross});o.src.fee.push({t:"st",id:st.id,a:k.fee});o.src.earn.push({t:"st",id:st.id,a:k.earn});o.src.net.push({t:"st",id:st.id,a:k.net});
   (st.ded||[]).forEach(function(x,i){addCat(x.c,x.a,{t:"stded",id:st.id,i:i,a:x.a,c:x.c})});
-  (st.loads||[]).forEach(function(l){o.loaded+=l.mi||0;o.empty+=l.dh||0;o.loadCount++});
+  var lm=0;(st.loads||[]).forEach(function(l){lm+=l.mi||0;o.empty+=l.dh||0;o.loadCount++});o.loaded+=st.miles?st.miles:lm;if(st.dh)o.empty+=st.dh;
   (st.fuel||[]).forEach(function(f){fuelAdd(f)});
   if(st.fuelRetail!=null&&st.fuelInvoice!=null&&!(st.fuel||[]).some(function(f){return f.ret!=null})){o.retail+=st.fuelRetail;o.invoice+=st.fuelInvoice}});
  (S.loads||[]).forEach(function(l){if(!C.inR(l.d,r))return;var e=l.earn!=null?l.earn:l.g;o.gross+=l.g;o.earn+=e;o.fee+=l.g-e;o.loaded+=l.mi||0;o.empty+=l.dh||0;o.loadCount++;
@@ -178,17 +178,38 @@ function locs(U){var re=new RegExp("([A-Z][A-Z .'\\-]{1,24}?)[, ]+("+STS+")\\b",
 C.parseStatement=function(txt){
  var lines=String(txt||"").split(/\n/).map(function(l){return l.replace(/\s+/g," ").trim()}).filter(Boolean),U=lines.join("\n").toUpperCase();
  var R={company:null,driver:null,num:null,d:null,p0:null,p1:null,gross:null,rate:null,earn:null,fee:null,adv:null,reimb:null,other:null,net:null,dedTotal:null,loads:[],ded:[],fuel:[],fuelRetail:null,fuelInvoice:null,unknown:[]};
- for(var i=0;i<Math.min(4,lines.length);i++){if(/[A-Za-z]{3}/.test(lines[i])&&!/STATEMENT|SETTLEMENT|PAGE|DRIVER|PERIOD/i.test(lines[i])&&!moneys(lines[i]).length){R.company=lines[i].slice(0,60);break}}
+ for(var i=0;i<Math.min(4,lines.length);i++){var cl=lines[i].replace(/\s*(STATEMENT DATE|SETTLEMENT DATE|PERIOD|DATE|PAGE)\b.*$/i,"").trim();if(/[A-Za-z]{3}/.test(cl)&&!/^(STATEMENT|SETTLEMENT|PAGE|DRIVER|PERIOD)/i.test(cl)&&!moneys(cl).length){R.company=cl.slice(0,60);break}}
  lines.forEach(function(l){var u=l.toUpperCase(),mm;
-  if(!R.num&&(mm=u.match(/(?:SETTLEMENT|STATEMENT|STMT)\s*(?:#|NO\.?|NUMBER|ID)\s*:?\s*([A-Z0-9\-]{3,})/)))R.num=mm[1];
+  if(!R.num&&(mm=u.match(/(?:SETTLEMENT|STATEMENT|STMT)\s*(?:#|NO\.?|NUMBER|ID)?\s*[:#]\s*([A-Z]{0,4}-?\d[A-Z0-9\-]{2,})/)))R.num=mm[1];
+  if(/PERIOD\s*START|START\s*DATE|PERIOD\s*FROM/.test(u)){var q1=dates(u);if(q1.length)R.p0=q1[0]}
+  if(/PERIOD\s*END|END\s*DATE|PERIOD\s*TO|WEEK\s*ENDING/.test(u)){var q2=dates(u);if(q2.length)R.p1=q2[q2.length-1]}
   if(!R.driver&&(mm=l.match(/DRIVER(?: NAME)?\s*:\s*([A-Za-z][A-Za-z .'\-]{2,40})/i)))R.driver=mm[1].replace(/\s+(UNIT|TRUCK).*$/i,"").trim();
   if(/PERIOD|WEEK|FROM\b/.test(u)&&!R.p0){var ds=dates(u);if(ds.length>=2){R.p0=ds[0];R.p1=ds[1]}else if(ds.length===1&&/ENDING/.test(u)){R.p1=ds[0];R.p0=C.addDays(ds[0],-6)}}
   if(!R.d&&/(STATEMENT|SETTLEMENT|CHECK|PAY)\s*DATE/.test(u)){var d1=dates(u);if(d1.length)R.d=d1[0]}
  });
  if(!R.p0){var ds2=dates(U.split("\n").slice(0,8).join(" "));if(ds2.length>=2){R.p0=ds2[0];R.p1=ds2[1]}}
+ var sec="";
  lines.forEach(function(l){var u=l.toUpperCase(),a=lastMoney(l),ls=locs(u),mm;
+  if(/^FUEL\s*TRANSACTIONS|^FUEL\s*(PURCHASES|DETAIL)/.test(u)){sec="fuel";return}
+  if(/^TOLL\s*TRANSACTIONS|^TOLL\s*DETAIL/.test(u)){sec="toll";return}
+  if(/^DEDUCTION\s*TYPE|^DEDUCTIONS$/.test(u)){sec="ded";return}
+  if(/^EARNINGS$|^LOAD\s*(NUMBER|#)/.test(u)){sec="loads";return}
+  if(sec==="toll"){if(a!=null&&!/TOTAL/.test(u)){R.tolls=R.tolls||[];R.tolls.push({d:dates(u)[0]||null,a:a})}return} /* detail of the Toll deduction — info only */
+  if(sec==="fuel"){if(a==null)return;var dl=(l.match(/\(?[-−]?\$\s?(?:\d{1,3}(?:,\d{3})+|\d+)\.\d{2}\)?/g)||[]).map(C.cents),ms=dl.length?dl:moneys(l);
+   if(/^TOTAL/.test(u)){if(ms.length>=2){R.fuelRetail=ms[0];R.fuelInvoice=ms[ms.length-1]}else R.fuelInvoice=ms[0];return}
+   var qty=(u.replace(/\$\s?[\d,]+\.\d{2}/g," ").replace(/\d{1,2}[\/\-.]\d{1,2}[\/\-.]\d{2,4}/g," ").match(/\b(\d{1,4}\.\d{1,3})\b/)||[])[1];
+   var stt=(u.match(new RegExp("\\b("+STS+")\\b(?=\\s+\\d)"))||[])[1]||null;
+   R.fuel.push({d:dates(u)[0]||null,v:(l.match(/(DIESEL|DEF|REEFER|GAS)\s+(.*?)\s+[A-Z]{2}\s+\d/i)||[0,"",""])[2],state:stt,gal:qty?Math.round(parseFloat(qty)*100):null,c:/\bDEF\b/.test(u)?"def":"diesel",ret:ms.length>=2?ms[0]:null,inv:ms[ms.length-1],a:ms[ms.length-1]});return}
+  if(/^\s*EARNINGS\s*:/.test(u)&&a!=null&&R.earn==null){R.earn=a;return}
+  if(/^\s*DEDUCTIONS\s*:/.test(u)&&a!=null){R.dedTotal=Math.abs(a);return}
+  if(/^\s*ADVANCES?\s*:/.test(u)&&a!=null){R.adv=Math.abs(a);return}
+  if(/^\s*REIMBURSEMENTS?\s*:/.test(u)&&a!=null){R.reimb=Math.abs(a);return}
+  if(/^\s*OTHER\s*PAY\s*:/.test(u)&&a!=null){R.other=Math.abs(a);return}
+  if(sec==="loads"&&/^TOTAL/.test(u)){var tm=moneys(l);if(tm.length&&R.gross==null)R.gross=tm[0];if(tm.length>1&&R.earn==null)R.earn=tm[tm.length-1];return}
+  if(sec==="ded"&&/^TOTAL/.test(u)){if(a!=null&&R.dedTotal==null)R.dedTotal=Math.abs(a);return}
   if(/(DRIVER|CONTRACTOR|OWNER OPERATOR|O\/O)\s*(RATE|%|PERCENT)|\bRATE\s*:?\s*\d{1,3}(\.\d+)?\s*%|\b\d{1,3}(\.\d+)?\s*%\s*(DRIVER|TO DRIVER|PAY)/.test(u)&&(mm=u.match(/(\d{1,3}(?:\.\d+)?)\s*%/))&&R.rate==null&&!/COMMISSION|COMPANY|FEE/.test(u))R.rate=C.bp(mm[1]);
-  if(ls.length>=2&&a!=null){var nums=u.replace(C.MONEY," ").replace(/\d{1,2}[\/\-.]\d{1,2}[\/\-.]\d{2,4}/g," ");var mi=null,m2=nums.match(/(\d{2,4})\s*(?:MI|MILES?|LM|LOADED)\b/);
+  if(ls.length>=2&&a!=null){var nums=u.replace(C.MONEY," ").replace(/\d{1,2}[\/\-.]\d{1,2}[\/\-.]\d{2,4}/g," ").replace(/\d+(\.\d+)?\s*%/g," ").replace(/\b\d{5,}\b/g," ");
+   var lr=u.match(/(\d{1,3}(?:\.\d+)?)\s*%/);if(lr&&R.rate==null)R.rate=C.bp(lr[1]);var mi=null,m2=nums.match(/(\d{2,4})\s*(?:MI|MILES?|LM|LOADED)\b/);
    if(m2)mi=+m2[1];else{var ns=(nums.match(/\b\d{2,4}\b/g)||[]).map(Number).filter(function(n){return n>=20&&n<=3500});if(ns.length)mi=ns[ns.length-1]}
    var ln=(u.match(/^\s*#?([A-Z]{0,3}\d{4,})/)||[])[1]||null,dd=dates(u);
    R.loads.push({num:ln,f:ls[0],t:ls[ls.length-1],pd:dd[0]||null,g:Math.max.apply(null,moneys(l)),mi:mi,dh:null});return}
@@ -223,7 +244,7 @@ C.collapseFuel=function(R){var F=[],rest=[];R.ded.forEach(function(d){if(C.catGr
  if(R.fuelInvoice!=null)total=R.fuelInvoice;
  else{var all=C.sum(F,"a");for(var i=0;i<F.length&&total==null;i++){if(F.length>1&&Math.abs(F[i].a*2-all)<=2||/TOTAL/i.test(F[i].v)){total=F[i].a;details=F.filter(function(x,j){return j!==i})}}
   if(total==null)total=all}
- details.forEach(function(d){R.fuel.push({d:null,v:d.v,gal:null,c:d.c,a:d.a,inv:d.a,ret:null})});
+ var hadRows=R.fuel.length>0;if(!hadRows&&!(details.length===1&&details[0].a===total))details.forEach(function(d){R.fuel.push({d:null,v:d.v,gal:null,c:d.c,a:d.a,inv:d.a,ret:null})});
  rest.push({c:"diesel",a:total,v:"Fuel"+(details.length?" ("+details.length+")":""),fuelN:details.length,raw:F.length===1?F[0].raw:""});R.ded=rest;R.fuelFromDetails=R.fuelInvoice==null&&details.length===F.length;return R};
 /* OCR often reads "$" as 5, 8 or S: "$25.65" → "825.65". Use the statement's own totals to pick the right reading. */
 C.fixOcrDollar=function(R){var target=R.dedTotal;if(target==null||C.sum(R.ded,"a")===target)return R;

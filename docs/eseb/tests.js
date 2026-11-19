@@ -82,4 +82,12 @@ eq("deductions = 4700.48",C.sum(R2.ded,"a"),470048);
 var k5=C.stmtCalc(Object.assign({},R2));eq("net reconciles 7575.52",[k5.net,k5.rec.diff],[757552,0]);
 // details only, no total line → summed once
 var R3=C.parseStatement("Fuel Diesel A 100.00\nFuel Diesel B 50.00\nFuel DEF C 10.00\nToll 5.00");eq("fuel details summed once",R3.ded.filter(function(d){return d.c=="diesel"})[0].a,16000);
+
+// REAL statement layout (ARAVAN-style "Driver Pay Settlement"), text from PDF
+try{var RT=require("fs").readFileSync("/tmp/stp/s.txt","utf8");var RR=C.parseStatement(RT),KR=C.stmtCalc(RR);
+ eq("real: period",[RR.p0,RR.p1],["2026-11-02","2026-11-08"]);eq("real: gross",RR.gross,1395000);eq("real: earn",RR.earn,1227600);eq("real: loads",RR.loads.length,4);
+ eq("real: deductions",C.sum(RR.ded,"a"),470048);eq("real: one fuel line",RR.ded.filter(function(d){return d.c=="diesel"}).length,1);eq("real: tolls not added twice",RR.ded.filter(function(d){return d.c=="toll"}).length,1);
+ eq("real: fuel retail/invoice",[RR.fuelRetail,RR.fuelInvoice],[431645,383983]);eq("real: fuel rows",RR.fuel.length,8);eq("real: net diff 0",[KR.net,KR.rec.diff],[757552,0]);
+ var TT=C.totals({stmts:[Object.assign({id:"r",miles:2900},RR)],tx:[],loads:[]},["2026-11-02","2026-11-08"]);eq("real: diesel gal / def gal",[TT.dieselGal,TT.defGal],[64728,2504]);eq("real: savings",TT.fuelSaved,47662);eq("real: fuel cost",TT.fuelCost,383983);
+}catch(e){console.log("(real statement fixture not present)",e.message)}
 console.log("\nPASS "+pass+"  FAIL "+fail);process.exit(fail?1:0);

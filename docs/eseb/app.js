@@ -190,6 +190,7 @@ function review(r,editId){var R0=r;
  var h='<div class="ocr">'+L("review")+'</div>'+
  '<div class="row">'+inp("rP0",L("p0"),r.p0,"d")+inp("rP1",L("p1"),r.p1,"d")+'</div>'+
  '<div class="row">'+inp("rG","Gross, $",r.gross)+'<div><label>'+L("rate")+'</label><input id="rRate" inputmode="decimal" value="'+(r.rate==null?"":r.rate/100)+'"'+(r.rate==null&&r.earn==null?' class="miss"':'')+'></div></div>'+
+ '<div class="row"><div><label>'+L("mi")+'</label><input id="rMi" inputmode="numeric" placeholder="'+(C.sum(r.loads,"mi")||"")+'" value="'+(r.miles||"")+'"></div><div><label>'+L("dh")+'</label><input id="rDh" inputmode="numeric" value="'+(r.dh||"")+'"></div></div>'+
  '<h2>🧾 '+L("ded")+'</h2><div id="rDd">'+r.ded.map(dedRow).join("")+'</div><button class="btn gh sm" data-add="D">'+L("addRow")+'</button>'+
  (r.ocrFixed?'<div class="ok2">✅ '+L("ocrFix")+'</div>':'')+
  '<details class="card"><summary>🚚 '+L("loads")+' ('+r.loads.length+') · '+M(C.sum(r.loads,"g"))+'</summary><div id="rL">'+r.loads.map(loadRow).join("")+'</div><button class="btn gh sm" data-add="L">'+L("addRow")+'</button></details>'+
@@ -202,7 +203,7 @@ function review(r,editId){var R0=r;
  sheet("📄 "+L("stmt"),h);
  function collect(){var st={id:editId||("s"+uid()),company:$("rCo").value.trim()||null,num:$("rNum").value.trim()||null,p0:$("rP0").value||null,p1:$("rP1").value||null,d:$("rD").value||$("rP1").value||today(),
   gross:cv("rG")||0,rate:$("rRate").value.trim()?C.bp($("rRate").value):null,earn:cv("rE"),fee:null,adv:cv("rAdv")||0,reimb:cv("rRe")||0,other:cv("rOt")||0,net:cv("rNet"),dedTotal:cv("rDT"),
-  fuelRetail:cv("rFR"),fuelInvoice:cv("rFI"),days:Math.max(0,Math.min(31,parseInt($("rDays").value,10)||0)),loads:[],ded:[],fuel:R0.fuel||[],src:"upload"};
+  fuelRetail:cv("rFR"),fuelInvoice:cv("rFI"),miles:parseInt($("rMi").value,10)||0,dh:parseInt($("rDh").value,10)||0,tolls:R0.tolls||[],days:Math.max(0,Math.min(31,parseInt($("rDays").value,10)||0)),loads:[],ded:[],fuel:R0.fuel||[],src:"upload"};
   var q=function(s){return document.querySelectorAll(s)};
   Array.prototype.forEach.call(q("[data-lr]"),function(e){var g=C.cents(e.querySelector(".lg").value);if(g==null)return;st.loads.push({num:e.getAttribute("data-num")||null,f:e.querySelector(".lf").value.trim(),t:e.querySelector(".lt").value.trim(),pd:e.getAttribute("data-pd")||null,g:g,mi:parseInt(e.querySelector(".lm").value,10)||0,dh:parseInt(e.querySelector(".ld").value,10)||0})});
   Array.prototype.forEach.call(q("[data-dr]"),function(e){var a=C.cents(e.querySelector(".da").value);if(!a)return;st.ded.push({c:e.querySelector(".dc").value,a:a,v:e.getAttribute("data-v")||""})});
