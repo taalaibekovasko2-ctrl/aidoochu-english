@@ -71,4 +71,15 @@ var a1={id:"a",d:"2026-11-08",p0:"2026-11-02",p1:"2026-11-08",gross:1395000,ded:
 eq("dup by same week",!!C.stmtDup(b1,{stmts:[a1]}),true);eq("dupPairs finds",C.dupPairs({stmts:[a1,b1]}).length,1);
 var mg=C.mergeStmt(a1,b1);eq("merge no double deductions",C.sum(mg.ded,"a"),4565);eq("merge keeps gross",mg.gross,1395000);
 eq("different weeks not dup",!!C.stmtDup({id:"c",p0:"2026-11-09",p1:"2026-11-15",gross:900000,d:"2026-11-15"},{stmts:[a1]}),false);
+
+// REAL-LIKE OCR: fuel total + fuel details listed, "$" misread as 8/5
+var S2="SETTLEMENT\nPeriod Nov 2 - Nov 8, 2026\nTotal Gross $13,950.00\nDriver Rate 88%\nParking Booking #XRWP60UJ 520.00\nPrepass NOVEMBER 20.00\nTrailer Van #207 200.00\nBobtail Insurance 100.00\nInsurance 360.00\nIfta Logbook 135.00\nToll Au 825.65\nFuel Au total 3,839.83\nFuel AMATZHANOV | Def Fernley NV 16.09\nFuel AMATZHANOV | Diesel Fernley NV 579.36\nFuel 512026 AMATZHANOV | Diesel Tacoma WA 337.70\nFuel 612026 AMATZHANOV | Diesel Roseburg OR 896.50\nFuel 812026 AMATZHANOV | Diesel Clive 1,033.46\nFuel 912026 AMATZHANOV | Diesel Ontario 976.72\nTotal Deductions 4,700.48\nNet Pay 7,575.52";
+var R2=C.parseStatement(S2);
+eq("period Nov 2 - Nov 8",[R2.p0,R2.p1],["2026-11-02","2026-11-08"]);
+eq("fuel collapsed to one line",R2.ded.filter(function(d){return C.catGroup(d.c)=="fuel"}).map(function(d){return d.a}),[383983]);
+eq("$ misread fixed (toll 25.65, parking 20.00)",R2.ded.filter(function(d){return d.c=="toll"||d.c=="parking"}).map(function(d){return d.a}),[2000,2565]);
+eq("deductions = 4700.48",C.sum(R2.ded,"a"),470048);
+var k5=C.stmtCalc(Object.assign({},R2));eq("net reconciles 7575.52",[k5.net,k5.rec.diff],[757552,0]);
+// details only, no total line → summed once
+var R3=C.parseStatement("Fuel Diesel A 100.00\nFuel Diesel B 50.00\nFuel DEF C 10.00\nToll 5.00");eq("fuel details summed once",R3.ded.filter(function(d){return d.c=="diesel"})[0].a,16000);
 console.log("\nPASS "+pass+"  FAIL "+fail);process.exit(fail?1:0);
