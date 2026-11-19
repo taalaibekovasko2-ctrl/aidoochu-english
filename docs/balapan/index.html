@@ -102,6 +102,7 @@ h2{font-size:20px;font-weight:900;margin:14px 4px 12px}
 .drw2{display:block;width:100%;max-width:230px;margin:0 auto;background:#fffdf6;border-radius:16px}.drw2 line{stroke:#d5ddeb;stroke-width:.8}.drw2 .mid{stroke-dasharray:3 3}
 .drw2 path{fill:none;stroke-linecap:round;stroke-linejoin:round}.drw2 .gd{stroke:#eef2f8;stroke-width:9}.drw2 .an{stroke-width:6;stroke-dasharray:1;stroke-dashoffset:1;animation:dr 1.2s ease forwards}
 @keyframes dr{to{stroke-dashoffset:0}}.drw2 .nb{opacity:0;animation:fi .2s forwards}.drw2 .nb text{fill:#fff;font:900 6.5px system-ui;text-anchor:middle}@keyframes fi{to{opacity:1}}
+.lnav{display:flex;align-items:center;gap:10px;margin-top:16px}.lnav button{flex:1;height:64px;border-radius:20px;background:#4dabf7;color:#fff;font-size:26px;font-weight:900;box-shadow:0 5px 0 rgba(0,0,0,.15)}.lnav span{font-weight:900;color:var(--sub);font-size:16px;min-width:56px;text-align:center}
 </style></head><body>
 <div id="app"></div>
 <script>
@@ -213,7 +214,7 @@ function letter(){var A=AB(),a=A[S.i],w=a[2],k=w.toUpperCase().indexOf(a[0]);D.a
  app.innerHTML=hd("🔤 "+t("abc"),"","abc")+'<div class="wrap"><div class="card"><div style="font-size:110px;font-weight:900;line-height:1;color:'+COLS[S.i%COLS.length]+'">'+a[0]+' '+a[0].toLowerCase()+'</div><span class="big" style="font-size:100px">'+a[1]+'</span><div class="word" style="font-size:36px">'+(k>=0?w.slice(0,k)+'<b>'+w[k]+'</b>'+w.slice(k+1):w)+'</div><button class="say" data-say="'+w+'" data-l="'+L()+'">'+t("listen")+'</button></div>'+
  '<div class="sec wr"><div class="sh">✍️ '+t("howw")+'</div>'+drwSvg(a[0])+'<button class="sm" data-rp="1" style="text-align:center">🔁 '+t("again2")+'</button></div>'+
  '<div class="sec wr"><div class="sh">👆 '+t("tryw")+'</div><canvas id="tc" width="600" height="520"></canvas><div class="pb" style="height:12px;margin-top:10px"><span id="tcp" style="width:0;background:#51cf66"></span></div><div id="tcm" class="lbl" style="text-align:center;font-size:17px;color:#2f9e44"></div><div class="lb"><button class="sp" data-clr="1">🧽 '+t("clear")+'</button><button class="ls" data-say="'+a[0]+'" data-l="'+L()+'">🔊 '+a[0]+'</button></div></div>'+
- '<div class="cnt">'+(S.i+1)+' / '+A.length+'</div><div class="swh">'+t("swipe")+'</div></div>';setTimeout(tcInit,30)}
+ '<div class="lnav"><button data-ln="-1">⬅️ '+A[(S.i-1+A.length)%A.length][0]+'</button><span>'+(S.i+1)+' / '+A.length+'</span><button data-ln="1">'+A[(S.i+1)%A.length][0]+' ➡️</button></div></div>';setTimeout(tcInit,30)}
 var TCOL=["#ff6b6b","#4dabf7","#51cf66","#845ef7","#ff922b","#f06595"],tci=0;
 var _A=["M20 90 L50 10 L80 90","M32 62 L68 62"],_B=["M25 10 L25 90","M25 10 L55 10 Q75 10 75 30 Q75 50 55 50 L25 50","M25 50 L58 50 Q80 50 80 70 Q80 90 58 90 L25 90"],_C=["M78 25 Q68 10 50 10 Q22 10 22 50 Q22 90 50 90 Q68 90 78 75"],_E=["M75 10 L25 10 L25 90 L75 90","M25 50 L65 50"],_H=["M25 10 L25 90","M75 10 L75 90","M25 50 L75 50"],_K=["M25 10 L25 90","M75 10 L25 58","M40 45 L78 90"],_M=["M20 90 L20 10 L50 60 L80 10 L80 90"],_O=["M50 10 Q20 10 20 50 Q20 90 50 90 Q80 90 80 50 Q80 10 50 10"],_P=["M25 90 L25 10","M25 10 L55 10 Q78 10 78 32 Q78 54 55 54 L25 54"],_T=["M20 10 L80 10","M50 10 L50 90"],_X=["M22 10 L78 90","M78 10 L22 90"];
 var STK={
@@ -221,10 +222,11 @@ A:_A,B:_B,C:_C,D:["M25 10 L25 90","M25 10 L45 10 Q78 10 78 50 Q78 90 45 90 L25 9
 "А":_A,"Б":["M72 10 L25 10 L25 90","M25 46 L55 46 Q78 46 78 68 Q78 90 55 90 L25 90"],"В":_B,"Г":["M72 10 L25 10 L25 90"],"Д":["M38 10 Q36 62 20 78","M38 10 L72 10 L72 78","M14 94 L14 78 L86 78 L86 94"],"Е":_E,"Ё":_E.concat(["M38 -6 L38 -1","M62 -6 L62 -1"]),"Ж":["M50 10 L50 90","M18 10 L50 50 L18 90","M82 10 L50 50 L82 90"],"З":["M25 22 Q32 10 50 10 Q74 10 74 29 Q74 48 48 48 Q78 48 78 69 Q78 90 50 90 Q28 90 22 76"],"И":["M25 10 L25 90 L75 10 L75 90"],"Й":["M25 10 L25 90 L75 10 L75 90","M38 -6 Q50 4 62 -6"],"К":_K,"Л":["M38 10 Q36 75 18 90","M38 10 L75 10 L75 90"],"М":_M,"Н":_H,"О":_O,"П":["M25 90 L25 10 L75 10 L75 90"],"Р":_P,"С":_C,"Т":_T,"У":["M20 10 L50 55","M80 10 L50 55 Q38 82 22 88"],"Ф":["M50 6 L50 94","M50 25 Q15 25 15 50 Q15 75 50 75 Q85 75 85 50 Q85 25 50 25"],"Х":_X,"Ц":["M25 10 L25 80 L75 80","M75 10 L75 80 L88 80 L88 95"],"Ч":["M25 10 L25 40 Q25 55 50 55 L75 55","M75 10 L75 90"],"Ш":["M15 10 L15 90 L85 90 L85 10","M50 10 L50 90"],"Щ":["M15 10 L15 80 L80 80 L80 10","M47 10 L47 80","M80 80 L92 80 L92 95"],"Ъ":["M12 10 L35 10 L35 90","M35 46 L60 46 Q82 46 82 68 Q82 90 60 90 L35 90"],"Ы":["M18 10 L18 90","M18 46 L40 46 Q60 46 60 68 Q60 90 40 90 L18 90","M82 10 L82 90"],"Ь":["M28 10 L28 90","M28 46 L55 46 Q78 46 78 68 Q78 90 55 90 L28 90"],"Э":["M22 25 Q32 10 50 10 Q78 10 78 50 Q78 90 50 90 Q32 90 22 75","M42 50 L78 50"],"Ю":["M15 10 L15 90","M15 50 L38 50","M65 10 Q38 10 38 50 Q38 90 65 90 Q90 90 90 50 Q90 10 65 10"],"Я":["M75 90 L75 10 L45 10 Q22 10 22 32 Q22 54 45 54 L75 54","M50 54 L22 90"]};
 var SCOL=["#ff6b6b","#4dabf7","#51cf66","#845ef7","#ff922b"];
 function st0(d){var m=d.match(/M\s*(-?[\d.]+)\s+(-?[\d.]+)/);return [+m[1],+m[2]]}
+function stS(ss){var u=[];return ss.map(function(d){var p=st0(d);u.forEach(function(q){if(Math.abs(q[0]-p[0])<6&&Math.abs(q[1]-p[1])<6)p=[p[0]+9,p[1]+4]});u.push(p);return p})}
 function drwSvg(ch){var ss=STK[ch]||[];return '<svg viewBox="0 -12 100 112" class="drw2"><line x1="0" y1="10" x2="100" y2="10"/><line x1="0" y1="90" x2="100" y2="90"/><line x1="0" y1="50" x2="100" y2="50" class="mid"/>'+
  ss.map(function(d,i){return '<path d="'+d+'" class="gd"/>'}).join("")+
  ss.map(function(d,i){return '<path d="'+d+'" pathLength="1" class="an" style="stroke:'+SCOL[i%5]+';animation-delay:'+(i*1.3)+'s"/>'}).join("")+
- ss.map(function(d,i){var p=st0(d);return '<g class="nb" style="animation-delay:'+(i*1.3)+'s"><circle cx="'+p[0]+'" cy="'+p[1]+'" r="5.5" fill="'+SCOL[i%5]+'"/><text x="'+p[0]+'" y="'+(p[1]+2.3)+'">'+(i+1)+'</text></g>'}).join("")+'</svg>'}
+ stS(ss).map(function(p,i){return '<g class="nb" style="animation-delay:'+(i*1.3)+'s"><circle cx="'+p[0]+'" cy="'+p[1]+'" r="5.5" fill="'+SCOL[i%5]+'"/><text x="'+p[0]+'" y="'+(p[1]+2.3)+'">'+(i+1)+'</text></g>'}).join("")+'</svg>'}
 var TC={};
 function tcMap(x,y){return [100+x*4,68+y*4]}
 function tcGuide(){var c=document.getElementById("tc");if(!c)return;var x=c.getContext("2d"),ch=AB()[S.i][0],ss=STK[ch]||[];x.clearRect(0,0,600,520);
@@ -234,7 +236,7 @@ function tcGuide(){var c=document.getElementById("tc");if(!c)return;var x=c.getC
  ss.forEach(function(d){var p=new Path2D(d);x.strokeStyle="#e3e9f5";x.lineWidth=13;x.stroke(p)});
  ss.forEach(function(d){var p=new Path2D(d);x.strokeStyle="#9fb0d0";x.lineWidth=1.2;x.setLineDash([3,3]);x.stroke(p);x.setLineDash([])});
  x.restore();
- ss.forEach(function(d,i){var s=st0(d),p=tcMap(s[0],s[1]);x.fillStyle=SCOL[i%5];x.beginPath();x.arc(p[0],p[1],20,0,7);x.fill();x.fillStyle="#fff";x.font="900 24px system-ui";x.textAlign="center";x.textBaseline="middle";x.fillText(i+1,p[0],p[1]+1)});
+ stS(ss).forEach(function(s,i){var p=tcMap(s[0],s[1]);x.fillStyle=SCOL[i%5];x.beginPath();x.arc(p[0],p[1],20,0,7);x.fill();x.fillStyle="#fff";x.font="900 24px system-ui";x.textAlign="center";x.textBaseline="middle";x.fillText(i+1,p[0],p[1]+1)});
  /* точки для проверки */
  var pts=[],ns="http://www.w3.org/2000/svg";ss.forEach(function(d){var e=document.createElementNS(ns,"path");e.setAttribute("d",d);var L=e.getTotalLength();for(var l=0;l<=L;l+=3){var q=e.getPointAtLength(l);pts.push(tcMap(q.x,q.y).concat([0]))}});
  TC={pts:pts,done:false};tcProg()}
@@ -375,6 +377,7 @@ document.addEventListener("click",function(e){var bq=e.target.closest("[data-bp]
  if(d.mc!==undefined){memTap(+d.mc,b);return}
  if(d.bl!==undefined){popTap(+d.bl,b);return}
  if(d.tl!==undefined){bldTap(+d.tl,b);return}
+ if(d.ln){swipe(+d.ln);window.scrollTo(0,0);return}
  if(d.clr){tcGuide();var m=document.getElementById("tcm");if(m)m.textContent="";return}
  if(d.rp){var s=document.querySelector(".drw2");if(s){var n=s.cloneNode(true);s.parentNode.replaceChild(n,s)}return}
  if(d.say){say(d.say,d.l);return}
