@@ -439,6 +439,7 @@ html,body{background:#f7f7f5;color:#111}
 .mtiles{display:flex;flex-wrap:wrap;gap:9px;justify-content:center}.mtiles button{width:52px;height:56px;border-radius:14px;background:#FFFFFF;border:2px solid #CFCFCA;border-bottom-width:4px;color:#111;font-size:24px;font-weight:900;font-family:inherit}.mtiles button.used{visibility:hidden}
 .mhint{background:none;border:0;color:#c25e00;font-weight:700;font-size:16px;text-decoration:underline;font-family:inherit;margin:6px 0}
 .glisten.sm{width:48px;height:48px;font-size:22px;margin:6px auto}
+.tth{position:fixed;left:12px;right:12px;bottom:14px;z-index:99;background:#1f2a44;color:#fff;border-radius:18px;padding:14px 44px 14px 16px;font-size:15px;font-weight:800;line-height:1.35;box-shadow:0 10px 30px rgba(0,0,0,.3)}.tth .ttb{display:inline-block;margin-top:10px;background:#40c057;color:#fff;padding:9px 16px;border-radius:12px;text-decoration:none}.tth .ttx{position:absolute;right:8px;top:8px;background:none;border:0;color:#fff;font-size:18px}
 </style>
 <link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#f7f7f5">
 <script data-goatcounter="https://askat.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
@@ -5526,14 +5527,34 @@ const partPic = c => c[5] ? `<img src="${c[5]}" alt="" loading="lazy">` : `<div 
 const tr = (a,i) => L<3 ? a[i+L] : "";
 const total = TOPICS.filter(t=>!t.daily).reduce((a,t)=>a+t.cards.length,0);
 
+const TTS={v:[],ok:("speechSynthesis" in window)&&("SpeechSynthesisUtterance" in window),hint:0};
+function ttsV(){try{TTS.v=speechSynthesis.getVoices()||[]}catch(e){}}
+if(TTS.ok){ttsV();try{speechSynthesis.onvoiceschanged=ttsV}catch(e){}}
+function inApp(){return /Instagram|FBAN|FBAV|WhatsApp|Telegram|Line\/|; wv\)/i.test(navigator.userAgent||"")}
+function ttsHelp(k){
+  if(TTS.hint) return; TTS.hint=1;
+  const isA=/Android/i.test(navigator.userAgent||"");
+  const M={none:["🔇 Бул браузерде үн жок. Сайтты Chrome же Safari'де ачыңыз.","🔇 Бұл браузерде дыбыс жоқ. Сайтты Chrome не Safari-де ашыңыз.","🔇 В этом браузере нет озвучки. Откройте сайт в Chrome или Safari.","🔇 No sound in this browser. Open the site in Chrome or Safari."],
+    silent:["🔇 Үн чыкпай жатабы? Үнсүз режимди өчүрүңүз. Android: Настройки → Синтез речи → Google.","🔇 Дыбыс шықпай ма? Дыбыссыз режимді өшіріңіз. Android: Параметрлер → Сөйлеу синтезі → Google.","🔇 Нет звука? Выключите беззвучный режим. Android: Настройки → Синтез речи → Google.","🔇 No sound? Turn off silent mode. Android: Settings → Text-to-speech → Google."]};
+  const li=(typeof L==="number"&&L>=0&&L<4)?L:0;
+  const msg=(k==="none"||inApp())?M.none[li]:M.silent[li];
+  const btn=isA?`<br><a class="ttb" href="intent://${location.href.replace(/^https?:\/\//,"")}#Intent;scheme=https;package=com.android.chrome;end">Chrome</a>`:"";
+  const d=document.createElement("div"); d.className="tth"; d.innerHTML=`<span>${msg}</span>${btn}<button class="ttx">✕</button>`;
+  document.body.appendChild(d); d.querySelector(".ttx").onclick=()=>d.remove(); setTimeout(()=>d.remove(),9000);
+}
 function speak(t, key){
+  if(!TTS.ok){ ttsHelp("none"); return; }
   try{
-    speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(t); u.lang="en-US"; u.rate=.85;
+    const s=speechSynthesis; if(!TTS.v.length) ttsV();
+    const vs=TTS.v.filter(x=>(x.lang||"").toLowerCase().replace("_","-").startsWith("en"));
+    const v=vs.find(x=>(x.lang||"").replace("_","-")==="en-US")||vs.find(x=>/google/i.test(x.name))||vs[0];
+    const u = new SpeechSynthesisUtterance(t); u.lang="en-US"; if(v) u.voice=v; u.rate=.85;
+    let st=0; u.onstart=()=>{st=1};
     u.onend = u.onerror = () => { S.speaking=null; mark(); };
     S.speaking = key; mark();
-    speechSynthesis.speak(u);
-  }catch(e){}
+    const go=()=>{ try{s.resume()}catch(e){} s.speak(u); setTimeout(()=>{ if(!st && !s.speaking){ S.speaking=null; mark(); ttsHelp("silent"); } },2500); };
+    if(s.speaking||s.pending){ s.cancel(); setTimeout(go,120); } else go();
+  }catch(e){ ttsHelp("none"); }
 }
 function mark(){ document.querySelectorAll("[data-key]").forEach(el => el.classList.toggle("on", el.dataset.key===S.speaking)); }
 
@@ -6416,7 +6437,7 @@ document.addEventListener("click",e=>{
 (()=>{ const m=(location.hash||"").match(/d=([A-Za-z0-9]{6})/); if(m){ S.tab=3; S.gv="invite"; S.dc=m[1].toUpperCase(); try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){} loadOnline(); } })();
 (async()=>{ try{ if(document.referrer.indexOf("android-app://com.aidoochu.english")===0) localStorage.setItem("twa","1"); if(localStorage.getItem("twa")==="1"){ __ok=true; render(); return; } const po=localStorage.getItem("promoOk"); if(po&&PROMOS[po]){ __ok=true; render(); return; } }catch(e){}
   let c=null; try{ c=localStorage.getItem("act"); }catch(e){} if(!c){ const m=document.cookie.match(/(?:^|; )act=([A-Za-z0-9_-]+)/); if(m) c=m[1]; } if(c && await checkCode(c)) __ok=true; render(); })();
-const APP_VER="aidoochu-v83";
+const APP_VER="aidoochu-v84";
 function checkUpdate(){ if(location.protocol!=="https:") return; if((S.g&&!S.g.end)||(S.m&&!S.m.end)) return;
   fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(r=>r.ok?r.text():"").then(v=>{ v=(v||"").trim(); if(!v||v===APP_VER) return;
     let tried=""; try{ tried=sessionStorage.getItem("upd")||""; }catch(e){} if(tried===v) return; try{ sessionStorage.setItem("upd",v); }catch(e){}
