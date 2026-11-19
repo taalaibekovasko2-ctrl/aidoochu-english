@@ -188,7 +188,7 @@ function say(txt,l){l=l||L();try{var u=new SpeechSynthesisUtterance(txt),vs=spee
 function spell(w,l){try{speechSynthesis.cancel()}catch(e){}var ch=w.replace(/[ -]/g,"").split(""),i=0,els=document.querySelectorAll('.sp[data-sp="'+w.replace(/"/g,'')+'"]');var row=els.length?els[0].parentNode.querySelectorAll("em"):[];
  (function nx(){row.forEach&&row.forEach(function(e,j){e.classList.toggle("on",j==i)});if(i>=ch.length){setTimeout(function(){say(w,l)},300);return}say(ch[i],l);i++;setTimeout(nx,900)})()}
 function conf(){for(var i=0;i<18;i++){var d=document.createElement("div");d.className="conf";d.textContent=["⭐","🎉","🌟","🎈","✨"][i%5];d.style.left=Math.random()*100+"vw";d.style.animationDelay=Math.random()*.5+"s";document.body.appendChild(d);setTimeout(function(x){return function(){x.remove()}}(d),2300)}}
-function hd(title,sub,back){return '<div class="top"><div class="row">'+(back?'<button class="back" data-go="'+(back===2?"body":"home")+'">'+t("back")+'</button>':'<div class="logo">🐥 '+(L()=="ru"?"Балапан":"Balapan")+'</div>')+
+function hd(title,sub,back){return '<div class="top"><div class="row">'+(back?'<button class="back" data-go="'+(typeof back=="string"?back:back===2?"body":"home")+'">'+t("back")+'</button>':'<div class="logo">🐥 '+(L()=="ru"?"Балапан":"Balapan")+'</div>')+
  '<div class="lang"><button data-lg="ru" class="'+(L()=="ru"?"on":"")+'">🇷🇺 RU</button><button data-lg="en" class="'+(L()=="en"?"on":"")+'">🇺🇸 EN</button></div><div class="stars">⭐ '+D.st+'</div></div>'+
  (title?'<div class="ttl">'+title+'</div>':'')+(sub?'<div class="sub">'+sub+'</div>':'')+'</div>'}
 function bar(a,b,col){var p=b?Math.round(a/b*100):0;return '<div class="pb"><span style="width:'+p+'%;background:'+(col||"#6fcf97")+'"></span></div>'}
@@ -207,7 +207,7 @@ function card(){var c=CATS[S.c],w=c.w[S.i];D.seen[w[1]]=1;act();
 function AB(){return ABC[L()]}
 function abc(){app.innerHTML=hd("🔤 "+t("abc"),t("abcs"),1)+'<div class="wrap"><div class="abc">'+AB().map(function(a,i){return '<button data-ab="'+i+'" style="background:'+["#ff6b6b","#ffa94d","#fcc419","#51cf66","#22b8cf","#4dabf7","#845ef7","#f06595","#20c997","#ff922b"][i%10]+'">'+a[0]+(D.ab[L()+a[0]]?'<em>✓</em>':'')+'<small>'+a[1]+'</small></button>'}).join("")+'</div></div>'}
 function letter(){var A=AB(),a=A[S.i],w=a[2],k=w.toUpperCase().indexOf(a[0]);D.ab[L()+a[0]]=1;act();
- app.innerHTML=hd("🔤 "+t("abc"),"",1)+'<div class="wrap"><div class="card"><div style="font-size:110px;font-weight:900;line-height:1;color:'+COLS[S.i%COLS.length]+'">'+a[0]+' '+a[0].toLowerCase()+'</div><span class="big" style="font-size:100px">'+a[1]+'</span><div class="word" style="font-size:36px">'+(k>=0?w.slice(0,k)+'<b>'+w[k]+'</b>'+w.slice(k+1):w)+'</div><button class="say" data-say="'+w+'" data-l="'+L()+'">'+t("listen")+'</button></div>'+
+ app.innerHTML=hd("🔤 "+t("abc"),"","abc")+'<div class="wrap"><div class="card"><div style="font-size:110px;font-weight:900;line-height:1;color:'+COLS[S.i%COLS.length]+'">'+a[0]+' '+a[0].toLowerCase()+'</div><span class="big" style="font-size:100px">'+a[1]+'</span><div class="word" style="font-size:36px">'+(k>=0?w.slice(0,k)+'<b>'+w[k]+'</b>'+w.slice(k+1):w)+'</div><button class="say" data-say="'+w+'" data-l="'+L()+'">'+t("listen")+'</button></div>'+
  '<div class="sec wr"><div class="sh">✍️ '+t("howw")+'</div><svg viewBox="0 0 300 150" class="drw"><line x1="10" y1="120" x2="290" y2="120"/><line x1="10" y1="30" x2="290" y2="30"/><line x1="10" y1="75" x2="290" y2="75" class="mid"/><text x="150" y="120" text-anchor="middle">'+a[0]+a[0].toLowerCase()+'</text></svg><button class="sm" data-rp="1" style="text-align:center">🔁 '+t("again2")+'</button></div>'+
  '<div class="sec wr"><div class="sh">👆 '+t("tryw")+'</div><canvas id="tc" width="600" height="300"></canvas><div class="lb"><button class="sp" data-clr="1">🧽 '+t("clear")+'</button><button class="ls" data-say="'+a[0]+'" data-l="'+L()+'">🔊 '+a[0]+'</button></div></div>'+
  '<div class="cnt">'+(S.i+1)+' / '+A.length+'</div><div class="swh">'+t("swipe")+'</div></div>';setTimeout(tcInit,30)}
@@ -315,7 +315,11 @@ function body(){var m=S.m||"o",s=S.sel,p=s&&BP[s],extra=Object.keys(BP).filter(f
  '<p class="fact">'+p[fi]+'</p><button class="say" data-say="'+esc(cap(bn(s))+". "+p[fi])+'" data-l="'+L()+'">'+t("listen")+'</button></div>':'')}
 function bpick(k){if(S.qz){if(k==S.qz){D.st++;act();say(bn(k));conf();var ks=Object.keys(BP).filter(function(x){return BP[x][7]==(S.m||"o")&&x!=k});S.qz=ks[Math.floor(Math.random()*ks.length)];S.qm=t("bok");setTimeout(function(){say(bn(S.qz))},900)}else{S.qm=t("bno",{x:bn(k)})}render();return}
  D.bp[k]=1;act();S.sel=k;render();say(bn(k))}
-function render(){if(S.v!="body"||!S.keep)window.scrollTo(0,0);S.keep=S.v=="body";if(/w$/.test(S.v)&&S.v!="win")return;var f={home:home,card:card,abc:abc,letter:letter,game:game,mem:mem,pop:pop,bld:bld,body:body,gate:gate,par:par,addkid:addkid}[S.v];(f||win)()}
+var SCR={},PV=null,KEEP={home:1,abc:1,body:1,par:1,mem:1};
+function render(){var same=PV===S.v;if(PV&&!same&&KEEP[PV])SCR[PV]=window.scrollY;
+ if(/w$/.test(S.v)&&S.v!="win"){PV=S.v;return}
+ var f={home:home,card:card,abc:abc,letter:letter,game:game,mem:mem,pop:pop,bld:bld,body:body,gate:gate,par:par,addkid:addkid}[S.v];var y=window.scrollY;(f||win)();
+ if(same&&KEEP[S.v])window.scrollTo(0,y);else if(!same&&(S.v=="home"||S.v=="abc")&&SCR[S.v])window.scrollTo(0,SCR[S.v]);else if(!same||!KEEP[S.v])window.scrollTo(0,0);PV=S.v}
 document.addEventListener("change",function(e){if(e.target.id=="trc"){SET.tr=e.target.checked?1:0;ls("set",SET)}});
 document.addEventListener("click",function(e){var bq=e.target.closest("[data-bp]");if(bq){bpick(bq.getAttribute("data-bp"));return}
  var b=e.target.closest("button,[data-go]");if(!b)return;var d=b.dataset;
