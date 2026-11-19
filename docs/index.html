@@ -5538,10 +5538,13 @@ function ttsHelp(k){
   const M={app:["🔇 Үн чыкпай жатабы? Шилтемени Safari же Chrome'до ачып көрүңүз.","🔇 Дыбыс шықпай ма? Сілтемені Safari не Chrome-да ашыңыз.","🔇 Нет звука? Откройте ссылку в Safari или Chrome.","🔇 No sound? Open the link in Safari or Chrome."],none:["🔇 Бул браузерде үн жок. Сайтты Chrome же Safari'де ачыңыз.","🔇 Бұл браузерде дыбыс жоқ. Сайтты Chrome не Safari-де ашыңыз.","🔇 В этом браузере нет озвучки. Откройте сайт в Chrome или Safari.","🔇 No sound in this browser. Open the site in Chrome or Safari."],
     silent:["🔇 Үн чыкпай жатабы? iPhone: капталдагы үнсүз режим баскычын өчүрүп, үндү көтөрүңүз. Android: Настройки → Синтез речи → Google.","🔇 Дыбыс шықпай ма? Дыбыссыз режимді өшіріңіз. Android: Параметрлер → Сөйлеу синтезі → Google.","🔇 Нет звука? iPhone: выключите беззвучный режим (переключатель сбоку) и прибавьте громкость. Android: Настройки → Синтез речи → Google.","🔇 No sound? Turn off silent mode. Android: Settings → Text-to-speech → Google."]};
   const li=(typeof L==="number"&&L>=0&&L<4)?L:0;
-  const msg=(k==="none")?M.none[li]:(inApp()?M.app[li]:M.silent[li]);
+  const iosNS=/iPhone|iPad|iPod/i.test(navigator.userAgent||"")&&(!TTS.ok||/CriOS|FxiOS|EdgiOS|OPiOS|GSA|Instagram|FBAN|WhatsApp|Telegram/i.test(navigator.userAgent||""));
+  if(iosNS) M.ios=["🔇 iPhone'догу Chrome жана башка тиркемелерде үн иштебейт — бул Apple'дин чектөөсү. Сайтты Safari'де ачыңыз.","🔇 iPhone-да Chrome және басқа қолданбаларда дыбыс жұмыс істемейді — бұл Apple шектеуі. Сайтты Safari-де ашыңыз.","🔇 На iPhone в Chrome и других приложениях озвучка не работает — это ограничение Apple. Откройте сайт в Safari.","🔇 On iPhone, sound only works in Safari (Apple limitation). Open the site in Safari."];
+  const msg=iosNS?M.ios[li]:(k==="none")?M.none[li]:(inApp()?M.app[li]:M.silent[li]);
   const btn=isA?`<br><a class="ttb" href="intent://${location.href.replace(/^https?:\/\//,"")}#Intent;scheme=https;package=com.android.chrome;end">Chrome</a>`:"";
-  const d=document.createElement("div"); d.className="tth"; d.innerHTML=`<span>${msg}</span>${btn}<button class="ttx">✕</button>`;
-  document.body.appendChild(d); d.querySelector(".ttx").onclick=()=>d.remove(); setTimeout(()=>d.remove(),9000);
+  const btn2=iosNS?`<br><a class="ttb" href="x-safari-${location.href}">Safari'де ачуу</a>`:"";
+  const d=document.createElement("div"); d.className="tth"; d.innerHTML=`<span>${msg}</span>${btn}${btn2}<button class="ttx">✕</button>`;
+  document.body.appendChild(d); d.querySelector(".ttx").onclick=()=>d.remove(); setTimeout(()=>d.remove(),iosNS?20000:9000);
 }
 function speak(t, key){
   if(!TTS.ok){ ttsHelp("none"); return; }
@@ -6438,7 +6441,7 @@ document.addEventListener("click",e=>{
 (()=>{ const m=(location.hash||"").match(/d=([A-Za-z0-9]{6})/); if(m){ S.tab=3; S.gv="invite"; S.dc=m[1].toUpperCase(); try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){} loadOnline(); } })();
 (async()=>{ try{ if(document.referrer.indexOf("android-app://com.aidoochu.english")===0) localStorage.setItem("twa","1"); if(localStorage.getItem("twa")==="1"){ __ok=true; render(); return; } const po=localStorage.getItem("promoOk"); if(po&&PROMOS[po]){ __ok=true; render(); return; } }catch(e){}
   let c=null; try{ c=localStorage.getItem("act"); }catch(e){} if(!c){ const m=document.cookie.match(/(?:^|; )act=([A-Za-z0-9_-]+)/); if(m) c=m[1]; } if(c && await checkCode(c)) __ok=true; render(); })();
-const APP_VER="aidoochu-v86";
+const APP_VER="aidoochu-v87";
 function checkUpdate(){ if(location.protocol!=="https:") return; if((S.g&&!S.g.end)||(S.m&&!S.m.end)) return;
   fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(r=>r.ok?r.text():"").then(v=>{ v=(v||"").trim(); if(!v||v===APP_VER) return;
     let tried=""; try{ tried=sessionStorage.getItem("upd")||""; }catch(e){} if(tried===v) return; try{ sessionStorage.setItem("upd",v); }catch(e){}
