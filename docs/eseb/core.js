@@ -220,9 +220,19 @@ C.unassignedDebt=function(S){var u=[];(S.stmts||[]).forEach(function(st){(st.ded
 C.debtCandidates=function(S,st){return (S.debts||[]).filter(function(d){return d.type!=="neg"&&(!d.company||!st.company||C.norm(d.company)===C.norm(st.company))})};
 /* fully automatic: every company-debt line and every advance of a statement goes to that company's debt record */
 C.autoDebts=function(S,st,uid){var lines=(st.ded||[]).filter(function(x){return C.isCoDebt(x,S)}),adv=st.adv>0&&!st.advInDed;if(!lines.length&&!adv)return null;S.debts=S.debts||[];
- var key=C.norm(st.company||""),dd=S.debts.filter(function(x){return x.type!=="neg"&&C.norm(x.company||"")===key&&!x.closed})[0];
+ var free=lines.filter(function(x){return !x.debt});if(!free.length&&(!adv||st.advDebt))return null; /* already linked → nothing new (no empty debt) */
+ var key=C.norm(st.company||""),dd=S.debts.filter(function(x){return x.type!=="neg"&&C.norm(x.company||"")===key})[0];
  if(!dd){var lb=String((lines[0]||{}).v||"").toUpperCase();dd={id:"d"+uid(),company:st.company||"",type:/ADVANCE/.test(lb)||adv?"advance":/FUEL/.test(lb)?"fuel_adv":/REPAIR/.test(lb)?"repair_adv":/CHARGE|DAMAGE/.test(lb)?"damage":"loan",opening:null,items:[],auto:true};S.debts.push(dd)}
  lines.forEach(function(x){if(!x.debt)x.debt=dd.id});if(adv)st.advDebt=dd.id;return dd};
+/* one debt per company: duplicates (e.g. an old 'paid' copy and a new empty one) are joined, empty auto records removed */
+C.mergeDebts=function(S){var ds=(S.debts||[]).filter(function(d){return d.type!=="neg"}),by={},drop={};
+ function used(id){return (S.stmts||[]).some(function(st){return st.advDebt===id||st.negCarry===id||(st.ded||[]).some(function(x){return x.debt===id})})}
+ ds.forEach(function(d){var k=C.norm(d.company||"");if(!k)return;if(!by[k]){by[k]=d;return}var keep=by[k];if(!used(keep.id)&&used(d.id)){by[k]=d;d=keep;keep=by[k]}
+  (S.stmts||[]).forEach(function(st){if(st.advDebt===d.id)st.advDebt=keep.id;(st.ded||[]).forEach(function(x){if(x.debt===d.id)x.debt=keep.id})});
+  keep.items=(keep.items||[]).concat(d.items||[]);if(keep.opening==null&&d.opening!=null){keep.opening=d.opening;keep.zeroOk=d.zeroOk}drop[d.id]=1});
+ S.debts=(S.debts||[]).filter(function(d){if(drop[d.id])return false;if(d.type!=="neg"&&!used(d.id)&&!(d.items||[]).length&&(d.opening==null||d.opening===0))return false;return true});
+ (S.debts||[]).forEach(function(d){if(d.closed&&d.auto)delete d.closed}); /* status comes from the statements only */
+ return S};
 /* a hand-entered payment that is already recorded: same day & amount (exact), or the same amount taken from a statement within 7 days (probably the same money) */
 C.debtPayDup=function(S,id,d,a){var c=C.debtCalc(S).filter(function(x){return x.id===id})[0];if(!c)return null;var hit=null;
  c.items.forEach(function(i){if(i.a>=0||hit)return;var amt=-i.a;if(amt!==a)return;if(i.src==="man"&&i.d===d)hit="same";else if(i.src==="st"&&Math.abs(C.days(i.d,d))<=7)hit="statement"});return hit};

@@ -470,4 +470,12 @@ eq("payments only (ROYCE case) → paid 4,000, total & left 'needs checking', no
 var R1={stmts:[Object.assign({id:"rr"},RD)],debts:[]};R1.stmts[0].ded.forEach(function(x){delete x.debt});C.autoDebts(R1,R1.stmts[0],U);var R1c=C.debtCalc(R1)[0];
 eq("real ROYCE PDF: one ROYCE LLC debt, paid 4,000, $8,000 from Comments not used",[R1.debts.length,R1.debts[0].company,R1c.payments,R1c.total,R1c.remaining],[1,"ROYCE LLC",400000,null,null]);
 eq("debts never change Net Pay / business expenses",[C.stmtCalc(R1.stmts[0]).net,C.totals(R1,["2026-11-01","2026-11-07"]).exp],[728318,481608]);
+
+// ===== duplicate company debts (old 'paid' copy + new empty one) are joined =====
+var MD={stmts:[Object.assign({id:"m1"},JSON.parse(JSON.stringify(RD)))],debts:[{id:"old",company:"ROYCE LLC",type:"loan",opening:null,items:[],closed:"2026-11-20",auto:true},{id:"new",company:"ROYCE LLC",type:"advance",opening:null,items:[],auto:true}]};
+MD.stmts[0].ded.forEach(function(x){if(x.c==="co_debt")x.debt="old"});C.mergeDebts(MD);MD.stmts.forEach(function(st){C.autoDebts(MD,st,U)});C.mergeDebts(MD);
+var MDc=C.debtCalc(MD);eq("one ROYCE debt left, 'closed' from the old version cleared, paid 4,000, rest needs checking",[MD.debts.length,MDc[0].payments,MDc[0].status],[1,400000,"unknown"]);
+var MD2={stmts:[stW("x1","2026-11-02","2026-11-08",[{c:"co_debt",a:1000,debt:"a"}]),stW("x2","2026-11-09","2026-11-15",[{c:"co_debt",a:500,debt:"b"}])],debts:[{id:"a",company:"ACME",opening:null,items:[]},{id:"b",company:"acme",opening:null,items:[]}]};
+C.mergeDebts(MD2);eq("two records of the same company joined, both payments kept",[MD2.debts.length,C.debtCalc(MD2)[0].payments],[1,1500]);
+C.autoDebts(MD2,MD2.stmts[0],U);eq("already linked statement creates no new empty debt",MD2.debts.length,1);
 console.log("\nPASS "+pass+"  FAIL "+fail+"  NOT RUN "+SKIP);process.exit(fail||SKIP?1:0);

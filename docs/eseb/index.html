@@ -97,6 +97,7 @@ input:focus,select:focus{border-color:var(--bl)}
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulation}
 html,body{max-width:100%;overflow-x:hidden}
 @supports (overflow:clip){html,body{overflow-x:clip}}
+html,body{overscroll-behavior-x:none;width:100%;position:relative}#app,.sh,.nav{overflow-x:hidden}#app{width:100%;max-width:min(520px,100vw);box-sizing:border-box}.sh{max-width:min(520px,100vw)}.card,.it,.hc{min-width:0;max-width:100%;box-sizing:border-box}.v,.big,.lbl,.note,.tl span,.tl b{overflow-wrap:anywhere}
 input,select,textarea{font-size:max(16px,1em)}
 img,video{max-width:100%}
 </style>
@@ -129,6 +130,6 @@ details.card summary{font-weight:800;cursor:pointer;list-style:none;padding:2px 
 <input type="file" id="fileIn" accept="image/*" capture="environment" style="display:none">
 <input type="file" id="stIn" accept="image/*,application/pdf,.pdf,.csv,.xlsx,.xls,text/csv" multiple style="display:none">
 <input type="file" id="bkIn" accept=".json,application/json" style="display:none">
-<script src="core.js?v=31"></script>
-<script src="app.js?v=31"></script>
+<script src="core.js?v=32"></script>
+<script src="app.js?v=32"></script>
 </body></html>
