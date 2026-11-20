@@ -446,4 +446,9 @@ eq("same amount as a statement payment within 7 days → asked first",C.debtPayD
 eq("different payment is fine",C.debtPayDup(SP2,"dR","2026-11-12",30000),null);
 var GD={stmts:[],tx:[],loads:[],debts:[{id:"o1",company:"Friend",type:"other",opening:50000,items:[]}],truck:{type:"financed",owner:"Bank",num:"6771",balance:5000000,aprBp:1200,period:"week"},shop:[{id:"h1",name:"Joe Truck Shop",d:"2026-11-04",total:300000,payer:"credit",paidAmt:0},{id:"h2",name:"Paid shop",d:"2026-11-04",total:10000,payer:"driver",paidAmt:10000}]};
 var GA=C.allDebts(GD);eq("groups: other · truck loan · shop on credit (paid-in-full shop not a debt)",GA.map(function(x){return [x.grp,x.name,x.status,x.remaining]}),[["other","Friend","active",50000],["truck","Bank","active",5000000],["shop","Joe Truck Shop","active",300000]]);
+
+// ===== same PDF uploaded twice → counted once =====
+var RW2=JSON.parse(JSON.stringify(RD));RW2.id="again";eq("same statement again is recognized (number, week, totals)",[C.stmtSame(RW2,RD),!!C.stmtDup(RW2,{stmts:[RD]})],[true,true]);
+var RW3=JSON.parse(JSON.stringify(RD));RW3.ded[0].a+=100;eq("different totals → not 'the same' (user decides)",C.stmtSame(RW3,RD),false);
+var RW4=JSON.parse(JSON.stringify(RD)),RW5=JSON.parse(JSON.stringify(RD));RW4.num="ST-1";RW5.num="ST-2";eq("different settlement number → not the same",C.stmtSame(RW4,RW5),false);
 console.log("\nPASS "+pass+"  FAIL "+fail+"  NOT RUN "+SKIP);process.exit(fail||SKIP?1:0);

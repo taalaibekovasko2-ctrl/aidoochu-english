@@ -536,6 +536,9 @@ C.aiVerdict=function(R){if(!R)return {ok:false,why:["noResult"]};if(!(R.gross>0)
  if(R.earn!=null&&R.rate!=null&&Math.abs(C.pct(R.gross,R.rate)-R.earn)>100&&R.fee==null)why.push("earn:"+C.fmt(R.earn)+"≠"+C.fmt(C.pct(R.gross,R.rate)));
  return {ok:!why.length,why:why,status:k.rec.status,unclear:R.ded.filter(function(d){return d.unclear}).length}};
 C.aiFeedback=function(R,v){return "Our arithmetic from your values: gross "+C.fmt(R.gross||0)+", driver earnings "+C.fmt(C.stmtCalc(R).earn)+", deductions sum "+C.fmt(C.sum(R.ded,"a"))+", computed net "+C.fmt(C.stmtCalc(R).net)+". Problems: "+v.why.join("; ")+"."};
+/* the very same statement uploaded again (same number or same week, same totals) */
+C.stmtSame=function(a,b){if(!a||!b)return false;var ka=C.stmtCalc(a),kb=C.stmtCalc(b);if(a.num&&b.num&&C.norm(a.num)!==C.norm(b.num))return false;
+ return ka.gross===kb.gross&&ka.net===kb.net&&ka.ded===kb.ded&&(a.loads||[]).length===(b.loads||[]).length&&C.stDay(a)===C.stDay(b)};
 /* ---------- data safety ---------- */
 /* never overwrites an existing backup: a second backup with the same name gets a time suffix */
 C.safeBackup=function(store,key,raw){if(raw==null)return null;try{var k=key;if(store.getItem(k)!=null){k=key+"_"+new Date().toISOString().replace(/[^0-9]/g,"").slice(0,14);var n=1;while(store.getItem(k)!=null)k=key+"_"+new Date().toISOString().replace(/[^0-9]/g,"").slice(0,14)+"_"+(n++)}store.setItem(k,raw);return store.getItem(k)===raw?k:null}catch(e){return null}};
