@@ -51,7 +51,7 @@ C.isTaxable=function(c,S,x){if(x&&x.tax!=null)return !!x.tax;var u=C.custom(S,c)
 C.KW=[["escrow",/ESCROW/],["reserve",/RESERVE|MAINT(ENANCE)? (FUND|RESERVE)/],["wash",/TRUCK ?WASH|BLUE ?BEACON|\bWASH\b/],["co_fee",/ADMIN FEE|SERVICE FEE|COMPANY FEE|PROCESSING FEE|PLATFORM FEE/],["tires",/TIRE/],["co_debt",/DRIVER DEBT|\bDR\.?\s*DEBT\b|^(?!.*SHOP).*\bDEBT\b|DEBT (REPAY|PAYMENT|DEDUCT)|LOAN REPAY|ADVANCE REPAY|CHARGE ?BACK|COMPANY LOAN|DAMAGE|NEG(ATIVE)? BAL|CARRY ?OVER|PREVIOUS BAL/],["shop_debt",/SHOP (DEBT|LOAN|PAYMENT|INSTALL)|REPAIR (LOAN|INSTALL|ADVANCE)/],["ifta_eld",/\bIF?TA\s*(&|AND|\/|\+)?\s*(LOG|ELD)|(LOG ?BOOK|ELD)\s*(&|AND|\/|\+)\s*IF?TA\b/],["prepass",/PRE ?PASS|BESTPASS|DRIVEWYZE/],["def",/\bDEF\b|DIESEL EXHAUST/],
  ["bobtail",/BOBTAIL/],["cargo_ins",/CARGO/],["truck_ins",/INSUR|OCC(UPATIONAL)? ?ACC|PHYSICAL DAMAGE|\bPD\b|LIABILITY|\bNTL\b|\bINS\b/],
  ["trailer_repair",/TRAILER (REPAIR|MAINT)|REEFER REPAIR/],["trailer",/TRAILER|\bVAN RENT|REEFER RENT/],["truck_pay",/TRUCK PAY|LEASE|TRACTOR|TRUCK LOAN|TRUCK NOTE|FINANC/],
- ["ifta",/\bIFTA\b|FUEL TAX/],["eld",/\bELD\b|LOG ?BOOK|SAMSARA|MOTIVE|KEEP ?TRUCKIN|OMNITRACS/],["phone",/PHONE|INTERNET|VERIZON|T-?MOBILE|AT&T|TABLET|DATA PLAN/],
+ ["ifta",/\bIFTA\b|FUEL TAX|OREGON\s*(MILES?|MILEAGE|TAX|WMT)|WEIGHT[- ]?MILE|\bWMT\b|\bKYU\b|NY\s*HUT|HIGHWAY USE TAX|NM\s*WEIGHT/],["eld",/\bELD\b|LOG ?BOOK|SAMSARA|MOTIVE|KEEP ?TRUCKIN|OMNITRACS/],["phone",/PHONE|INTERNET|VERIZON|T-?MOBILE|AT&T|TABLET|DATA PLAN/],
  ["permits",/PERMIT|\bIRP\b|PLATE|REGISTRATION|HVUT|2290|\bUCR\b|\bKYU\b|NM WEIGHT|OR WEIGHT/],
  ["scale",/SCALE|WEIGH/],["toll",/TOLL|E-?Z ?PASS|I-?PASS|SUN ?PASS|TURNPIKE|PIKEPASS/],["parking",/PARKING/],
  ["diesel",/FUEL|DIESEL|ULSD|COMDATA|\bEFS\b|FLEET ?ONE|\bWEX\b|PILOT|FLYING J|LOVE'?S|PETRO|\bTA\b/],
@@ -347,7 +347,7 @@ C.parseStatement=function(txt){txt=C.fixLig(txt);var NF=C.normNumbers(txt);txt=N
  function one(l){ln++;if(/^\[\[PAGE (\d+)\]\]$/.test(l)){page=+l.match(/\d+/)[0];ln=0;return}var u=l.toUpperCase(),a=lastMoney(l),ls=locs(u),mm;
   if(/^FUEL\s*TRANSACTIONS|^FUEL\s*(PURCHASES|DETAIL)/.test(u)){sec="fuel";return}
   if(/^TOLL\s*TRANSACTIONS|^TOLL\s*DETAIL/.test(u)){sec="toll";return}
-  if(/^DEDUCTION\s*TYPE|^(DEDUCTIONS?|EXPENSES?|CHARGES|DEDUCTIONS? (AND|&) EXPENSES)\s*:?$/.test(u)){sec="ded";return}
+  if(/^DEDUCTION\s*TYPE|^((OTHER|RECURRING|FIXED|WEEKLY|SCHEDULED|VARIABLE|ONE[- ]TIME)\s+)?(DEDUCTIONS?|EXPENSES?|CHARGES|DEDUCTIONS? (AND|&) EXPENSES)\s*:?$/.test(u)){sec="ded";return}
   if(/^EARNINGS$|^LOAD\s*(NUMBER|#)/.test(u)){sec="loads";return}
   if(sec==="toll"){if(a!=null&&!/TOTAL/.test(u)){R.tolls=R.tolls||[];R.tolls.push({d:dates(u)[0]||null,a:a})}return} /* detail of the Toll deduction — info only */
   if(sec==="fuel"){if(a==null)return;var dl=(l.match(/\(?[-−]?\$\s?(?:\d{1,3}(?:,\d{3})+|\d+)\.\d{2}\)?/g)||[]).map(C.cents),ms=dl.length?dl:moneys(l);
@@ -355,6 +355,11 @@ C.parseStatement=function(txt){txt=C.fixLig(txt);var NF=C.normNumbers(txt);txt=N
    var qty=(u.replace(/\$\s?[\d,]+\.\d{2}/g," ").replace(/\d{1,2}[\/\-.]\d{1,2}[\/\-.]\d{2,4}/g," ").match(/\b(\d{1,4}\.\d{1,3})\b/)||[])[1];
    var stt=(u.match(new RegExp("\\b("+STS+")\\b(?=\\s+\\d)"))||[])[1]||null;
    R.fuel.push({d:dates(u)[0]||null,v:(l.match(/(DIESEL|DEF|REEFER|GAS)\s+(.*?)\s+[A-Z]{2}\s+\d/i)||[0,"",""])[2],state:stt,gal:qty?Math.round(parseFloat(qty)*100):null,c:/\bDEF\b/.test(u)?"def":"diesel",ret:ms.length>=2?ms[0]:null,inv:ms[ms.length-1],a:ms[ms.length-1]});return}
+  if(a!=null&&/^TOTAL\s+(OTHER|RECURRING|FIXED|WEEKLY|SCHEDULED|VARIABLE|ONE[- ]TIME)\s+(DEDUCTIONS?|EXPENSES?|CHARGES)\b/.test(u)){(R.dedSubs=R.dedSubs||[]).push(Math.abs(a));if(R.ded.length)R._dtAfter=1;return} /* section subtotal */
+  if(a!=null&&/^(TOTAL\s+)?PAY\s*OUT\b|^PAYOUT\b/.test(u)){R.net=a;R.netLbl="Payout";return}                      /* "Payout" = what is paid */
+  if(a!=null&&/^(TOTAL\s+)?NET\s+AMOUNT\b/.test(u)&&!/PAY/.test(u)){if(/^TOTAL/.test(u)||R.netAmt==null)R.netAmt=a;return} /* decided at the end: earnings or net */
+  if(a!=null&&/^(TOTAL\s+)?EARNINGS?\b/.test(u)&&!/DEDUCT|YTD/.test(u)&&!/:\s*$/.test(u)){if(/^TOTAL/.test(u)||R.earn==null)R.earn=a;return}
+  if(a!=null&&/^TOTAL\s+(TRIP|LOAD|FREIGHT|LINE ?HAUL)?\s*GROSS\b/.test(u)){var tg=moneys(l);if(tg.length>=2&&tg[0]>tg[tg.length-1]){R.gross=tg[0];if(R.earn==null)R.earn=tg[tg.length-1]}else R.gross=a;return}                      /* a printed total always wins over a per-trip gross */
   if(/^\s*EARNINGS\s*:/.test(u)&&a!=null&&R.earn==null){R.earn=a;return}
   if(/^\s*DEDUCTIONS\s*:/.test(u)&&a!=null){R.dedTotal=Math.abs(a);return}
   if(/^\s*ADVANCES?\s*:/.test(u)&&a!=null){R.adv=Math.abs(a);return}
@@ -391,6 +396,8 @@ C.parseStatement=function(txt){txt=C.fixLig(txt);var NF=C.normNumbers(txt);txt=N
   if(c&&!/TOTAL|SUBTOTAL/.test(u)){R.ded.push({post:R._dtAfter||undefined,pg:page,ln:ln,c:c,a:/REFUND|REBATE|CREDIT|RETURN/.test(u)?-Math.abs(a):Math.abs(a),v:lab,raw:(l.match(C.MONEY)||[]).pop()||""});return}
   if(!/TOTAL|SUBTOTAL|BALANCE|PAGE/.test(u))R.unknown.push({pg:page,ln:ln,v:lab||l.slice(0,48),a:Math.abs(a)});
  }
+ if(R.netAmt!=null){if(R.net==null)R.net=R.netAmt;else if(R.earn==null&&R.netAmt!==R.net)R.earn=R.netAmt} /* "Net Amount" is earnings when a Payout is printed */
+ if(R.dedSubs&&R.dedTotal==null){R.dedTotal=R.dedSubs.reduce(function(a,b){return a+b},0)} /* Other + Recurring … = all deductions */
  C.collapseFuel(R);C.fixOcrDollar(R);
  /* lines printed AFTER the deductions total: deductions only if the total needs them; otherwise information (e.g. a debt balance) — never saved as a balance */
  if(R._dtAfter&&R.dedTotal!=null){var pre=R.ded.filter(function(x){return !x.post}),post=R.ded.filter(function(x){return x.post}),D0=R.fuelDisc||0,sp=C.sum(pre,"a"),sa=C.sum(R.ded,"a");

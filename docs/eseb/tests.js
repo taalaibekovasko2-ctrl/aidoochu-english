@@ -478,4 +478,15 @@ var MDc=C.debtCalc(MD);eq("one ROYCE debt left, 'closed' from the old version cl
 var MD2={stmts:[stW("x1","2026-11-02","2026-11-08",[{c:"co_debt",a:1000,debt:"a"}]),stW("x2","2026-11-09","2026-11-15",[{c:"co_debt",a:500,debt:"b"}])],debts:[{id:"a",company:"ACME",opening:null,items:[]},{id:"b",company:"acme",opening:null,items:[]}]};
 C.mergeDebts(MD2);eq("two records of the same company joined, both payments kept",[MD2.debts.length,C.debtCalc(MD2)[0].payments],[1,1500]);
 C.autoDebts(MD2,MD2.stmts[0],U);eq("already linked statement creates no new empty debt",MD2.debts.length,1);
+
+// ===== field names: Total Trip Gross / Net Amount (Earning) / Other + Recurring Deductions / Payout — SYNTHETIC text with the user's totals, not the original PDF =====
+var PO=C.parseStatement(["CARRIER X LLC","Trip 1001  Gross $6,000.00  Net Amount $5,280.00","Trip 1002  Gross $5,082.02  Net Amount $4,472.17","Total Trip Gross  $11,082.02","Net Amount  $9,752.17",
+ "Other Deductions","Fuel  $3,602.02","Cash Advance  $500.00","Toll  $315.00","Oregon miles  $100.00","Total Other Deductions  $4,517.02",
+ "Recurring Deductions","Insurance  $450.00","ELD  $40.00","Trailer  $175.00","Total Recurring Deductions  $665.00","Payout  $4,570.15"].join("\n")),POk=C.stmtCalc(PO);
+eq("labels: Gross from Total Trip Gross (not a trip line), Earning from Net Amount, Payout = original Net Pay",[PO.gross,PO.earn,PO.net,/Payout/.test(PO.from.net.t)],[1108202,975217,457015,true]);
+eq("labels: Other 4,517.02 + Recurring 665.00 = 5,182.02; 9,752.17 − 5,182.02 = 4,570.15 ✓ (no load list in this text → one-tap confirm)",[PO.dedTotal,POk.ded,POk.net,POk.rec.status,C.decide(PO).act],[518202,518202,457015,"partial","confirm"]);
+eq("labels: Cash Advance → debt/advance, Toll & Oregon miles → expenses",PO.ded.filter(function(d){return /Cash|Toll|Oregon/.test(d.v)}).map(function(d){return [d.v,C.kindOf(d.c,{},d)]}),[["Cash Advance","debt"],["Toll","expense"],["Oregon miles","expense"]]);
+var POt=C.totals({stmts:[Object.assign({id:"po",d:"2026-11-08"},PO)],tx:[],loads:[]},["2026-11-02","2026-11-08"]);
+eq("labels: cash advance not a business expense, each deduction once",[POt.debtPaid,POt.exp],[50000,518202-50000]);
+var PO2=C.parseStatement("Gross  $5,000.00\nNet Amount  $4,400.00\nFuel  $400.00\nTotal Deductions  $400.00");eq("no Payout printed → 'Net Amount' is the net",[PO2.net,PO2.earn],[440000,null]);
 console.log("\nPASS "+pass+"  FAIL "+fail+"  NOT RUN "+SKIP);process.exit(fail||SKIP?1:0);
