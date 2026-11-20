@@ -118,7 +118,7 @@ eq("0.1+0.2 style sums exact",C.sum([{a:C.cents("0.10")},{a:C.cents("0.20")}],"a
 // === smart system ===
 var LG=C.legs([{f:"Clearfield,UT",t:"San Jose,CA",pd:"2026-11-02"},{f:"Oakland,CA",t:"Seattle,WA",pd:"2026-11-03"},{f:"Seattle,WA",t:"Laton,CA",pd:"2026-11-05"},{f:"Fresno,CA",t:"Lockport,IL",pd:"2026-11-06"}]);
 eq("legs: points",LG.pts.length,7);eq("legs: types (no guessed start/end)",LG.types,["loaded","empty","loaded","loaded","empty","loaded"]);
-eq("legs sum",C.sumLegs(LG.types,[1609344,160934.4,1609344,1609344,160934.4,1609344]),{loaded:4000,empty:200});
+var SL=C.sumLegs(LG.types,[1609344,160934.4,1609344,1609344,160934.4,1609344],LG.pts);eq("legs sum",[SL.loaded,SL.empty],[4000,200]);eq("empty legs are San Jose→Oakland and Laton→Fresno",SL.legs.filter(function(l){return l.type=="empty"}).map(function(l){return l.f+">"+l.t}),["San Jose,CA>Oakland,CA","Laton,CA>Fresno,CA"]);
 var SMi={stmts:[Object.assign({},SP,{miLoaded:4330,miEmpty:400,milesAuto:true})],tx:[],loads:[]},TM=C.totals(SMi,W);
 eq("miles total = loaded+empty",TM.miles,4730);eq("gross RPM ≈ 2.95",TM.rpm.gross,295);eq("net cash RPM ≈ 1.60",TM.rpm.net,160);eq("driver RPM",TM.rpm.driver,260);eq("loaded RPM",TM.rpm.loaded,322);eq("estimated flag",TM.autoMi,true);
 // escrow & company debt repayment are not expenses, but reduce net pay
@@ -145,4 +145,20 @@ eq("balances parsed",RB.bal.map(function(b){return b.k+":"+b.a}),["shop:175000",
 eq("unknown debt balance stays null",C.debtCalc({stmts:[],debts:[{id:"u",opening:null,items:[]}]})[0].remaining,null);
 eq("unknown shop total stays null",C.shopCalc({stmts:[],shop:[{id:"s"}]})[0].remaining,null);
 eq("different settlement numbers are not duplicates",!!C.stmtDup({id:"x",company:"A",num:"2",p1:"2026-11-15",gross:1395000,d:"2026-11-15"},{stmts:[{id:"y",company:"A",num:"1",p1:"2026-11-08",gross:1395000,d:"2026-11-08"}]}),false);
+
+// advance shown in summary AND inside deductions table → subtracted once
+var RA=C.parseStatement("SETTLEMENT\nEarnings: $5,000.00\nAdvances: $300.00\nDeductions: ($1,300.00)\nNet Pay: $3,700.00\nDeduction type Description Quantity Rate Total amount\nCash Advance COMCHECK 1 $300.00 ($300.00)\nFuel Auto calculated 1 $1,000.00 ($1,000.00)\nTotal: ($1,300.00)");
+var KA=C.stmtCalc(Object.assign({gross:500000},RA));eq("advance inside deductions not double",[RA.advInDed,KA.net,KA.rec.diff],[true,370000,0]);eq("advance repayment not an expense",C.totals({stmts:[Object.assign({},RA,{id:"a",gross:500000,d:"2026-11-08",p1:"2026-11-08"})],tx:[],loads:[]},W).exp,100000);
+// gross from document vs sum of loads
+eq("gross doc vs loads mismatch reported",C.stmtCalc({gross:1000000,loads:[{g:900000}],ded:[],net:1000000,rate:10000}).rec.why[0].k,"grossLoads");
+// several weekly statements of one driver → month totals add up, weeks stay separate
+var W1=Object.assign({},SP,{id:"w1"}),W2=Object.assign({},SP,{id:"w2",num:"X2",p0:"2026-11-09",p1:"2026-11-15",d:"2026-11-17"});var SW={stmts:[W1,W2],tx:[],loads:[]};
+eq("two weeks in month",C.totals(SW,["2026-11-01","2026-11-30"]).net,757552*2);eq("week 1 only",C.totals(SW,W).net,757552);eq("week 2 only",C.totals(SW,["2026-11-09","2026-11-15"]).net,757552);
+// lease-to-own behaves like a loan (interest + principal), rental does not
+var LT=C.truckCalc({stmts:STK.stmts,truck:{type:"lto",balance:2600000,aprBp:2000,period:"week"}});eq("lease-to-own interest/principal",[LT.interest,LT.principal,LT.balance],[10000,90000,2510000]);
+eq("truck rental: no balance",C.truckCalc({stmts:STK.stmts,truck:{type:"rental"}}).isLoan,false);
+// new categories
+eq("tires/wash/reserve/company fee",[C.guessCat("TIRE SERVICE"),C.guessCat("BLUE BEACON TRUCK WASH"),C.guessCat("MAINTENANCE RESERVE"),C.guessCat("ADMIN FEE")],["tires","wash","reserve","co_fee"]);
+// source page/line kept
+var RP=C.parseStatement("[[PAGE 2]]\nToll Auto calculated $25.65");eq("source page/line",[RP.ded[0].pg,RP.ded[0].ln],[2,1]);
 console.log("\nPASS "+pass+"  FAIL "+fail);process.exit(fail?1:0);
