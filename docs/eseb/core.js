@@ -259,7 +259,16 @@ function dates(U){var out=[],re=/(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})/g,m;w
 function title(s){s=s.replace(/\b([A-Z]{2,})\s(FI|FL)\s([A-Z]{2,})\b/g,"$1$2$3");return s.toLowerCase().replace(/\b[a-z]/g,function(c){return c.toUpperCase()})}
 function locs(U){var re=new RegExp("([A-Z][A-Z .'\\-]{1,24}?)[, ]+("+STS+")\\b","g"),out=[],m;while((m=re.exec(U))){var city=m[1].replace(/^(?:\d+|[A-Z]{1,2}\d+)\s+/,"").replace(/^(FROM|TO|ORIGIN|DEST(INATION)?|PICKUP|DELIVERY|SHIPPER|CONSIGNEE|PU|DEL)\s*:?\s*/,"").trim();
  var w=city.split(/\s+/);if(w.length>3)city=w.slice(-3).join(" ");if(city.length>=2&&!/^(TOTAL|FUEL|LOAD|PAY|RATE|MILES?|NET|GROSS)$/.test(city))out.push(title(city)+", "+m[2])}return out}
-C.parseStatement=function(txt){
+/* PDF fonts often draw tt/ff/fi/fl/ffi/ffl as ONE glyph that has no text — pdf.js then drops it ("Sea" + "le" for Seattle).
+   The PDF reader marks such a gap with \u00A4 (one per missing letter); here it is filled from known words, otherwise "tt"/"ff". */
+C.LIGW=("seattle,settlement,statement,battle,little,pittsburgh,pittsburg,pittston,scottsdale,scottsbluff,scottsburg,chattanooga,ottawa,ottumwa,mattoon,plattsburgh,hattiesburg,marietta,henrietta,lafayette,fayette,fayetteville,gettysburg,bettendorf,brattleboro,kettleman,rotterdam,"+
+ "buffalo,jefferson,jeffersonville,effingham,griffin,tiffin,sheffield,suffolk,cliffside,flagstaff,stafford,clifton,fairfield,springfield,mansfield,bakersfield,wakefield,chesterfield,marshfield,plainfield,westfield,bloomfield,litchfield,clearfield,littlefield,"+
+ "afton,after,office,officer,traffic,offset,staff,tariff,affidavit,difference,different,effective,trailer,attn,attention,letter,better,matter,water").split(",");
+C.fixLig=function(txt){if(String(txt).indexOf("\u00A4")<0)return String(txt);var C2=["tt","ff","fi","fl","ft","ti","tf"],C3=["ffi","ffl","ttl","tti"];
+ return String(txt).replace(/[A-Za-z]*\u00A4+[A-Za-z]*/g,function(w){var n=(w.match(/\u00A4/g)||[]).length,cs=n>=3?C3:C2,lw=w.toLowerCase(),pick=null;
+  for(var i=0;i<cs.length&&!pick;i++){var t=lw.replace(/\u00A4+/,cs[i]);if(C.LIGW.indexOf(t)>=0)pick=cs[i]}if(!pick)pick=cs[0];
+  var up=w.replace(/\u00A4+/,"").length&&w.replace(/\u00A4+/,"")===w.replace(/\u00A4+/,"").toUpperCase();return w.replace(/\u00A4+/,up?pick.toUpperCase():pick)})};
+C.parseStatement=function(txt){txt=C.fixLig(txt);
  var lines=String(txt||"").split(/\n/).map(function(l){return l.replace(/\s+/g," ").trim()}).filter(Boolean),U=lines.join("\n").toUpperCase();
  var R={company:null,driver:null,num:null,d:null,p0:null,p1:null,gross:null,rate:null,earn:null,fee:null,adv:null,reimb:null,other:null,net:null,dedTotal:null,loads:[],ded:[],fuel:[],fuelRetail:null,fuelInvoice:null,unknown:[]};
  for(var i=0;i<Math.min(4,lines.length);i++){var cl=lines[i].replace(/\s*(STATEMENT DATE|SETTLEMENT DATE|PERIOD|DATE|PAGE)\b.*$/i,"").trim();if(/[A-Za-z]{3}/.test(cl)&&!/^(STATEMENT|SETTLEMENT|PAGE|DRIVER|PERIOD)/i.test(cl)&&!moneys(cl).length){R.company=cl.slice(0,60);break}}
@@ -342,7 +351,7 @@ C.fixOcrDollar=function(R){var target=R.dedTotal;if(target==null||C.sum(R.ded,"a
   if(sum===target){for(var k2=0;k2<amb.length;k2++)if(mask&(1<<k2)){var d=R.ded[amb[k2].i];d.ocrFix=d.a;d.a=amb[k2].alt}R.ocrFixed=true;return R}}
  return R};
 /* ---------- receipts ---------- */
-C.parseReceipt=function(txt){var lines=String(txt||"").split(/\n/).map(function(l){return l.trim()}).filter(Boolean),U=lines.join("\n").toUpperCase(),a=null;
+C.parseReceipt=function(txt){txt=C.fixLig(txt);var lines=String(txt||"").split(/\n/).map(function(l){return l.trim()}).filter(Boolean),U=lines.join("\n").toUpperCase(),a=null;
  lines.forEach(function(l){var u=l.toUpperCase();if(/(TOTAL|AMOUNT|BALANCE|DUE|SALE|ИТОГО)/.test(u)&&!/SUB\s?TOTAL|TAX|CHANGE|SAVING|DISCOUNT/.test(u)){var v=lastMoney(l);if(v!=null&&v>0)a=v}});
  if(a==null){var all=moneys(U).filter(function(x){return x>0&&x<5000000});if(all.length)a=Math.max.apply(null,all)}
  var ds=dates(U),v="";for(var j=0;j<Math.min(lines.length,6);j++){if(/^[A-Za-z][A-Za-z'&. ]{2}/.test(lines[j])&&!/\d{5}|\d{1,2}[\/\-]\d{1,2}/.test(lines[j])){v=lines[j].replace(/#\s*\d+/g,"").replace(/[^A-Za-z0-9&'.\- ]/g,"").trim();if(v.length>2)break}}

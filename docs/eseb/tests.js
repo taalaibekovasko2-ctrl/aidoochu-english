@@ -292,4 +292,11 @@ var V1=C.readBackup(JSON.stringify({app:"jolesep",data:{stmts:[{id:"s1",d:"2026-
 eq("valid v1 backup still opens and migrates",[!!V1,V1&&V1.data.v,V1&&V1.data.stmts.length,V1&&V1.data.tx.length],[true,2,1,1]);
 var S6=store();S6.setItem("jolesep_v1","CURRENT");S6.setItem=function(){throw new Error("quota")};var R6=C.restoreInto(S6,"jolesep_v1",JSON.stringify(C.exportData({v:2,stmts:[],tx:[],loads:[]},{id:"main"})));
 eq("backup fails → restore stops, profile unchanged (recheck)",[R6.ok,R6.why,S6.m["jolesep_v1"]],[false,"backup","CURRENT"]);
+
+// ===== PDF ligature glyphs (tt/ff) lost by pdf.js =====
+eq("ligature: Sea¤¤le → Seattle, Se¤¤lement → Settlement",C.fixLig("Oakland,CA Sea¤¤le,WA Se¤¤lement #"),"Oakland,CA Seattle,WA Settlement #");
+eq("ligature: Bu¤¤alo → Buffalo, Je¤¤erson → Jefferson (known words)",C.fixLig("Bu¤¤alo,NY Je¤¤erson"),"Buffalo,NY Jefferson");
+eq("ligature: upper case kept",C.fixLig("SEA¤¤LE,WA"),"SEATTLE,WA");eq("ligature: text without marker unchanged",C.fixLig("Laton,CA"),"Laton,CA");
+if(typeof RT!=="undefined"){var LT=RT.split("Seattle").join("Sea¤¤le").split("Settlement").join("Se¤¤lement"),LR=C.parseStatement(LT);
+ eq("real ARAVAN via pdf.js ligatures: cities, number and totals unchanged",[LR.loads[1].t,LR.loads[2].f,LR.num,C.stmtCalc(LR).net,C.stmtCalc(LR).rec.status],["Seattle, WA","Seattle, WA",RR.num,757552,"full"])}
 console.log("\nPASS "+pass+"  FAIL "+fail+"  NOT RUN "+SKIP);process.exit(fail||SKIP?1:0);

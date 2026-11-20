@@ -355,13 +355,21 @@ var PDFJS="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js",TE
 function lib(u){if(libs[u])return libs[u];libs[u]=new Promise(function(ok,no){var s=document.createElement("script");s.src=u;s.onload=ok;s.onerror=function(){libs[u]=null;no()};document.head.appendChild(s)});return libs[u]}
 function shrink(file,cb,mx){var fr=new FileReader();fr.onload=function(){var im=new Image();im.onload=function(){var m=mx||1600,k=Math.min(1,m/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext("2d").drawImage(im,0,0,c.width,c.height);cb(c.toDataURL("image/jpeg",.72),c)};im.onerror=function(){cb(null)};im.src=fr.result};fr.readAsDataURL(file)}
 function ocr(canvas){return (window.Tesseract?Promise.resolve():lib(TESS)).then(function(){return window.Tesseract.recognize(canvas,"eng")}).then(function(r){return String(r.data.text||"").replace(/\uFB01/g,"fi").replace(/\uFB02/g,"fl")})}
-function joinRow(items){items=items.slice().sort(function(a,b){return a.transform[4]-b.transform[4]});var out="",end=null;
+function joinRow(items){items=items.slice().sort(function(a,b){return a.transform[4]-b.transform[4]});var out="",end=null,cw=4;
  items.forEach(function(it){var x=it.transform[4],fs=Math.abs(it.transform[0])||8,str=it.str;if(!str)return;
-  if(end!=null){var gap=x-end;out+=gap>fs*0.25?" ":""}out+=str;end=x+(it.width||0)});return out.replace(/\uFB01/g,"fi").replace(/\uFB02/g,"fl")}
+  /* ligature glyph mapped to a private-use character (e.g. U+E009 for "tt"): one marker per missing letter, by its width */
+  if(/[\uE000-\uF8FF]/.test(str)){var pu=str.replace(/[^\uE000-\uF8FF]/g,"").length,lw=pu&&it.width&&str.length===pu?it.width/pu:cw*2;str=str.replace(/[\uE000-\uF8FF]/g,lw<cw*2.2?"\u00A4\u00A4":"\u00A4\u00A4\u00A4")}
+  if(end!=null){var gap=x-end;
+   /* letter … gap … lowercase letter, about 1–3 letters wide: a ligature glyph without text (Sea|tt|le) → mark the missing letters */
+   if(/[A-Za-z]$/.test(out)&&/^[a-z]/.test(str)&&gap>cw*0.6&&gap<cw*3.2)out+=gap<cw*2.2?"\u00A4\u00A4":"\u00A4\u00A4\u00A4";
+   else out+=gap>fs*0.25?" ":""}
+  out+=str;end=x+(it.width||0);if(str.length&&it.width)cw=it.width/str.length});return out.replace(/\uFB01/g,"fi").replace(/\uFB02/g,"fl").replace(/\uFB00/g,"ff").replace(/\uFB03/g,"ffi").replace(/\uFB04/g,"ffl")}
+/* rows by y with a tolerance (rounding could split one printed line into two) */
+function pdfRows(items){var its=items.filter(function(i){return i.str}).slice().sort(function(a,b){return b.transform[5]-a.transform[5]}),rows=[];
+ its.forEach(function(it){var y=it.transform[5],r=rows[rows.length-1];if(r&&Math.abs(r.y-y)<=2.5)r.it.push(it);else rows.push({y:y,it:[it]})});return rows.map(function(r){return r.it})}
 function pdfText(file){return lib(PDFJS).then(function(){var P=window.pdfjsLib;P.GlobalWorkerOptions.workerSrc=PDFJS.replace("pdf.min.js","pdf.worker.min.js");
  return new Promise(function(ok){var fr=new FileReader();fr.onload=function(){ok(new Uint8Array(fr.result))};fr.readAsArrayBuffer(file)}).then(function(buf){return P.getDocument({data:buf}).promise}).then(function(doc){var out=[],chain=Promise.resolve();
-  for(var p=1;p<=doc.numPages;p++)(function(p){chain=chain.then(function(){out.push("[[PAGE "+p+"]]");return doc.getPage(p)}).then(function(pg){return pg.getTextContent().then(function(tc){var rows={};tc.items.forEach(function(it){var y=Math.round(it.transform[5]/3);(rows[y]=rows[y]||[]).push(it)});
-   Object.keys(rows).map(Number).sort(function(a,b){return b-a}).forEach(function(y){out.push(joinRow(rows[y]))});
+  for(var p=1;p<=doc.numPages;p++)(function(p){chain=chain.then(function(){out.push("[[PAGE "+p+"]]");return doc.getPage(p)}).then(function(pg){return pg.getTextContent().then(function(tc){pdfRows(tc.items).forEach(function(r){out.push(joinRow(r))});
    if(tc.items.length<5){var vp=pg.getViewport({scale:2}),c=document.createElement("canvas");c.width=vp.width;c.height=vp.height;return pg.render({canvasContext:c.getContext("2d"),viewport:vp}).promise.then(function(){return ocr(c)}).then(function(t){out.push(t)})}})})})(p);
   return chain.then(function(){return out.join("\n")})})})}
 function onStatements(files){sheet("📄 "+L("stmt"),'<div id="stP" class="ocr" style="font-size:15px">⏳ '+L("stRead")+'</div><div class="note" style="margin-top:8px">'+L("stWait")+'</div>');
