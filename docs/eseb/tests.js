@@ -489,4 +489,17 @@ eq("labels: Cash Advance → debt/advance, Toll & Oregon miles → expenses",PO.
 var POt=C.totals({stmts:[Object.assign({},PO,{id:"po",d:"2026-11-08",p1:"2026-11-08"})],tx:[],loads:[]},["2026-11-02","2026-11-08"]);
 eq("labels: cash advance not a business expense, each deduction once",[POt.debtPaid,POt.exp],[50000,518202-50000]);
 var PO2=C.parseStatement("Gross  $5,000.00\nNet Amount  $4,400.00\nFuel  $400.00\nTotal Deductions  $400.00");eq("no Payout printed → 'Net Amount' is the net",[PO2.net,PO2.earn],[440000,null]);
+
+// ===== REAL statement: Pro Truck Inc "Driver Payroll" (anonymized word positions) =====
+var PTi=fx("protruck_2026_46_pdf_items.json"),PTr=C.cellRows(PTi),PT=C.readAll({texts:[{name:"pdf",text:C.rowsText(PTr),rows:PTr}]}),PTk=C.stmtCalc(PT);
+eq("REAL Pro Truck: company (not the driver's name on line 1), driver, truck, period Nov 10–16",[PT.company,PT.driver,PT.unit,PT.p0,PT.p1],["Pro Truck Inc","TEST DRIVER","2001","2026-11-10","2026-11-16"]);
+eq("REAL Pro Truck: Gross = Total Trip Gross 11,082.02 · Earning 9,752.17 (not the YTD numbers on the same line)",[PTk.gross,PT.earn,/^Total Trip Gross/.test(PT.from.gross.t),/^Earning/.test(PT.from.earn.t)],[1108202,975217,true,true]);
+eq("REAL Pro Truck: Other 4,517.02 + Recurring 665.00 = 5,182.02 · Payout 4,570.15 · full → auto-save",[PTk.ded,PT.net,PTk.net,PTk.rec.status,C.decide(PT).act,/Payout/.test(PT.from.net.t)],[518202,457015,457015,"full","save",true]);
+eq("REAL Pro Truck: 3 trips with origin/destination and gross",PT.loads.map(function(l){return [l.num,l.f,l.t,l.g]}),[["15395","Kent, WA","Shafter, CA",183898],["15366","Shafter, CA","Vacaville, CA",229534],["15428","Stockton, CA","Kenosha, WI",694770]]);
+eq("REAL Pro Truck: miles from the summary (loaded 3,769 · deadhead 1,081 · total 4,850), 'Total Loaded' never used as Gross",[PT.docLoaded,PT.docEmpty,PT.docMiles],[3769,1081,4850]);
+var PTc={};PT.ded.forEach(function(d){PTc[d.v.split(" ")[0]]=[d.c,d.a,C.kindOf(d.c,{},d)]});
+eq("REAL Pro Truck: each deduction once, right meaning",[PT.ded.length,PTc.Tolls,PTc.Oregon,PTc.Cash,PTc.Administration,PTc.Cargo,PTc.OCCAC,PTc.Physical],[7,["toll",6630,"expense"],["ifta",95072,"expense"],["co_debt",350000,"debt"],["co_fee",11500,"expense"],["cargo_ins",45000,"expense"],["truck_ins",3500,"expense"],["truck_ins",6500,"expense"]]);
+var PTt=C.totals({stmts:[Object.assign({},PT,{id:"pt"})],tx:[],loads:[]},["2026-11-10","2026-11-16"]);
+eq("REAL Pro Truck: Cash Advance $3,500 → debts, expenses 1,682.02, profit 8,070.15, take-home 4,570.15",[PTt.debtPaid,PTt.exp,PTt.profit,PTt.net],[350000,168202,975217-168202,457015]);
+eq("fixture anonymized",/ANVAR|ALAPAEV|WARING|PHILADELPHIA|8008442080/i.test(JSON.stringify(PTi)),false);
 console.log("\nPASS "+pass+"  FAIL "+fail+"  NOT RUN "+SKIP);process.exit(fail||SKIP?1:0);
