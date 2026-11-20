@@ -486,7 +486,7 @@ var PO=C.parseStatement(["CARRIER X LLC","Trip 1001  Gross $6,000.00  Net Amount
 eq("labels: Gross from Total Trip Gross (not a trip line), Earning from Net Amount, Payout = original Net Pay",[PO.gross,PO.earn,PO.net,/Payout/.test(PO.from.net.t)],[1108202,975217,457015,true]);
 eq("labels: Other 4,517.02 + Recurring 665.00 = 5,182.02; 9,752.17 − 5,182.02 = 4,570.15 ✓ (no load list in this text → one-tap confirm)",[PO.dedTotal,POk.ded,POk.net,POk.rec.status,C.decide(PO).act],[518202,518202,457015,"partial","confirm"]);
 eq("labels: Cash Advance → debt/advance, Toll & Oregon miles → expenses",PO.ded.filter(function(d){return /Cash|Toll|Oregon/.test(d.v)}).map(function(d){return [d.v,C.kindOf(d.c,{},d)]}),[["Cash Advance","debt"],["Toll","expense"],["Oregon miles","expense"]]);
-var POt=C.totals({stmts:[Object.assign({id:"po",d:"2026-11-08"},PO)],tx:[],loads:[]},["2026-11-02","2026-11-08"]);
+var POt=C.totals({stmts:[Object.assign({},PO,{id:"po",d:"2026-11-08",p1:"2026-11-08"})],tx:[],loads:[]},["2026-11-02","2026-11-08"]);
 eq("labels: cash advance not a business expense, each deduction once",[POt.debtPaid,POt.exp],[50000,518202-50000]);
 var PO2=C.parseStatement("Gross  $5,000.00\nNet Amount  $4,400.00\nFuel  $400.00\nTotal Deductions  $400.00");eq("no Payout printed → 'Net Amount' is the net",[PO2.net,PO2.earn],[440000,null]);
 console.log("\nPASS "+pass+"  FAIL "+fail+"  NOT RUN "+SKIP);process.exit(fail||SKIP?1:0);
