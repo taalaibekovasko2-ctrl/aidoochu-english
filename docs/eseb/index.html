@@ -2,7 +2,7 @@
 <html lang="ky"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#f4f6fb">
+<meta name="theme-color" content="#0b1630">
 <title>Жол Эсеп — тракисттин кирешеси жана салыгы</title>
 <meta name="description" content="Тракисттер үчүн бекер: рейстер, чыгашалар, чектер, per diem жана болжолдуу салык. Кыргызча жана орусча.">
 <link rel="manifest" href="manifest.json">
@@ -10,7 +10,7 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-:root{--bg:#f4f6fb;--c1:#ffffff;--c2:#eef2f8;--ln:#e3e8f1;--tx:#111a2e;--mu:#5d6b85;--ac:#ff7a00;--gr:#0f9f5a;--rd:#e23d48;--bl:#2f6fed;--yl:#b7791f;color-scheme:light}
+:root{--bg:#0b1630;--c1:#122247;--c2:#182c58;--ln:#24396b;--tx:#fff;--mu:#9fb0d4;--ac:#ff8c1a;--gr:#3ddc84;--rd:#ff6b6b;--bl:#4c8dff}
 html,body{margin:0;background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif}
 body{padding-bottom:calc(86px + env(safe-area-inset-bottom))}
 #app{max-width:520px;margin:0 auto;padding:calc(12px + env(safe-area-inset-top)) 14px 20px}
@@ -27,7 +27,7 @@ body{padding-bottom:calc(86px + env(safe-area-inset-bottom))}
 .per{display:flex;align-items:center;justify-content:space-between;margin:2px 0 12px}
 .per b{width:40px;height:36px;border-radius:10px;background:var(--c1);display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer}
 .per span{font-weight:800;font-size:16px}
-.card{background:var(--c1);border:1px solid var(--ln);border-radius:18px;padding:14px;margin-bottom:10px;box-shadow:0 1px 3px rgba(17,26,46,.05)}
+.card{background:var(--c1);border:1px solid var(--ln);border-radius:18px;padding:14px;margin-bottom:10px}
 .big{font-size:32px;font-weight:900;letter-spacing:-.5px}
 .lbl{font-size:13px;color:var(--mu);font-weight:600;margin-bottom:4px}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
@@ -36,10 +36,10 @@ body{padding-bottom:calc(86px + env(safe-area-inset-bottom))}
 .pos{color:var(--gr)}.neg{color:var(--rd)}
 .btns{display:flex;gap:10px;margin:6px 0 12px}
 .btn{flex:1;border:0;border-radius:14px;padding:14px 10px;font-weight:800;font-size:15px;color:#fff;background:var(--bl);cursor:pointer;font-family:inherit}
-.btn.o{background:#fff;border:2px solid var(--bl);color:var(--bl)}
+.btn.o{background:transparent;border:2px solid var(--bl);color:#9cc0ff}
 .btn.ac{background:var(--ac)}
 .btn.gh{background:var(--c2)}
-.btn.rd{background:#fdecee;color:#c0293a}
+.btn.rd{background:#5a2330;color:#ffb3b3}
 .btn:disabled{opacity:.5}
 h2{font-size:18px;margin:16px 2px 10px}
 .it{display:flex;align-items:center;gap:12px;background:var(--c1);border:1px solid var(--ln);border-radius:16px;padding:12px;margin-bottom:8px;cursor:pointer}
@@ -50,7 +50,7 @@ h2{font-size:18px;margin:16px 2px 10px}
 .it .m small{color:var(--mu);font-size:12.5px}
 .it .r{font-weight:800;font-size:16px;text-align:right}
 .empty{text-align:center;color:var(--mu);padding:26px 10px;font-size:14px}
-.nav{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.97);border-top:1px solid var(--ln);box-shadow:0 -4px 16px rgba(17,26,46,.06);display:flex;justify-content:center;padding:6px 6px calc(6px + env(safe-area-inset-bottom));z-index:5}
+.nav{position:fixed;left:0;right:0;bottom:0;background:rgba(11,22,48,.96);border-top:1px solid var(--ln);display:flex;justify-content:center;padding:6px 6px calc(6px + env(safe-area-inset-bottom));z-index:5}
 .nav div{flex:1;max-width:130px;text-align:center;color:var(--mu);font-size:11.5px;font-weight:700;padding:4px 0;cursor:pointer}
 .nav div i{display:block;font-style:normal;font-size:21px;margin-bottom:2px;filter:grayscale(1);opacity:.7}
 .nav div.on{color:var(--ac)}.nav div.on i{filter:none;opacity:1}
@@ -63,19 +63,19 @@ h2{font-size:18px;margin:16px 2px 10px}
 .dbs{display:inline-block;font-size:12px;font-weight:800;border:1px solid;border-radius:999px;padding:1px 8px;margin:4px 0}
 .dbg{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12.5px;color:var(--mu);margin-top:4px}.dbg span{white-space:nowrap}
 .dbc{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;font-weight:700;margin-top:6px}
-.ov{position:fixed;inset:0;background:rgba(17,26,46,.45);z-index:10;display:flex;align-items:flex-end;justify-content:center}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:10;display:flex;align-items:flex-end;justify-content:center}
 .sh{background:var(--bg);width:100%;max-width:520px;max-height:92vh;overflow:auto;border-radius:22px 22px 0 0;padding:16px 16px calc(20px + env(safe-area-inset-bottom));border-top:1px solid var(--ln)}
 .sh h3{margin:0 0 12px;font-size:19px;display:flex;justify-content:space-between;align-items:center}
 .sh h3 b{font-size:24px;color:var(--mu);cursor:pointer;padding:0 6px}
 label{display:block;font-size:13px;color:var(--mu);font-weight:700;margin:10px 2px 5px}
-input,select,textarea{width:100%;background:var(--c1);border:1px solid var(--ln);border-radius:12px;padding:13px 12px;color:var(--tx);font-size:16px;font-family:inherit;outline:none}
+input,select,textarea{width:100%;background:var(--c1);border:1px solid var(--ln);border-radius:12px;padding:13px 12px;color:#fff;font-size:16px;font-family:inherit;outline:none}
 input:focus,select:focus{border-color:var(--bl)}
 .row{display:flex;gap:10px}.row>div{flex:1;min-width:0}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chips b{padding:8px 11px;border-radius:999px;background:var(--c1);border:1px solid var(--ln);font-size:13.5px;cursor:pointer;font-weight:600}
 .chips b.on{background:var(--ac);border-color:var(--ac)}
 .note{font-size:12.5px;color:var(--mu);line-height:1.45}
-.warn{background:#fff7e6;border:1px solid #f3d08a;color:#8a5a00;border-radius:14px;padding:12px;font-size:13px;line-height:1.45;margin-bottom:10px}
+.warn{background:#2b2410;border:1px solid #6b5418;color:#ffd98a;border-radius:14px;padding:12px;font-size:13px;line-height:1.45;margin-bottom:10px}
 .tl{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--ln);font-size:14.5px}
 .tl:last-child{border:0}
 .tl span{color:var(--mu)}.tl b{font-weight:800}
@@ -83,11 +83,11 @@ input:focus,select:focus{border-color:var(--bl)}
 .hero .lbl{color:#dbe7ff}
 .bar{height:8px;border-radius:6px;background:var(--c2);overflow:hidden;margin-top:6px}
 .bar i{display:block;height:100%;background:var(--ac);border-radius:6px}
-.prev{width:100%;max-height:260px;object-fit:contain;border-radius:14px;background:#eef2f8;margin-top:8px}
-.ocr{font-size:13px;color:var(--bl);margin-top:8px}
-.toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%);background:#111a2e;color:#fff;padding:11px 16px;border-radius:12px;font-weight:700;font-size:14px;z-index:20;max-width:90%;text-align:center}
+.prev{width:100%;max-height:260px;object-fit:contain;border-radius:14px;background:#000;margin-top:8px}
+.ocr{font-size:13px;color:#9cc0ff;margin-top:8px}
+.toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%);background:#fff;color:#111;padding:11px 16px;border-radius:12px;font-weight:700;font-size:14px;z-index:20;max-width:90%;text-align:center}
 .foot{text-align:center;color:var(--mu);font-size:12px;margin:18px 0 4px}
-.foot a{color:#d63b7a;text-decoration:none;font-weight:700}
+.foot a{color:#ff6fa3;text-decoration:none;font-weight:700}
 .q{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .q div{background:var(--c2);border-radius:12px;padding:10px}
 .q small{color:var(--mu);font-size:12px;display:block}
@@ -105,9 +105,9 @@ img,video{max-width:100%}
 .tap{cursor:pointer}.tap:active{transform:scale(.98)}
 .nd{font-size:13px;color:var(--mu);font-weight:600}
 .big2{display:flex;flex-direction:column;align-items:center;gap:2px;padding:16px 8px}.big2 small{font-size:11.5px;font-weight:600;opacity:.85}
-.bd{display:inline-block;margin-top:5px;font-size:11.5px;font-weight:800;padding:3px 8px;border-radius:8px}.bd.ok{background:#e3f7ec;color:#0b7a45}.bd.est{background:#fff4dc;color:#8a5a00}.bd.man{background:#e8efff;color:#2456c7}.bd.bad{background:#fdecee;color:#c0293a}
-.dim{opacity:.55}.it small i{color:var(--yl);font-style:normal}
-.miss{border-color:#e0a63a!important;background:#fff7e6!important}
+.bd{display:inline-block;margin-top:5px;font-size:11.5px;font-weight:800;padding:3px 8px;border-radius:8px}.bd.ok{background:#123d2a;color:#5df0a0}.bd.est{background:#3a3010;color:#ffd98a}.bd.man{background:#1d2c55;color:#9cc0ff}.bd.bad{background:#4a1d24;color:#ffb3b3}
+.dim{opacity:.55}.it small i{color:#ffd98a;font-style:normal}
+.miss{border-color:#a8781e!important;background:#2b2410!important}
 .btn.sm{padding:9px;font-size:13px;flex:none;width:auto;margin-bottom:8px}
 .rm{color:var(--mu);font-size:22px;padding:0 6px;cursor:pointer;align-self:center;flex:none!important}
 .drow{align-items:center;margin-bottom:8px}.lrow{padding:10px}
@@ -119,7 +119,7 @@ input[type=date]{display:block;width:100%;min-width:0;max-width:100%;-webkit-app
 .grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important}.card{min-width:0}.v,.big{overflow-wrap:anywhere}.tl>span{min-width:0;padding-right:8px}.tl>b{text-align:right;flex:none}
 @media (max-width:360px){.v{font-size:19px}.big{font-size:28px}.card{padding:12px}.nav div{font-size:10.5px}.seg b{font-size:13px}}
 .row2{display:flex;justify-content:space-between;align-items:center}
-.ok2{margin-top:8px;color:#0b7a45;font-weight:700;font-size:14px}
+.ok2{margin-top:8px;color:#5df0a0;font-weight:700;font-size:14px}
 details.card summary{font-weight:800;cursor:pointer;list-style:none;padding:2px 0}details.card summary::-webkit-details-marker{display:none}details.card summary:after{content:" ▾";color:var(--mu)}details[open].card summary{margin-bottom:6px}
 .chips b{white-space:nowrap}
 </style>
@@ -129,6 +129,6 @@ details.card summary{font-weight:800;cursor:pointer;list-style:none;padding:2px 
 <input type="file" id="fileIn" accept="image/*" capture="environment" style="display:none">
 <input type="file" id="stIn" accept="image/*,application/pdf,.pdf,.csv,.xlsx,.xls,text/csv" multiple style="display:none">
 <input type="file" id="bkIn" accept=".json,application/json" style="display:none">
-<script src="core.js?v=30"></script>
-<script src="app.js?v=30"></script>
+<script src="core.js?v=31"></script>
+<script src="app.js?v=31"></script>
 </body></html>
