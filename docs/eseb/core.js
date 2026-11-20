@@ -94,17 +94,22 @@ C.findDups=function(t,S){ /* returns [{type:'tx'|'stline'|'stfuel', id, score, .
  out.sort(function(a,b){return b.score-a.score});return out};
 C.stHasFuelLines=function(S,id){var r=false;(S.stmts||[]).forEach(function(s){if(s.id===id&&(s.fuel||[]).some(function(f){return f.gal}))r=true});return r};
 C.stDay=function(st){return st.p1||st.d}; /* statement belongs to the week it covers */
-C.stmtDup=function(st,S){ /* same company+number, or same covered week, or same money → same statement */
+C.norm=function(x){return String(x||"").toUpperCase().replace(/[^A-Z0-9]/g,"")};
+C.stmtDup=function(st,S){ /* same statement = same company AND (same settlement # or same covered week/money). Different company, driver, unit or number → never a duplicate */
  var k=C.key(st),f=null;(S.stmts||[]).forEach(function(o){if(f||o.id===st.id)return;
-  var ok2=C.key(o);if(k&&ok2===k){f=o;return}if(k&&ok2&&ok2!==k)return; /* different settlement numbers → different statements */
+  var ok2=C.key(o);if(k&&ok2===k){f=o;return}if(k&&ok2&&ok2!==k)return;
+  if(st.company&&o.company&&C.norm(st.company)!==C.norm(o.company))return;
+  if(st.driver&&o.driver&&C.norm(st.driver)!==C.norm(o.driver))return;
+  if(st.unit&&o.unit&&C.norm(st.unit)!==C.norm(o.unit))return;
   var sameWeek=(st.p1&&o.p1&&Math.abs(C.days(st.p1,o.p1))<=1)||(st.p0&&o.p0&&st.p0===o.p0);
   var sameMoney=(st.gross&&st.gross===o.gross)||(st.net!=null&&o.net!=null&&st.net===o.net);
-  if(sameWeek||sameMoney&&Math.abs(C.days(C.stDay(st),C.stDay(o)))<=10)f=o});return f};
+  if(sameWeek&&(sameMoney||!st.gross||!o.gross)||sameMoney&&sameWeek)f=o;else if(sameMoney&&Math.abs(C.days(C.stDay(st),C.stDay(o)))<=3&&!(st.p1&&o.p1))f=o});return f};
 C.dupPairs=function(S){var out=[],a=S.stmts||[];for(var i=0;i<a.length;i++)for(var j=i+1;j<a.length;j++){var x=C.stmtDup(a[j],{stmts:[a[i]]});if(x)out.push([a[i],a[j]])}return out};
-C.mergeStmt=function(a,b){ /* add b's loads/deductions that a does not already have */
- var o=JSON.parse(JSON.stringify(a));function has(list,x,keys){return list.some(function(y){return keys.every(function(k){return y[k]===x[k]})})}
- (b.loads||[]).forEach(function(l){if(!has(o.loads,l,["g","f","t"]))o.loads.push(l)});(b.ded||[]).forEach(function(d){if(!has(o.ded,d,["c","a"]))o.ded.push(d)});(b.fuel||[]).forEach(function(f){o.fuel=o.fuel||[];if(!has(o.fuel,f,["a","d"]))o.fuel.push(f)});
- ["company","num","p0","p1","rate","earn","fee","net","dedTotal","fuelRetail","fuelInvoice"].forEach(function(k){if(o[k]==null&&b[k]!=null)o[k]=b[k]});
+C.mergeStmt=function(a,b){ /* add b's loads/deductions that a does not already have (same source line, or same label+amount) */
+ var o=JSON.parse(JSON.stringify(a));function same(x,y){if(x.pg&&y.pg&&x.ln&&y.ln)return x.pg===y.pg&&x.ln===y.ln;return x.a===y.a&&x.c===y.c&&C.norm(x.v)===C.norm(y.v)&&!!x.v}
+ (b.loads||[]).forEach(function(l){if(!o.loads.some(function(y){return (l.num&&y.num)?l.num===y.num:(y.g===l.g&&y.f===l.f&&y.t===l.t)}))o.loads.push(l)});
+ (b.ded||[]).forEach(function(d){if(!o.ded.some(function(y){return same(d,y)}))o.ded.push(d)});(b.fuel||[]).forEach(function(f){o.fuel=o.fuel||[];if(!o.fuel.some(function(y){return y.a===f.a&&y.d===f.d&&y.gal===f.gal}))o.fuel.push(f)});
+ ["company","num","p0","p1","rate","earn","fee","net","dedTotal","fuelRetail","fuelInvoice","driver","unit"].forEach(function(k){if(o[k]==null&&b[k]!=null)o[k]=b[k]});
  ["adv","reimb","other"].forEach(function(k){if(!o[k]&&b[k])o[k]=b[k]});
  var lg=C.sum(o.loads,"g");if(!o.gross||(b.gross&&b.gross>o.gross))o.gross=Math.max(o.gross||0,b.gross||0,lg);return o};
 C.key=function(st){if(!st.num)return null;return String(st.company||"").toUpperCase().replace(/[^A-Z0-9]/g,"")+"#"+String(st.num).toUpperCase().replace(/[^A-Z0-9]/g,"")};
@@ -141,15 +146,17 @@ C.totals=function(S,r){
  (S.loads||[]).forEach(function(l){if(!C.inR(l.d,r))return;var e=l.earn!=null?l.earn:l.g;o.gross+=l.g;o.earn+=e;o.fee+=l.g-e;o.loaded+=l.mi||0;o.empty+=l.dh||0;o.loadCount++;
   o.src.gross.push({t:"load",id:l.id,a:l.g});o.src.earn.push({t:"load",id:l.id,a:e});o.src.fee.push({t:"load",id:l.id,a:l.g-e})});
  (S.tx||[]).forEach(function(t){if(!C.inR(t.d,r))return;
-  if(t.kind=="reimb"){o.reimb+=t.a;return}
-  if(t.kind=="income"){o.other+=t.a;return}
+  if(t.kind=="reimb"){o.reimb+=t.a;o.txReimb=(o.txReimb||0)+t.a;return}
+  if(t.kind=="income"){o.other+=t.a;o.txIncome=(o.txIncome||0)+t.a;return}
   if(t.c&&C.catGroup(t.c)==="fuel"&&!t.dupOf&&!(t.link&&C.stHasFuelLines(S,t.link)))fuelAdd(t);
   if(C.counts(t)){o.oop+=t.a;addCat(t.c,t.a,{t:"tx",id:t.id,a:t.a,c:t.c})}else if(C.persCounts(t))o.pers=(o.pers||0)+t.a});
  function fuelAdd(f){var cost=f.inv!=null?f.inv:(f.a||0);if(f.c==="def"){o.defGal+=f.gal||0}else if(f.gal){o.dieselGal+=f.gal;o.dieselCost+=cost}
   if(f.ret!=null&&f.inv!=null){o.retail+=f.ret;o.invoice+=f.inv}}
+ var tk=C.truckCalc(S);o.principal=0;o.interest=0;tk.pays.forEach(function(p){if(!C.inR(p.d,r))return;o.interest+=p.interest;if(tk.isLoan&&p.principal){o.principal+=p.principal;if(p.src==="st"){o.stDed-=p.principal;o.byCat.truck_pay=(o.byCat.truck_pay||0)-p.principal}}});
  o.exp=o.stDed+o.oop;o.fuelSaved=o.retail&&o.invoice?o.retail-o.invoice:0;
  o.fuelCost=(o.byCat.diesel||0)+(o.byCat.def||0); /* authoritative: counted fuel expenses only */
  o.profit=o.earn+o.other+o.reimb-o.stDed-o.oop;
+ o.cashFlow=o.net-o.oop+(o.txReimb||0)+(o.txIncome||0); /* money actually received minus money spent from own pocket */
  o.miles=o.loaded+o.empty;
  o.perMile=function(c){return o.miles>0?Math.round(c/o.miles):null};
  o.rpm={gross:o.perMile(o.gross),driver:o.perMile(o.earn),net:o.perMile(o.net),loaded:o.loaded>0?Math.round(o.gross/o.loaded):null};
@@ -163,32 +170,41 @@ C.legs=function(loads){var ls=(loads||[]).slice().sort(function(a,b){return (a.p
  return {pts:pts,types:types}};
 C.sumLegs=function(types,meters,pts){var list=types.map(function(t,i){return {type:t,f:pts?pts[i]:null,t:pts?pts[i+1]:null,mi:Math.round((meters[i]||0)/1609.344)}}),o={loaded:0,empty:0};list.forEach(function(x){o[x.type]+=x.mi});return {loaded:o.loaded,empty:o.empty,legs:list}};
 /* ---------- truck / lease / loan ---------- */
-C.truckCalc=function(S){var T=S.truck||{},pays=[];
- (S.stmts||[]).forEach(function(st){(st.ded||[]).forEach(function(x){if(x.c==="truck_pay")pays.push({d:C.stDay(st),a:x.a,src:"st",id:st.id})})});
+C.truckCalc=function(S){var T=S.truck||{},pays=[],tc=C.norm(T.company);
+ (S.stmts||[]).forEach(function(st){if(tc&&st.company&&C.norm(st.company)!==tc)return;if(T.num&&st.unit&&C.norm(st.unit).indexOf(C.norm(T.num))<0&&C.norm(T.num).indexOf(C.norm(st.unit))<0)return;
+  (st.ded||[]).forEach(function(x,i){if(x.c==="truck_pay")pays.push({d:C.stDay(st),a:x.a,src:"st",id:st.id,i:i})})});
  (T.manual||[]).forEach(function(p){pays.push({d:p.d,a:p.a,src:"man",id:p.id})});pays.sort(function(a,b){return a.d<b.d?-1:1});
  var fin=T.type==="financed"||T.type==="lto",bal=T.balance||0,apr=T.aprBp||0,per=T.period==="month"?12:52,intT=0,prinT=0,rows=[];
- pays.forEach(function(p){var it=0,pr=0;if(fin){it=Math.min(p.a,Math.round(bal*apr/10000/per));pr=p.a-it;bal=Math.max(0,bal-pr)}rows.push({d:p.d,a:p.a,interest:it,principal:pr,bal:fin?bal:null,src:p.src,id:p.id});intT+=it;prinT+=pr});
- return {pays:rows,paid:C.sum(pays,"a"),interest:intT,principal:prinT,balance:fin?bal:null,isLoan:fin}};
+ pays.forEach(function(p){var it=0,pr=0;if(fin){it=Math.min(p.a,Math.round(bal*apr/10000/per));pr=p.a-it;bal=Math.max(0,bal-pr)}rows.push({d:p.d,a:p.a,interest:it,principal:pr,bal:fin?bal:null,src:p.src,id:p.id,i:p.i});intT+=it;prinT+=pr});
+ return {pays:rows,paid:C.sum(pays,"a"),interest:intT,principal:prinT,lease:fin?0:C.sum(pays,"a"),balance:fin?bal:null,isLoan:fin}};
 /* ---------- company debts ---------- */
-C.debtCalc=function(S){var out=[];(S.debts||[]).forEach(function(d){var items=(d.items||[]).slice(),key=String(d.company||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
-  (S.stmts||[]).forEach(function(st){var sk=String(st.company||"").toUpperCase().replace(/[^A-Z0-9]/g,"");if(key&&sk&&key!==sk)return;
-   (st.ded||[]).forEach(function(x){if(x.c==="co_debt"&&(x.debt===d.id||(!x.debt&&d.auto!==false)))items.push({d:C.stDay(st),a:-x.a,src:"st",id:st.id})});
+C.debtCalc=function(S){var out=[];(S.debts||[]).forEach(function(d){var items=(d.items||[]).slice();
+  (S.stmts||[]).forEach(function(st){(st.ded||[]).forEach(function(x){if(x.c==="co_debt"&&x.debt===d.id)items.push({d:C.stDay(st),a:-x.a,src:"st",id:st.id})});
    if(st.negCarry===d.id){var k=C.stmtCalc(st);if(k.net<0)items.push({d:C.stDay(st),a:-k.net,src:"neg",id:st.id})}});
   var nw=0,pay=0;items.forEach(function(i){if(i.a>0)nw+=i.a;else pay+=-i.a});var unk=d.opening==null&&!nw;out.push({id:d.id,company:d.company,type:d.type,opening:d.opening||0,newDebt:nw,payments:pay,remaining:unk?null:(d.opening||0)+nw-pay,unknown:unk,items:items.sort(function(a,b){return a.d<b.d?-1:1})})});return out};
+C.unassignedDebt=function(S){var u=[];(S.stmts||[]).forEach(function(st){(st.ded||[]).forEach(function(x,i){if(x.c==="co_debt"&&!x.debt)u.push({st:st,i:i,a:x.a,v:x.v})})});return u};
+C.debtCandidates=function(S,st){return (S.debts||[]).filter(function(d){return d.type!=="neg"&&(!d.company||!st.company||C.norm(d.company)===C.norm(st.company))})};
 /* ---------- truck shop ---------- */
-C.shopCalc=function(S){return (S.shop||[]).map(function(r){var paid=r.paidAmt!=null?r.paidAmt:(r.drv||0)+(r.co||0),pays=(r.pays||[]).slice();
-  (S.stmts||[]).forEach(function(st){(st.ded||[]).forEach(function(x){if(x.c==="shop_debt"&&x.shop===r.id)pays.push({d:C.stDay(st),a:x.a,src:"st",id:st.id})})});
-  var p2=C.sum(pays,"a"),known=r.total!=null||r.parts!=null||r.labor!=null,total=r.total!=null?r.total:(r.parts||0)+(r.labor||0);return {id:r.id,r:r,total:known?total:null,paid:paid+p2,remaining:known?Math.max(0,total-paid-p2):null,pays:pays}})};
+C.shopCalc=function(S){return (S.shop||[]).map(function(r){
+  var pa=r.paidAmt!=null?r.paidAmt:(r.drv||0)+(r.co||0),payer=r.payer||(r.drv?"driver":r.co?"company":"driver");
+  var paid=(payer==="credit"||payer==="install")?0:pa; /* shop credit / installment = still owed to the shop */
+  var pays=(r.pays||[]).slice();(S.stmts||[]).forEach(function(st){(st.ded||[]).forEach(function(x){if(x.c==="shop_debt"&&x.shop===r.id)pays.push({d:C.stDay(st),a:x.a,src:"st",id:st.id})})});
+  var p2=C.sum(pays,"a"),known=r.total!=null||r.parts!=null||r.labor!=null,total=r.total!=null?r.total:(r.parts||0)+(r.labor||0);
+  var owedTo=payer==="company"&&r.transfer?"company":"shop";
+  return {id:r.id,r:r,total:known?total:null,payer:payer,paid:paid+p2,remaining:known?Math.max(0,total-paid-p2):null,owedTo:owedTo,movedToCompany:owedTo==="company"?pa:0,pays:pays}})};
 /* one source for the Expenses screen: every row and whether it counts */
 C.expRows=function(S,r){var rows=[];
  (S.stmts||[]).forEach(function(s){if(!C.inR(C.stDay(s),r))return;(s.ded||[]).forEach(function(x,i){rows.push({src:"st",id:s.id,i:i,d:C.stDay(s),a:x.a,c:x.c,v:x.v,pers:false,cnt:true})})});
  (S.tx||[]).forEach(function(t){if(t.kind!=="exp"||!C.inR(t.d,r))return;var p=C.isPers(t);rows.push({src:"tx",id:t.id,d:t.d,a:t.a,c:t.c||"other",v:t.v,pers:p,cnt:p?C.persCounts(t):C.counts(t),t:t})});
  rows.sort(function(a,b){return a.d<b.d?1:a.d>b.d?-1:0});var biz=0,pers=0;rows.forEach(function(x){if(!x.cnt)return;if(x.pers)pers+=x.a;else biz+=x.a});return {rows:rows,biz:biz,pers:pers}};
 /* statement saved after manual entries: own-money entries equal to a statement line are linked (counted once) */
-C.linkMatching=function(st,S){var ids=[];(S.tx||[]).forEach(function(t){if(t.kind!=="exp"||t.link||t.dupOf||C.isPers(t))return;
+C.linkCandidates=function(st,S){var out=[];(S.tx||[]).forEach(function(t){if(t.kind!=="exp"||t.link||t.dupOf||C.isPers(t))return;
   var inP=st.p0&&st.p1?(t.d>=C.addDays(st.p0,-7)&&t.d<=C.addDays(st.p1,1)):Math.abs(C.days(t.d,C.stDay(st)))<=7;if(!inP)return;
-  var hit=(st.ded||[]).some(function(x){return Math.abs(x.a-t.a)<=1&&(x.c===t.c||C.catGroup(x.c)===C.catGroup(t.c))})||(st.fuel||[]).some(function(f){return Math.abs((f.inv!=null?f.inv:f.a)-t.a)<=1&&C.catGroup(t.c)==="fuel"});
-  if(hit){t.link=st.id;ids.push(t.id)}});return ids};
+  var line=null;(st.ded||[]).forEach(function(x){if(!line&&Math.abs(x.a-t.a)<=1&&(x.c===t.c||C.catGroup(x.c)===C.catGroup(t.c)))line=x});
+  (st.fuel||[]).forEach(function(f){if(!line&&Math.abs((f.inv!=null?f.inv:f.a)-t.a)<=1&&C.catGroup(t.c)==="fuel")line=f});
+  if(line){var strong=!!(t.ref&&(line.ref||line.v)&&C.norm(line.ref||line.v).indexOf(C.norm(t.ref))>=0);out.push({t:t,line:line,strong:strong})}});return out};
+C.linkMatching=function(st,S,confirmIds){ /* links only strong matches (same invoice/transaction #) or the ones the user confirmed */
+ var ids=[];C.linkCandidates(st,S).forEach(function(c){if(c.strong||(confirmIds&&confirmIds.indexOf(c.t.id)>=0)){c.t.link=st.id;ids.push(c.t.id)}});return ids};
 /* ---------- tax estimate 2026 (owner-operator, Schedule C + SE). Estimates only. ---------- */
 C.TAX={BR:{single:[[1240000,1000],[5040000,1200],[10570000,2200],[20177500,2400],[25622500,3200],[64060000,3500],[1e15,3700]],
  mfj:[[2480000,1000],[10080000,1200],[21140000,2200],[40355000,2400],[51245000,3200],[76870000,3500],[1e15,3700]],
@@ -225,6 +241,7 @@ C.parseStatement=function(txt){
   if(!R.num&&(mm=u.match(/(?:SETTLEMENT|STATEMENT|STMT)\s*(?:#|NO\.?|NUMBER|ID)?\s*[:#]\s*([A-Z]{0,4}-?\d[A-Z0-9\-]{2,})/)))R.num=mm[1];
   if(/PERIOD\s*START|START\s*DATE|PERIOD\s*FROM/.test(u)){var q1=dates(u);if(q1.length)R.p0=q1[0]}
   if(/PERIOD\s*END|END\s*DATE|PERIOD\s*TO|WEEK\s*ENDING/.test(u)){var q2=dates(u);if(q2.length)R.p1=q2[q2.length-1]}
+  if(!R.unit&&(mm=u.match(/UNIT\s*(?:NUMBER|NO\.?|#)?\s*:?\s*([A-Z0-9]{2,})/)))R.unit=mm[1];
   if(!R.driver&&(mm=l.match(/DRIVER(?: NAME)?\s*:\s*([A-Za-z][A-Za-z .'\-]{2,40})/i)))R.driver=mm[1].replace(/\s+(UNIT|TRUCK).*$/i,"").trim();
   if(/PERIOD|WEEK|FROM\b/.test(u)&&!R.p0){var ds=dates(u);if(ds.length>=2){R.p0=ds[0];R.p1=ds[1]}else if(ds.length===1&&/ENDING/.test(u)){R.p1=ds[0];R.p0=C.addDays(ds[0],-6)}}
   if(!R.d&&/(STATEMENT|SETTLEMENT|CHECK|PAY)\s*DATE/.test(u)){var d1=dates(u);if(d1.length)R.d=d1[0]}
@@ -290,7 +307,7 @@ C.collapseFuel=function(R){var F=[],rest=[];R.ded.forEach(function(d){if(C.catGr
  else{var all=C.sum(F,"a");for(var i=0;i<F.length&&total==null;i++){if(F.length>1&&Math.abs(F[i].a*2-all)<=2||/TOTAL/i.test(F[i].v)){total=F[i].a;details=F.filter(function(x,j){return j!==i})}}
   if(total==null)total=all}
  var hadRows=R.fuel.length>0;if(!hadRows&&!(details.length===1&&details[0].a===total))details.forEach(function(d){R.fuel.push({d:null,v:d.v,gal:null,c:d.c,a:d.a,inv:d.a,ret:null})});
- rest.push({c:"diesel",a:total,v:"Fuel"+(details.length?" ("+details.length+")":""),fuelN:details.length,raw:F.length===1?F[0].raw:""});R.ded=rest;R.fuelFromDetails=R.fuelInvoice==null&&details.length===F.length;return R};
+ var src0=F.filter(function(x){return x.a===total})[0]||F[0]||{};rest.push({pg:src0.pg,ln:src0.ln,c:"diesel",a:total,v:"Fuel"+(details.length?" ("+details.length+")":""),fuelN:details.length,raw:F.length===1?F[0].raw:""});R.ded=rest;R.fuelFromDetails=R.fuelInvoice==null&&details.length===F.length;return R};
 /* OCR often reads "$" as 5, 8 or S: "$25.65" → "825.65". Use the statement's own totals to pick the right reading. */
 C.fixOcrDollar=function(R){var target=R.dedTotal;if(target==null||C.sum(R.ded,"a")===target)return R;
  var amb=[];R.ded.forEach(function(d,i){var raw=String(d.raw||"").replace(/[()\s-]/g,"");if(/^[58S]\d{1,3}(,\d{3})*\.\d{2}$/.test(raw)&&raw.indexOf("$")<0)amb.push({i:i,alt:C.cents(raw.slice(1))})});

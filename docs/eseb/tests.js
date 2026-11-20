@@ -67,7 +67,7 @@ var Tf=C.totals(Sf,["2026-11-02","2026-11-08"]);eq("fuel cost = statement fuel o
 eq("fuel cost per mile",Tf.perMile(Tf.fuelCost),Math.round(383983/2266));
 
 // same statement uploaded twice without number (old version) → detected by week/money
-var a1={id:"a",d:"2026-11-08",p0:"2026-11-02",p1:"2026-11-08",gross:1395000,ded:[{c:"toll",a:2565}],loads:[]},b1={id:"b",company:"X",num:"1",d:"2026-11-10",p0:"2026-11-02",p1:"2026-11-08",gross:1395000,ded:[{c:"toll",a:2565},{c:"parking",a:2000}],loads:[]};
+var a1={id:"a",d:"2026-11-08",p0:"2026-11-02",p1:"2026-11-08",gross:1395000,ded:[{c:"toll",a:2565,v:"Toll"}],loads:[]},b1={id:"b",company:"X",num:"1",d:"2026-11-10",p0:"2026-11-02",p1:"2026-11-08",gross:1395000,ded:[{c:"toll",a:2565,v:"Toll"},{c:"parking",a:2000,v:"Parking"}],loads:[]};
 eq("dup by same week",!!C.stmtDup(b1,{stmts:[a1]}),true);eq("dupPairs finds",C.dupPairs({stmts:[a1,b1]}).length,1);
 var mg=C.mergeStmt(a1,b1);eq("merge no double deductions",C.sum(mg.ded,"a"),4565);eq("merge keeps gross",mg.gross,1395000);
 eq("different weeks not dup",!!C.stmtDup({id:"c",p0:"2026-11-09",p1:"2026-11-15",gross:900000,d:"2026-11-15"},{stmts:[a1]}),false);
@@ -84,12 +84,13 @@ var k5=C.stmtCalc(Object.assign({},R2));eq("net reconciles 7575.52",[k5.net,k5.r
 var R3=C.parseStatement("Fuel Diesel A 100.00\nFuel Diesel B 50.00\nFuel DEF C 10.00\nToll 5.00");eq("fuel details summed once",R3.ded.filter(function(d){return d.c=="diesel"})[0].a,16000);
 
 // REAL statement layout (ARAVAN-style "Driver Pay Settlement"), text from PDF
-try{var RT=require("fs").readFileSync("/tmp/stp/s.txt","utf8");var RR=C.parseStatement(RT),KR=C.stmtCalc(RR);
+var FIX=require("path").join(__dirname,"fixtures","aravan_2026-11-02_text.txt"),SKIP=0;if(!require("fs").existsSync(FIX)){SKIP++;console.log("⚠️ NOT RUN: real ARAVAN fixture missing ("+FIX+")")}else try{var RT=require("fs").readFileSync(FIX,"utf8");var RR=C.parseStatement(RT),KR=C.stmtCalc(RR);
  eq("real: period",[RR.p0,RR.p1],["2026-11-02","2026-11-08"]);eq("real: gross",RR.gross,1395000);eq("real: earn",RR.earn,1227600);eq("real: loads",RR.loads.length,4);
  eq("real: deductions",C.sum(RR.ded,"a"),470048);eq("real: one fuel line",RR.ded.filter(function(d){return d.c=="diesel"}).length,1);eq("real: tolls not added twice",RR.ded.filter(function(d){return d.c=="toll"}).length,1);
  eq("real: fuel retail/invoice",[RR.fuelRetail,RR.fuelInvoice],[431645,383983]);eq("real: fuel rows",RR.fuel.length,8);eq("real: net diff 0",[KR.net,KR.rec.diff],[757552,0]);
  var TT=C.totals({stmts:[Object.assign({id:"r",miles:2900},RR)],tx:[],loads:[]},["2026-11-02","2026-11-08"]);eq("real: diesel gal / def gal",[TT.dieselGal,TT.defGal],[64728,2504]);eq("real: savings",TT.fuelSaved,47662);eq("real: fuel cost",TT.fuelCost,383983);
-}catch(e){console.log("(real statement fixture not present)",e.message)}
+eq("real: page/line of Fuel deduction kept",[RR.ded.filter(function(d){return C.catGroup(d.c)=="fuel"})[0].pg>=1,!!RR.loads[0].ln],[true,true]);eq("real: no driver name leaks into categories",RR.unknown.length,0);
+}catch(e){fail++;console.log("❌ real fixture crashed",e.message)}
 
 // === spec #2 test ===
 var SP={id:"sp",d:"2026-11-10",p0:"2026-11-02",p1:"2026-11-08",gross:1395000,rate:8800,ded:[{c:"diesel",a:383983},{c:"toll",a:2565},{c:"ifta_eld",a:13500},{c:"truck_ins",a:36000},{c:"bobtail",a:10000},{c:"trailer",a:20000},{c:"prepass",a:2000},{c:"parking",a:2000}],loads:[{g:160000},{g:360000},{g:225000},{g:650000}]};
@@ -101,7 +102,7 @@ eq("spec: no miles → null per-mile (no divide by zero)",[TS.perMile(TS.gross),
 eq("home expenses == expenses screen",C.expRows(SS,W).biz,TS.exp);
 // manual entry BEFORE statement → linked, counted once
 var SM={stmts:[],loads:[],tx:[{id:"m1",kind:"exp",d:"2026-11-05",a:2565,c:"toll",paidBy:"own"},{id:"m2",kind:"exp",d:"2026-11-06",a:9999,c:"truck_repair",paidBy:"own"}]};
-var lk=C.linkMatching(SP,SM);SM.stmts.push(SP);eq("manual toll linked to statement",lk,["m1"]);eq("expenses = statement + unrelated repair",C.totals(SM,W).exp,470048+9999);
+eq("manual toll proposed (not auto-linked)",[C.linkCandidates(SP,SM).map(function(c){return c.t.id}),C.linkMatching(SP,SM)],[["m1"],[]]);var lk=C.linkMatching(SP,SM,["m1"]);SM.stmts.push(SP);eq("manual toll linked after user confirms",lk,["m1"]);eq("expenses = statement + unrelated repair",C.totals(SM,W).exp,470048+9999);
 // personal does not reduce profit, shown separately
 var SPp={stmts:[SP],loads:[],tx:[{id:"p1",kind:"exp",d:"2026-11-04",a:5000,c:"other",pers:true,paidBy:"own"}]};var TP=C.totals(SPp,W);
 eq("personal not in profit",[TP.profit,TP.pers],[757552,5000]);eq("expenses screen split",[C.expRows(SPp,W).biz,C.expRows(SPp,W).pers],[470048,5000]);
@@ -122,7 +123,7 @@ var SL=C.sumLegs(LG.types,[1609344,160934.4,1609344,1609344,160934.4,1609344],LG
 var SMi={stmts:[Object.assign({},SP,{miLoaded:4330,miEmpty:400,milesAuto:true})],tx:[],loads:[]},TM=C.totals(SMi,W);
 eq("miles total = loaded+empty",TM.miles,4730);eq("gross RPM ≈ 2.95",TM.rpm.gross,295);eq("net cash RPM ≈ 1.60",TM.rpm.net,160);eq("driver RPM",TM.rpm.driver,260);eq("loaded RPM",TM.rpm.loaded,322);eq("estimated flag",TM.autoMi,true);
 // escrow & company debt repayment are not expenses, but reduce net pay
-var SE={stmts:[{id:"e",d:"2026-11-08",p1:"2026-11-08",gross:500000,rate:10000,ded:[{c:"diesel",a:100000},{c:"escrow",a:5000},{c:"co_debt",a:20000}],net:375000}],tx:[],loads:[]};var TE=C.totals(SE,W),KE=C.stmtCalc(SE.stmts[0]);
+var SE={stmts:[{id:"e",d:"2026-11-08",p1:"2026-11-08",gross:500000,rate:10000,ded:[{c:"diesel",a:100000},{c:"escrow",a:5000},{c:"co_debt",a:20000,debt:"d1"}],net:375000}],tx:[],loads:[]};var TE=C.totals(SE,W),KE=C.stmtCalc(SE.stmts[0]);
 eq("net pay includes all deductions",[KE.net,KE.rec.diff],[375000,0]);eq("expenses exclude escrow/debt",TE.exp,100000);eq("profit ≠ net",[TE.profit,TE.net],[400000,375000]);eq("debt paid tracked",[TE.debtPaid,TE.escrow],[25000,5000]);
 eq("escrow keyword",C.guessCat("ESCROW"),"escrow");eq("chargeback keyword",C.guessCat("DAMAGE CHARGEBACK"),"co_debt");
 // company debt balance: opening + new - payments; payment not an expense
@@ -161,4 +162,27 @@ eq("truck rental: no balance",C.truckCalc({stmts:STK.stmts,truck:{type:"rental"}
 eq("tires/wash/reserve/company fee",[C.guessCat("TIRE SERVICE"),C.guessCat("BLUE BEACON TRUCK WASH"),C.guessCat("MAINTENANCE RESERVE"),C.guessCat("ADMIN FEE")],["tires","wash","reserve","co_fee"]);
 // source page/line kept
 var RP=C.parseStatement("[[PAGE 2]]\nToll Auto calculated $25.65");eq("source page/line",[RP.ded[0].pg,RP.ded[0].ln],[2,1]);
-console.log("\nPASS "+pass+"  FAIL "+fail);process.exit(fail?1:0);
+
+// === audit regressions ===
+// two debts at one company: one statement payment reduces exactly one debt
+var S2D={stmts:[{id:"q",company:"ACME",d:"2026-11-08",p1:"2026-11-08",gross:0,ded:[{c:"co_debt",a:10000,debt:"A"}]}],debts:[{id:"A",company:"ACME",type:"advance",opening:50000,items:[]},{id:"B",company:"ACME",type:"loan",opening:80000,items:[]}]};
+eq("payment hits one debt only",C.debtCalc(S2D).map(function(d){return d.remaining}),[40000,80000]);
+S2D.stmts[0].ded[0].debt=null;eq("unassigned payment reduces nothing and is reported",[C.debtCalc(S2D).map(function(d){return d.remaining}),C.unassignedDebt(S2D).length],[[50000,80000],1]);
+eq("two candidate debts → user must choose",C.debtCandidates(S2D,S2D.stmts[0]).length,2);
+// two companies, same week, same money → not duplicates
+eq("other company same week not dup",!!C.stmtDup({id:"x",company:"BETA LLC",p0:"2026-11-02",p1:"2026-11-08",gross:1395000,d:"2026-11-08"},{stmts:[{id:"y",company:"ARAVAN CARGO INC",p0:"2026-11-02",p1:"2026-11-08",gross:1395000,d:"2026-11-08"}]}),false);
+eq("other driver same company not dup",!!C.stmtDup({id:"x",company:"A",driver:"JOHN",p1:"2026-11-08",gross:1,d:"2026-11-08"},{stmts:[{id:"y",company:"A",driver:"MIKE",p1:"2026-11-08",gross:1,d:"2026-11-08"}]}),false);
+eq("same company same week same money is dup",!!C.stmtDup({id:"x",company:"A",p1:"2026-11-08",gross:1,d:"2026-11-08"},{stmts:[{id:"y",company:"A",p1:"2026-11-08",gross:1,d:"2026-11-08"}]}),true);
+// two different expenses with the same amount & category are both kept
+var SA={stmts:[],loads:[],tx:[{id:"a1",kind:"exp",d:"2026-11-03",a:5000,c:"parking",paidBy:"own",v:"Lot A"},{id:"a2",kind:"exp",d:"2026-11-05",a:5000,c:"parking",paidBy:"own",v:"Lot B"}]};eq("same amount, different expenses both counted",C.totals(SA,W).exp,10000);
+eq("page-2 merge keeps a different line with same amount",C.mergeStmt({loads:[],ded:[{c:"parking",a:2000,v:"Parking A",pg:1,ln:5}]},{loads:[],ded:[{c:"parking",a:2000,v:"Parking B",pg:2,ln:3}]}).ded.length,2);
+eq("strong match by invoice # auto-links",C.linkMatching({id:"s",p0:"2026-11-02",p1:"2026-11-08",ded:[{c:"truck_repair",a:45000,v:"Repair INV 7781"}]},{tx:[{id:"r",kind:"exp",d:"2026-11-04",a:45000,c:"truck_repair",paidBy:"own",ref:"7781"}]}),["r"]);
+// loan principal is not an operating expense; interest is
+var SLn={stmts:[{id:"t1",d:"2026-11-08",p1:"2026-11-08",gross:500000,rate:10000,ded:[{c:"truck_pay",a:100000}]}],truck:{type:"financed",balance:5200000,aprBp:1000,period:"week"},tx:[],loads:[]};var TLn=C.totals(SLn,W);
+eq("loan: expenses include interest only",[TLn.exp,TLn.interest,TLn.principal],[10000,10000,90000]);eq("loan: net pay vs profit vs cash flow",[TLn.net,TLn.profit,TLn.cashFlow],[400000,490000,400000]);
+eq("weekly lease: full payment is an expense",C.totals({stmts:SLn.stmts,truck:{type:"lease"},tx:[],loads:[]},W).exp,100000);
+eq("truck payments of another company are not mixed in",C.truckCalc({stmts:[{id:"o",company:"OTHER",d:"2026-11-08",p1:"2026-11-08",ded:[{c:"truck_pay",a:5}]}],truck:{type:"lease",company:"ARAVAN"}}).paid,0);
+// shop credit is not a payment; company payment moved to driver is not owed to the shop twice
+eq("shop credit: still owed",C.shopCalc({stmts:[],shop:[{id:"c",total:300000,paidAmt:300000,payer:"credit"}]})[0].remaining,300000);
+var SHT=C.shopCalc({stmts:[],shop:[{id:"t",total:300000,paidAmt:100000,payer:"company",transfer:true}]})[0];eq("company paid & moved to driver: shop owed 2000, company 1000",[SHT.remaining,SHT.owedTo,SHT.movedToCompany],[200000,"company",100000]);
+console.log("\nPASS "+pass+"  FAIL "+fail+"  NOT RUN "+SKIP);process.exit(fail||SKIP?1:0);

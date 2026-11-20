@@ -1,0 +1,109 @@
+[[PAGE 1]]
+                    ARAVAN CARGO INC                                                                 Statement Date:                11/10/2026
+
+                                                                                                     Period Start:                   11/2/2026
+                    300 E BUSINESS WAY STE 200
+                    SUMMIT WOODS, CINCINNATI, OH                                                     Period End:                     11/8/2026
+                    45241
+
+                                                             Driver Pay Settlement
+Settlement: ST-038914                        Batch ID: SB-000300           Driver: DRIVER                 Unit Number: 2002N -
+                                                                           NAME                        DRIVER
+  Earnings:                                           $12,276.00              Pay to:                           DRIVER NAME
+
+  Advances:                                                  $0.00
+  Reimbursements:                                            $0.00
+
+  Deductions:                                         ($4,700.48)
+
+  Other pay:                                                 $0.00
+  Net Pay:                                             $7,575.52
+
+
+                                                                     Earnings
+Load number          PU                        DEL                     PU date          Load gross       Rate              Total amount
+
+39040005             Clearfield,UT             San Jose,CA             11/2/2026        $1,600.00        88%               $1,408.00
+
+7278314579           Oakland,CA                Seattle,WA              11/3/2026        $3,600.00        88%               $3,168.00
+
+39073298             Seattle,WA                Laton,CA                11/5/2026        $2,250.00        88%               $1,980.00
+
+69839362             Fresno,CA                 Lockport,IL             11/6/2026        $6,500.00        88%               $5,720.00
+
+Total:                                                                                  $13,950.00                         $12,276.00
+
+
+
+                                                                 Deductions
+Deduction type            Description                                              Quantity           Rate               Total amount
+
+Parking                   Booking #XRWP60UJ the parking booked for a day           1                  $20.00             ($20.00)
+
+Prepass                   NOVEMBER                                                 1                  $20.00             ($20.00)
+
+Trailer Van               #2071                                                    1                  $200.00            ($200.00)
+
+Bobtail Insurance         BOBTAIL INSURANCE                                        1                  $100.00            ($100.00)
+
+Insurance                 INSURANCE                                                1                  $360.00            ($360.00)
+
+Ifta & Logbook            IFTA & LOGBOOK                                           1                  $135.00            ($135.00)
+
+Toll                      Auto calculated Toll cost                                1                  $25.65             ($25.65)
+
+Fuel                      Auto calculated Fuel cost                                1                  $3,839.83          ($3,839.83)
+
+Total:                                                                                                                   ($4,700.48)
+                                                      Fuel Transactions
+                                                                                                  Total retail       Total invoice
+Type     Date            Description    Product         City               State       Quantity
+                                                                                                  amount             amount
+
+                         DRIVER
+Fuel     11/2/2026       NAME     Def             Fernley            NV          3.29       $16.09             $16.09
+                         #Love's #246
+
+                         DRIVER
+Fuel     11/2/2026       NAME     Diesel          Fernley            NV          94.03      $651.50            $579.36
+                         #Love's #246
+
+                         DRIVER
+Fuel     11/5/2026       NAME     Diesel          Tacoma             WA          50.58      $368.65            $337.70
+                         #Love's #448
+
+                         DRIVER
+Fuel     11/6/2026       NAME     Def             Roseburg           OR          8.83       $42.27             $42.27
+                         #Love's #312
+
+                         DRIVER
+Fuel     11/6/2026       NAME     Diesel          Roseburg           OR          163.39     $1,070.02          $896.50
+                         #Love's #312
+
+                         DRIVER
+Fuel     11/7/2026       NAME     Diesel          Littlefield        AZ          161.07     $1,072.59          $972.74
+                         #Pilot #1185
+
+                         DRIVER
+Fuel     11/8/2026       NAME     Diesel          Clive              IA          178.21     $1,033.46          $933.30
+                         #Love's #411
+
+                         DRIVER
+Fuel     11/8/2026       NAME     Def             Clive              IA          12.92      $61.87             $61.87
+                         #Love's #411
+
+Total:                                                                                 672.32     $4,316.45          $3,839.83
+
+
+
+                                                      Toll Transactions
+Type             Exit Date              Description               Exit plaza           State                Total amount
+
+Toll             11/1/2026              2002                      PLA - E470 PLAZA C                        $8.05
+
+Toll             11/1/2026              2002                      PLA - E470 PLAZA D                        $8.80
+
+Toll             11/1/2026              2002                      PLA - E470 PLAZA E                        $8.80
+
+Total:                                                                                                      $25.65
+
