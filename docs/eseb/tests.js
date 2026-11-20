@@ -586,4 +586,11 @@ eq("fixture anonymized",/ANVAR|ALAPAEV|WARING|PHILADELPHIA|8008442080/i.test(JSO
  var st0=D[0].items.filter(function(i){return i.printed})[0];eq("history: where the debt began — +$3,000 DR DEBT, first statement, its date (shown only, not added)",[st0&&st0.a,st0&&st0.id,st0&&st0.d,D[0].newDebt],[300000,"w1","2026-11-08",0]);
  eq("printed balances kept per statement (2,500 → 2,000 → 1,500)",D[0].snaps.map(function(b){return b.a}),[250000,200000,150000]);
  eq("header 'Description Total Amount' printed as one cell is split into two columns",C.parseTables(C.cellRows(fx("synth_debt_week2_pdf_items.json"))).ded.filter(function(d){return d.v==="DR DEBT"}).map(function(d){return [d.a,d.orig,d.bal]}),[[50000,300000,200000]])})();
+// ===== miles & RPM =====
+(function(){var r=C.cellRows(fx("synth_bobtail_miles_pdf_items.json")),B=C.readAll({texts:[{name:"pdf",text:rowsText(r),rows:r}]});
+ eq("miles printed: 'Total Loaded Miles 1,850' + 'Bobtail Miles 140' (bobtail = empty miles; 'Bobtail Insurance' is not miles)",[B.docLoaded,B.docEmpty,C.decide(B).act],[1850,140,"save"]);
+ var a={id:"m1",p0:"2026-11-02",p1:"2026-11-08",gross:500000,rate:10000,ded:[],net:500000,miLoaded:1800,miEmpty:200,miles:2000,loads:[]},
+     b={id:"m2",p0:"2026-11-09",p1:"2026-11-15",gross:400000,rate:10000,ded:[],net:400000,loads:[]},
+     T=C.totals({stmts:[a,b],tx:[],loads:[],trips:[]},["2026-11-01","2026-11-30"]);
+ eq("RPM never mixed: a statement without miles is left out ($5,000 ÷ 2,000 mi = $2.50, not $9,000 ÷ 2,000 = $4.50)",[T.miles,T.rpm.gross,T.rpm.loaded,T.rpm.driver,T.rpm.net,T.rpm.skipped],[2000,250,278,250,250,1])})();
 console.log("\nPASS "+pass+"  FAIL "+fail+"  NOT RUN "+SKIP);process.exit(fail||SKIP?1:0);
