@@ -228,7 +228,13 @@ function milesSheet(id){var r=R(),sts=S.stmts.filter(function(s){return C.inR(C.
  $("mS").onclick=function(){var a=parseInt($("mL").value,10)||0,b=parseInt($("mE").value,10)||0;s.miLoaded=a;s.miEmpty=b;s.miles=a+b;s.dh=0;s.milesAuto=false;log("miles",s.id+" "+a+"/"+b);save();close();toast(L("saved_"));render()}}
 /* free driving distance: OpenStreetMap geocoding (Nominatim) + OSRM route through PU→DEL→PU→DEL… = total miles (loaded + empty between loads) */
 function geo(city){var key="jolesep_geo",cache={};try{cache=JSON.parse(localStorage.getItem(key)||"{}")}catch(e){}if(cache[city])return Promise.resolve(cache[city]);
- return new Promise(function(ok){setTimeout(ok,1100)}).then(function(){return fetch("https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=us,ca&q="+encodeURIComponent(city))}).then(function(r){return r.json()}).then(function(j){if(!j||!j[0])throw {city:city};var c=[+(+j[0].lon).toFixed(5),+(+j[0].lat).toFixed(5)];cache[city]=c;try{localStorage.setItem(key,JSON.stringify(cache))}catch(e){}return c})}
+ var m=String(city).match(/^(.*?)[,\s]+([A-Za-z]{2})\s*$/),name=(m?m[1]:city).trim(),st=m?m[2].toUpperCase():"",cands=[name];
+ var joined=name.replace(/\s+/g,"");if(joined!==name)cands.push(joined);var tk=name.split(/\s+/);if(tk.length>2)cands.push(tk[0]+tk.slice(1).join("").toLowerCase());
+ var tries=[];cands.forEach(function(n){
+  tries.push(function(){return fetch("https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=us,ca&city="+encodeURIComponent(n)+(st?"&state="+encodeURIComponent(st):"")).then(function(r){return r.json()}).then(function(j){if(!j||!j[0])throw 0;return [+(+j[0].lon).toFixed(5),+(+j[0].lat).toFixed(5)]})});
+  tries.push(function(){return fetch("https://photon.komoot.io/api/?limit=1&layer=city&q="+encodeURIComponent(n+(st?" "+st:"")+" USA")).then(function(r){return r.json()}).then(function(j){var f=j&&j.features&&j.features[0];if(!f)throw 0;var c=f.geometry.coordinates;return [+c[0].toFixed(5),+c[1].toFixed(5)]})})});
+ var i=0;function next(){if(i>=tries.length)return Promise.reject({city:city});var t=tries[i++];return new Promise(function(ok){setTimeout(ok,i===1?0:700)}).then(t).catch(next)}
+ return next().then(function(c){cache[city]=c;try{localStorage.setItem(key,JSON.stringify(cache))}catch(e){}return c})}
 function autoMiles(st){var lg=C.legs(st.loads),pts=lg.pts;if(pts.length<2)return Promise.reject({});var coords=[],chain=Promise.resolve();
  pts.forEach(function(c){chain=chain.then(function(){return geo(c)}).then(function(x){coords.push(x)})});
  return chain.then(function(){return fetch("https://router.project-osrm.org/route/v1/driving/"+coords.map(function(c){return c.join(",")}).join(";")+"?overview=false")}).then(function(r){return r.json()})
@@ -240,7 +246,7 @@ function setMi(st,o){st.miLoaded=o.loaded;st.miEmpty=o.empty;st.miles=o.total;st
 var miBusy={};
 function autoMilesKick(r){var any=false;S.stmts.forEach(function(st){if(!C.inR(C.stDay(st),r)||st.miles||!(st.loads||[]).length)return;if(st.miTry&&Date.now()-st.miTry<6e5&&!miBusy[st.id])return;any=true;if(miBusy[st.id])return;miBusy[st.id]=1;st.miTry=Date.now();
   autoMiles(st).then(function(m){setMi(st,m);log("miles.auto",st.id+" "+m.total);save()}).catch(function(){}).then(function(){delete miBusy[st.id];if(V.tab=="home")render()})});return any}
-function autoMilesSave(st){if(st.miles||!(st.loads||[]).length||!window.fetch)return;autoMiles(st).then(function(m){var s=find(S.stmts,st.id);if(!s||s.miles)return;setMi(s,m);log("miles.auto",s.id+" "+m.total);save();render();toast("🗺 "+L("totMi")+": ≈"+m.total+" mi")}).catch(function(){})}
+function autoMilesSave(st){if(st.miles||!(st.loads||[]).length||!window.fetch||miBusy[st.id])return;miBusy[st.id]=1;st.miTry=Date.now();autoMiles(st).then(function(m){var s=find(S.stmts,st.id);if(!s||s.miles)return;setMi(s,m);log("miles.auto",s.id+" "+m.total);save();render();toast("🗺 "+L("totMi")+": ≈"+m.total+" mi")}).catch(function(){}).then(function(){delete miBusy[st.id];if(V.tab=="home")render()})}
 function srcSheet(key){if(key=="miles")return milesSheet();var t=C.totals(S,R()),list=[];
  if(key=="exp")list=t.src.exp;else if(key=="profit"||key=="net"){list=t.src.net.concat(t.src.exp.filter(function(x){return x.t=="tx"}))}else list=t.src[key]||[];
  sheet("🔎 "+L("sources"),'<div class="card">'+tl(L(key=="exp"?"exp":key),M(t[key]))+'</div>'+(list.length?list.map(rowOf).join(""):'<div class="empty">'+L("empty0")+'</div>'))}
@@ -259,11 +265,14 @@ function csvToText(t){return t.split(/\r?\n/).map(function(l){var out=[],cur="",
 var PDFJS="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js",TESS="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js",libs={};
 function lib(u){if(libs[u])return libs[u];libs[u]=new Promise(function(ok,no){var s=document.createElement("script");s.src=u;s.onload=ok;s.onerror=function(){libs[u]=null;no()};document.head.appendChild(s)});return libs[u]}
 function shrink(file,cb,mx){var fr=new FileReader();fr.onload=function(){var im=new Image();im.onload=function(){var m=mx||1600,k=Math.min(1,m/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext("2d").drawImage(im,0,0,c.width,c.height);cb(c.toDataURL("image/jpeg",.72),c)};im.onerror=function(){cb(null)};im.src=fr.result};fr.readAsDataURL(file)}
-function ocr(canvas){return (window.Tesseract?Promise.resolve():lib(TESS)).then(function(){return window.Tesseract.recognize(canvas,"eng")}).then(function(r){return r.data.text||""})}
+function ocr(canvas){return (window.Tesseract?Promise.resolve():lib(TESS)).then(function(){return window.Tesseract.recognize(canvas,"eng")}).then(function(r){return String(r.data.text||"").replace(/\uFB01/g,"fi").replace(/\uFB02/g,"fl")})}
+function joinRow(items){items=items.slice().sort(function(a,b){return a.transform[4]-b.transform[4]});var out="",end=null;
+ items.forEach(function(it){var x=it.transform[4],fs=Math.abs(it.transform[0])||8,str=it.str;if(!str)return;
+  if(end!=null){var gap=x-end;out+=gap>fs*0.25?" ":""}out+=str;end=x+(it.width||0)});return out.replace(/\uFB01/g,"fi").replace(/\uFB02/g,"fl")}
 function pdfText(file){return lib(PDFJS).then(function(){var P=window.pdfjsLib;P.GlobalWorkerOptions.workerSrc=PDFJS.replace("pdf.min.js","pdf.worker.min.js");
  return new Promise(function(ok){var fr=new FileReader();fr.onload=function(){ok(new Uint8Array(fr.result))};fr.readAsArrayBuffer(file)}).then(function(buf){return P.getDocument({data:buf}).promise}).then(function(doc){var out=[],chain=Promise.resolve();
   for(var p=1;p<=doc.numPages;p++)(function(p){chain=chain.then(function(){return doc.getPage(p)}).then(function(pg){return pg.getTextContent().then(function(tc){var rows={};tc.items.forEach(function(it){var y=Math.round(it.transform[5]/3);(rows[y]=rows[y]||[]).push(it)});
-   Object.keys(rows).map(Number).sort(function(a,b){return b-a}).forEach(function(y){out.push(rows[y].sort(function(a,b){return a.transform[4]-b.transform[4]}).map(function(i){return i.str}).join(" "))});
+   Object.keys(rows).map(Number).sort(function(a,b){return b-a}).forEach(function(y){out.push(joinRow(rows[y]))});
    if(tc.items.length<5){var vp=pg.getViewport({scale:2}),c=document.createElement("canvas");c.width=vp.width;c.height=vp.height;return pg.render({canvasContext:c.getContext("2d"),viewport:vp}).promise.then(function(){return ocr(c)}).then(function(t){out.push(t)})}})})})(p);
   return chain.then(function(){return out.join("\n")})})})}
 function onStatements(files){sheet("📄 "+L("stmt"),'<div id="stP" class="ocr" style="font-size:15px">⏳ '+L("stRead")+'</div><div class="note" style="margin-top:8px">'+L("stWait")+'</div>');

@@ -212,7 +212,7 @@ function dates(U){var out=[],re=/(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})/g,m;w
  while((m=re2.exec(U))){out.push(m[4]+"-"+C.p2(MN[m[1]])+"-"+C.p2(+m[2]));if(m[3])out.push(m[4]+"-"+C.p2(MN[m[1]])+"-"+C.p2(+m[3]))}
  var re3=/\b(JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEPT?|OCT|NOV|DEC)[A-Z]*\.?\s+(\d{1,2})\s*[-–]\s*(JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEPT?|OCT|NOV|DEC)[A-Z]*\.?\s+(\d{1,2}),?\s+(20\d{2})/g;
  while((m=re3.exec(U))){out.unshift(m[5]+"-"+C.p2(MN[m[3]])+"-"+C.p2(+m[4]));out.unshift(m[5]+"-"+C.p2(MN[m[1]])+"-"+C.p2(+m[2]))}return out}
-function title(s){return s.toLowerCase().replace(/\b[a-z]/g,function(c){return c.toUpperCase()})}
+function title(s){s=s.replace(/\b([A-Z]{2,})\s(FI|FL)\s([A-Z]{2,})\b/g,"$1$2$3");return s.toLowerCase().replace(/\b[a-z]/g,function(c){return c.toUpperCase()})}
 function locs(U){var re=new RegExp("([A-Z][A-Z .'\\-]{1,24}?)[, ]+("+STS+")\\b","g"),out=[],m;while((m=re.exec(U))){var city=m[1].replace(/^(?:\d+|[A-Z]{1,2}\d+)\s+/,"").replace(/^(FROM|TO|ORIGIN|DEST(INATION)?|PICKUP|DELIVERY|SHIPPER|CONSIGNEE|PU|DEL)\s*:?\s*/,"").trim();
  var w=city.split(/\s+/);if(w.length>3)city=w.slice(-3).join(" ");if(city.length>=2&&!/^(TOTAL|FUEL|LOAD|PAY|RATE|MILES?|NET|GROSS)$/.test(city))out.push(title(city)+", "+m[2])}return out}
 C.parseStatement=function(txt){
