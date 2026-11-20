@@ -6035,15 +6035,23 @@ const POOLS=(()=>{
   return {P,S,W,D,A:W.filter(c=>c[0].length<=26)};
 })();
 const LEVELS=(()=>{
-  const chunk=(u,n,size)=>{const pool=POOLS[u],out=[];for(let i=0;i<n;i++){const it=pool.slice(i*size,i*size+size);if(it.length>=8)out.push({u,items:it});}return out;};
-  const src={W:chunk("W",10,10),P:chunk("P",14,10),D:chunk("D",52,12),S:chunk("S",10,10),A:chunk("A",7,9)};
-  const order=["W","P","D","S","A","D","D"]; const L=[]; let k=0, normal=0;
-  const boss=()=>{ const seen=[].concat(...L.filter(x=>x.u!=="X").map(x=>x.items)); L.push({u:"X",items:shuf(seen.slice(-70)).slice(0,40)}); };
-  while(order.some(u=>src[u].length)){
-    const u=order[k++%order.length]; if(!src[u].length) continue;
-    L.push(src[u].shift()); normal++; if(normal%5===0) boss();
-  }
-  if(L[L.length-1].u!=="X") boss();
+  /* every word/phrase is asked as a correct answer in ONE level only: no repeats inside a level, between levels, or in review (boss) levels */
+  const nrm=c=>String(c[0]).toLowerCase().replace(/[^a-z0-9' ]+/g," ").replace(/\s+/g," ").trim();
+  const used=new Set(), take=(pool,n,ok)=>{const out=[];for(const c of pool){if(out.length>=n)break;const k=nrm(c);if(!k||used.has(k)||(ok&&!ok(c)))continue;used.add(k);out.push(c);}return out;};
+  const left=(pool,ok)=>pool.filter(c=>!used.has(nrm(c))&&(!ok||ok(c))).length;
+  /* same order of level kinds as before (progress stays on the same level numbers) */
+  const cnt={W:10,P:13,D:52,S:9,A:7}, order=["W","P","D","S","A","D","D"], seq=[]; let k=0,normal=0;
+  while(Object.keys(cnt).some(u=>cnt[u]>0)){ const u=order[k++%order.length]; if(!(cnt[u]>0)) continue; cnt[u]--; seq.push(u); normal++; if(normal%5===0) seq.push("X"); }
+  if(seq[seq.length-1]!=="X") seq.push("X");
+  const N=seq.length, nQ=(i,boss)=>Math.round(10+6*(i/(N-1)))+(boss?4:0);
+  const short=c=>c[0].length<=26, L=[];
+  seq.forEach((u,i)=>{ const n=nQ(i,u==="X"); let items=[], kind=u;
+    if(u==="X"){ /* review level: new phrases from every part, mixed */
+      const per=2; items=take(POOLS.P,per).concat(take(POOLS.S,per),take(POOLS.W,per)); items=items.concat(take(POOLS.D,n-items.length)); items=shuf(items); }
+    else if(u==="A"){ items=take(POOLS.D,n,short); }
+    else { if(left(POOLS[u])>=8) items=take(POOLS[u],n); if(items.length<n){ if(items.length<8){ items.forEach(c=>used.delete(nrm(c))); items=[]; kind="D"; } items=items.concat(take(POOLS.D,n-items.length)); } }
+    L.push({u:kind,items});
+  });
   return L;
 })();
 const NL=LEVELS.length;
