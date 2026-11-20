@@ -205,7 +205,21 @@ C.truckCalc=function(S){var T=S.truck||{},pays=[],tc=C.norm(T.company);
 C.debtCalc=function(S){var out=[];(S.debts||[]).forEach(function(d){var items=(d.items||[]).slice();
   (S.stmts||[]).forEach(function(st){(st.ded||[]).forEach(function(x){if(x.debt===d.id&&C.isCoDebt(x,S))items.push({d:C.stDay(st),a:-x.a,src:"st",id:st.id})});
    if(st.negCarry===d.id){var k=C.stmtCalc(st);if(k.net<0)items.push({d:C.stDay(st),a:-k.net,src:"neg",id:st.id})}});
-  var nw=0,pay=0;items.forEach(function(i){if(i.a>0)nw+=i.a;else pay+=-i.a});var unk=d.opening==null&&!nw;out.push({id:d.id,company:d.company,type:d.type,opening:d.opening||0,newDebt:nw,payments:pay,remaining:unk?null:(d.opening||0)+nw-pay,unknown:unk,items:items.sort(function(a,b){return a.d<b.d?-1:1})})});return out};
+  var nw=0,pay=0;items.forEach(function(i){if(i.a>0)nw+=i.a;else pay+=-i.a});var unk=(d.opening==null||d.opening===0&&!d.zeroOk)&&!nw; /* 0 typed by default is not a known balance */var rem=unk?null:(d.opening||0)+nw-pay;
+  /* status: paid (green) · active (red) · unknown balance (yellow) */
+  var st=d.closed||rem!=null&&rem<=0&&(nw||d.opening)?"paid":rem==null?"unknown":"active";
+  out.push({id:d.id,company:d.company,type:d.type,opening:d.opening==null?null:d.opening,openKnown:d.opening!=null,newDebt:nw,payments:pay,remaining:rem,unknown:unk,status:st,closed:!!d.closed,over:rem!=null&&rem<0?-rem:0,items:items.sort(function(a,b){return a.d<b.d?-1:1})})});return out};
+/* a hand-entered payment that is already recorded: same day & amount (exact), or the same amount taken from a statement within 7 days (probably the same money) */
+C.debtPayDup=function(S,id,d,a){var c=C.debtCalc(S).filter(function(x){return x.id===id})[0];if(!c)return null;var hit=null;
+ c.items.forEach(function(i){if(i.a>=0||hit)return;var amt=-i.a;if(amt!==a)return;if(i.src==="man"&&i.d===d)hit="same";else if(i.src==="st"&&Math.abs(C.days(i.d,d))<=7)hit="statement"});return hit};
+/* all debts in one list for the Debts screen: company · truck loan · truck shop · other */
+C.allDebts=function(S){var out=[],unitOf=function(co){var u=null;(S.stmts||[]).forEach(function(st){if(st.unit&&(!co||C.norm(st.company)===C.norm(co)))u=st.unit});return u||(S.truck&&S.truck.num)||null};
+ C.debtCalc(S).forEach(function(d){out.push({grp:d.type==="other"?"other":"co",id:d.id,name:d.company||"",to:d.company||"",unit:unitOf(d.company),opening:d.opening,paid:d.payments,newDebt:d.newDebt,remaining:d.remaining,status:d.status,over:d.over,items:d.items,type:d.type,src:"debt"})});
+ var tk=C.truckCalc(S),T=S.truck||{};if(tk.isLoan){var op=T.balance||null;out.push({grp:"truck",id:"truck",name:T.owner||T.company||"",to:T.owner||T.company||"",unit:T.num||unitOf(T.company),opening:op,paid:tk.principal,interest:tk.interest,remaining:op==null?null:tk.balance,status:op==null?"unknown":tk.balance<=0?"paid":"active",items:tk.pays.map(function(p){return {d:p.d,a:-p.a,src:p.src,principal:p.principal,interest:p.interest}}),src:"truck"})}
+ C.shopCalc(S).forEach(function(x){if(x.owedTo==="company")return; /* moved to a company debt */var r=x.r,owes=x.payer==="credit"||x.payer==="install"||x.pays.length;if(!owes)return;
+  out.push({grp:"shop",id:x.id,name:r.name||"Shop",to:r.name||"Shop",unit:unitOf(null),opening:x.total,paid:x.paid,remaining:x.remaining,status:r.closed||x.remaining===0?"paid":x.remaining==null?"unknown":"active",items:x.pays.map(function(p){return {d:p.d,a:-p.a,src:p.src}}),src:"shop"})});
+ return out};
+
 C.unassignedDebt=function(S){var u=[];(S.stmts||[]).forEach(function(st){(st.ded||[]).forEach(function(x,i){if(C.isCoDebt(x,S)&&!x.debt)u.push({st:st,i:i,a:x.a,v:x.v})})});return u};
 C.debtCandidates=function(S,st){return (S.debts||[]).filter(function(d){return d.type!=="neg"&&(!d.company||!st.company||C.norm(d.company)===C.norm(st.company))})};
 /* ---------- truck shop ---------- */
@@ -492,7 +506,7 @@ C.readAll=function(src){var cands=[],seen={};function add(name,R){if(!R)return;C
   if(t.rows&&t.rows.length&&!t.noNotes){var DN=C.dropNotes(t.rows);if(DN.found&&DN.notes.length){var R2=C.readAll({texts:[{name:t.name+"−comments",text:C.rowsText(DN.rows),rows:DN.rows,noNotes:true}]});
    (R2.cands2||[R2]).forEach(function(x){x.info=(x.info||[]).concat(DN.notes.filter(function(n){return n.a}));add(x.method,x)})}}});
  cands.sort(function(a,b){function sc(R){var v=R.verdict;return (v.ok?100:0)+(v.status==="full"?20:v.status==="partial"?10:0)-v.why.length*5-(R.unknown||[]).length-(R.solved||0)*2+(R.loads.length?3:0)+R.loads.filter(function(l){return l.num&&l.mi}).length*0.5}return sc(b)-sc(a)});
- var best=cands[0]||C.parseStatement("");best.cands2=cands;
+ var best=cands[0]||C.parseStatement("");try{Object.defineProperty(best,"cands2",{value:cands,enumerable:false,configurable:true,writable:true})}catch(e){best.cands2=cands} /* not saved / not serialized */
  /* commission not printed: derived from printed numbers, and checked against the printed percentage */
  if(best.from&&!best.from.fee&&best.gross>0&&best.earn!=null){var dv=best.gross-best.earn,okp=best.rate!=null&&Math.abs(C.pct(best.gross,best.rate)-best.earn)<=1;
   best.from.fee={pg:(best.from.earn||{}).pg||1,ln:(best.from.earn||{}).ln||0,t:"= Gross "+C.fmt(best.gross)+" − Driver "+C.fmt(best.earn)+" = "+C.fmt(dv)+(best.rate!=null?" · "+(best.rate/100)+"% × Gross = "+C.fmt(C.pct(best.gross,best.rate))+(okp?" ✓":" ≠"):"")}}best.cands=cands.map(function(c){return {m:c.method,ok:c.verdict.ok,st:c.verdict.status,net:C.stmtCalc(c).net,why:c.verdict.why}});

@@ -429,4 +429,21 @@ eq("REAL ROYCE: $8,000 (Comments column) only as information — no balance, no 
 eq("REAL ROYCE: source lines — Net from TOTAL PAYABLE, deductions total from Total Expenses",[/^TOTAL PAYABLE \$7,283\.18$/.test(RW.from.net.t),/Total Expenses/.test(RW.from.dedTotal.t),/Amount 88%/.test(RW.from.rate.t)],[true,true,true]);
 var RWbad=C.readAll({texts:[{name:"pdf",text:C.rowsText(RWr)}]});eq("REAL ROYCE: without column positions the $8,000 trap is NOT saved (warn)",[C.decide(RWbad).act],["warn"]);
 eq("fixture is anonymized (no name, phone, email, address, VIN)",/NURDOOLOT|URMAT|gmail|LINDEN|DAYTON|274 1161|4V4NC9/i.test(JSON.stringify(RWi)),false);
+
+// ===== 🔴 Debts screen =====
+var RD=Object.assign({id:"rw"},JSON.parse(JSON.stringify(RW)));RD.ded.forEach(function(d){if(d.c==="co_debt")d.debt="dR"});
+var SD={stmts:[RD],tx:[],loads:[],debts:[{id:"dR",company:"ROYCE LLC",type:"loan",opening:null,items:[]}]};
+var AD=C.allDebts(SD).filter(function(x){return x.id==="dR"})[0];
+eq("ROYCE: $2,000 + $2,000 = $4,000 paid; start unknown → remaining 'unknown' (not −$4,000), yellow",[AD.paid,AD.remaining,AD.status,AD.grp,AD.unit],[400000,null,"unknown","co","6771"]);
+eq("ROYCE: debt payments still lower Net Pay but not business expense (unchanged)",[C.stmtCalc(RD).net,C.totals(SD,["2026-11-01","2026-11-07"]).exp],[728318,481608]);
+SD.debts[0].opening=1000000;var AD2=C.allDebts(SD)[0];eq("start 10,000 typed → active red, 6,000 left",[AD2.status,AD2.remaining],["active",600000]);
+SD.debts[0].opening=0;eq("opening 0 left by default is not a known balance",C.allDebts(SD)[0].status,"unknown");
+SD.debts[0].opening=400000;eq("fully repaid → green 'paid'",[C.allDebts(SD)[0].status,C.allDebts(SD)[0].remaining],["paid",0]);
+SD.debts[0].opening=null;SD.debts[0].closed="2026-11-20";eq("marked paid with unknown balance → green, no amount invented",[C.allDebts(SD)[0].status,C.debtCalc(SD)[0].payments],["paid",400000]);
+var SP2={stmts:[RD],debts:[{id:"dR",opening:1000000,items:[{d:"2026-11-12",a:-50000,src:"man"}]}]};
+eq("duplicate hand payment (same day, same amount) is blocked",C.debtPayDup(SP2,"dR","2026-11-12",50000),"same");
+eq("same amount as a statement payment within 7 days → asked first",C.debtPayDup(SP2,"dR","2026-11-09",200000),"statement");
+eq("different payment is fine",C.debtPayDup(SP2,"dR","2026-11-12",30000),null);
+var GD={stmts:[],tx:[],loads:[],debts:[{id:"o1",company:"Friend",type:"other",opening:50000,items:[]}],truck:{type:"financed",owner:"Bank",num:"6771",balance:5000000,aprBp:1200,period:"week"},shop:[{id:"h1",name:"Joe Truck Shop",d:"2026-11-04",total:300000,payer:"credit",paidAmt:0},{id:"h2",name:"Paid shop",d:"2026-11-04",total:10000,payer:"driver",paidAmt:10000}]};
+var GA=C.allDebts(GD);eq("groups: other · truck loan · shop on credit (paid-in-full shop not a debt)",GA.map(function(x){return [x.grp,x.name,x.status,x.remaining]}),[["other","Friend","active",50000],["truck","Bank","active",5000000],["shop","Joe Truck Shop","active",300000]]);
 console.log("\nPASS "+pass+"  FAIL "+fail+"  NOT RUN "+SKIP);process.exit(fail||SKIP?1:0);
