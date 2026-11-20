@@ -535,8 +535,22 @@ C.resolveUnknown=function(R){var un=(R.unknown||[]).filter(function(u){return u.
  pick.forEach(function(i){var u=un[i];R.ded.push({c:"other",a:u.a,v:u.v,pg:u.pg||null,ln:u.ln||null,dk:"adjust",check:true,unclear:true,solved:true})});
  R.unknown=un.filter(function(u,i){return pick.indexOf(i)<0});R.solved=pick.length;return R};
 /* combine: the text reader result + the table reader result → candidates; the one whose arithmetic matches the printed totals wins */
-C.readAll=function(src){var cands=[],seen={};function add(name,R){if(!R)return;C.resolveUnknown(R);var key=JSON.stringify([R.gross,R.earn,C.sum(R.ded,"a"),R.net,R.loads.map(function(l){return [l.num,l.mi,l.dh,l.g,l.pd]})]);if(seen[key])return;seen[key]=1;R.method=name;R.verdict=C.aiVerdict(R);cands.push(R)}
- (src.texts||[]).forEach(function(t){if(!t||!t.text)return;var A=C.parseStatement(t.text);add(t.name,A);
+/* side-by-side PANELS (earnings left, deductions right): one printed line holds two unrelated rows.
+   Candidate gutters = x where no cell crosses and both sides have cells on ≥3 lines; inside the panel block the left panel is read first, then the right one.
+   Only an extra candidate: the arithmetic decides whether the split reading is the right one. */
+C.panelSplits=function(rows){var xs={},out=[];(rows||[]).forEach(function(r){r.cells.forEach(function(c){xs[Math.round(c.x0)]=1})});
+ var sc=Object.keys(xs).map(Number).map(function(X){var both=0,gap=1e9,first=-1,last=-1;rows.forEach(function(r,i){var L=r.cells.filter(function(c){return c.x1<=X}),R=r.cells.filter(function(c){return c.x0>=X}),cr=r.cells.length-L.length-R.length;
+   if(!cr&&L.length&&R.length){both++;if(first<0)first=i;last=i;gap=Math.min(gap,Math.min.apply(null,R.map(function(c){return c.x0}))-Math.max.apply(null,L.map(function(c){return c.x1})))}});return {X:X,both:both,gap:gap,first:first,last:last}})
+  .filter(function(o){return o.both>=3&&o.gap>=18}).sort(function(a,b){return a.X-b.X});var seenP={};
+ sc.forEach(function(o){if(out.length>=12)return;var top=rows.slice(0,o.first),L=[],R=[],i=o.first;
+  for(;i<rows.length;i++){var r=rows[i],l=r.cells.filter(function(c){return c.x1<=o.X}),rr=r.cells.filter(function(c){return c.x0>=o.X});if(l.length+rr.length<r.cells.length&&i>o.last)break;
+   if(l.length)L.push({y:r.y,cells:l});if(rr.length)R.push({y:r.y,cells:rr})}
+  var key=L.map(function(r){return r.cells.length}).join(",")+"|"+R.length+"|"+i;if(seenP[key])return;seenP[key]=1;out.push(top.concat(L,R,rows.slice(i)))});return out};
+C.readAll=function(src){var cands=[],seen={},curT=null;
+ src=Object.assign({},src,{texts:(src.texts||[]).reduce(function(a,t){a.push(t);if(t&&t.rows&&t.rows.length&&!t.panel)C.panelSplits(t.rows).forEach(function(rs,j){a.push({name:t.name+"·cols"+(j||""),src:String(t.text||"").replace(/[$,\s]/g,""),text:rs.map(function(r){return r.cells.map(function(c){return c.s}).join("   ")}).join("\n"),rows:rs,panel:true})});return a},[])});function add(name,R){if(!R)return;
+ /* a panel reading counts only when its Net Pay is printed in the document text as read (never a number the split made up) */
+ if(curT&&curT.panel&&!(R.net!=null&&curT.src.indexOf((Math.abs(R.net)/100).toFixed(2))>=0))return;C.resolveUnknown(R);var key=JSON.stringify([R.gross,R.earn,C.sum(R.ded,"a"),R.net,R.dedTotal,R.loads.map(function(l){return [l.num,l.mi,l.dh,l.g,l.pd]})]);if(seen[key])return;seen[key]=1;R.method=name;R.verdict=C.aiVerdict(R);cands.push(R)}
+ (src.texts||[]).forEach(function(t){if(!t||!t.text)return;curT=t;var A=C.parseStatement(t.text);add(t.name,A);
   if(t.rows&&t.rows.length&&!t.noDict){var DA=C.dictCand(A,t.rows,src.learned);if(DA)add(t.name+"·dict",DA);
    /* pure LAYOUT reading: header fields from the text, trips + deductions only from tables, summary from the dictionary, arithmetic decides */
    var TL=C.parseTables(t.rows,C.numFormat(t.text));if(TL.loads.length||TL.ded.length){var L0=JSON.parse(JSON.stringify(A));L0.gross=L0.earn=L0.fee=L0.net=L0.dedTotal=null;L0.adv=L0.reimb=L0.other=null;L0.fuel=[];L0.unknown=[];L0.from={};
@@ -587,7 +601,7 @@ C.FIELDS=[
  ["miles","miles",/^(TOTAL\s+)?(MILES|MILEAGE)$/],["loaded","miles",/^(TOTAL\s+)?(LOADED|LDD)(\s+MI(LES)?)?$/],["empty","miles",/^(TOTAL\s+)?(DEADHEAD|EMPTY|DHD|DH)(\s+MI(LES)?)?$/],
  ["num","id",/^(SETTLEMENT|STATEMENT|STMT|PAYROLL|PAY\s+STUB|CHECK)\s*(#|NO\.?|NUMBER|ID)?$/],["trips","count",/^(TOTAL\s+)?(TRIPS|LOADS|NUMBER\s+OF\s+(TRIPS|LOADS))$/]];
 C.SKIPLBL=/\b(YTD|YEAR|PREVIOUS|PRIOR|LAST\s+(WEEK|PERIOD)|TO\s+DATE|ESCROW\s+BALANCE|LIMIT)\b/;
-C.lblNorm=function(s){return String(s||"").toUpperCase().replace(/\(.*?\)/g," ").replace(/[:#*]+/g," ").replace(/[^A-Z0-9%\/&' ]+/g," ").replace(/\s+/g," ").trim()};
+C.lblNorm=function(s){return String(s||"").toUpperCase().replace(/\(.*?\)/g," ").replace(/(\S)\s+\d{1,3}(\.\d+)?\s*%$/,"$1").replace(/[:#*]+/g," ").replace(/[^A-Z0-9%\/&' ]+/g," ").replace(/\s+/g," ").trim()};
 /* what kind of token a cell is: money / miles / pct / date / count / id / text */
 C.tok=function(s){var t=String(s||"").trim(),u=t.toUpperCase(),m;if(!t)return null;
  if((m=u.match(/^\(?-?\$?\s*([\d,]+(?:\.\d+)?)\s*(MI|MILES|MILE)\.?\)?$/)))return {t:"miles",v:Math.round(parseFloat(m[1].replace(/,/g,""))*100)/100};
@@ -607,7 +621,7 @@ C.kvPairs=function(rows,learned,all){var out=[];(rows||[]).forEach(function(r,ri
     if(ok)out.push({role:ro.role,alt:!!ro.alt,learned:!!ro.learned,lab:lab,lbl:C.lblNorm(lab),v:ro.kind==="money"?tk.v:ro.kind==="pct"?C.bp(String(tk.v)):ro.kind==="miles"?tk.v:(tk.s||String(tk.v)),pg:pg,row:ri,t:line.slice(0,120)})})}
   cs.forEach(function(c,i){var s2=c.s,m;
    if((m=s2.match(/^(.*?[A-Za-z].*?)\s*[:=]\s*(.+)$/))&&!/\d/.test(m[1])){push(m[1],m[2],c);return}
-   if(/[A-Za-z]{2}/.test(s2)&&!/\d{2}/.test(s2.replace(/#/g,""))){var nx=cs[i+1];if(nx&&/\d/.test(nx.s)&&!/[A-Za-z]{3}/.test(nx.s.replace(/\b(mi|miles|USD)\b/i,""))){push(s2,nx.s,nx);return}
+   if(/[A-Za-z]{2}/.test(s2)&&!/\d{2}/.test(s2.replace(/#/g,"").replace(/\s+\d{1,3}(\.\d+)?\s*%$/,""))){var nx=cs[i+1];if(nx&&/\d/.test(nx.s)&&!/[A-Za-z]{3}/.test(nx.s.replace(/\b(mi|miles|USD)\b/i,""))){push(s2,nx.s,nx);return}
     /* header cell → the value right under it (summary as a small table) */
     var below=rows[ri+1];if(below&&cs.length>=2&&cs.filter(function(x){return hdrKey(x.s)}).length<2&&cs.every(function(x){return /[A-Za-z]{2}/.test(x.s)&&!/\d/.test(x.s)})){below.cells.forEach(function(b){if(b.x1>=c.x0-4&&b.x0<=c.x1+4&&/\d/.test(b.s)&&!/[A-Za-z]{3}/.test(b.s))push(s2,b.s,b)})}}})});
  return out};
@@ -683,7 +697,8 @@ C.tripBlocks=function(rows,n){var MON={JAN:1,FEB:2,MAR:3,APR:4,MAY:5,JUN:6,JUL:7
   return {trips:trips,chk:tot!=null?{sum:Math.round(sumT*100)/100,printed:tot}:null}}
  return null};
 /* what to do with a reading: save (everything printed matches), confirm (nothing contradicts, but some totals are not printed), warn (cannot trust) */
-C.decide=function(R){var v=C.aiVerdict(R);if(v.ok&&v.status==="full"&&!(R.unknown||[]).length)return {act:"save",v:v};if(v.ok)return {act:"confirm",v:v};return {act:"warn",v:v}};
+/* a left-over line whose label is a summary field (Less Deductions, Net Revenue, a YTD figure of one…) is not an unexplained charge: with every printed total matching it does not stop the automatic save */
+C.decide=function(R){var v=C.aiVerdict(R),un=(R.unknown||[]).filter(function(u){return !C.roleOf(u.v).length});if(v.ok&&v.status==="full"&&!un.length)return {act:"save",v:v};if(v.ok)return {act:"confirm",v:v};return {act:"warn",v:v}};
 /* ---------- AI reading (server function → JSON) → the same statement shape as the rule reader ---------- */
 C.AIKIND={expense:null,debt:"debt",advance:"advance",deposit:"deposit",holdback:"holdback",adjust:"adjust",loan:"loan",unclear:"adjust"};
 function aiC(n){return typeof n==="number"&&isFinite(n)?Math.round(n*100):null}

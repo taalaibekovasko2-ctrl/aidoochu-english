@@ -565,4 +565,11 @@ eq("re-check: differences between a saved statement and a new reading are listed
  eq("debts series: 'Total Amount $3,500' printed, $500 taken, no remaining printed → total 3,500 recorded, left = 'needs check' (not guessed)",[g4.total,g4.payments,g4.remaining,g4.status],[350000,50000,null,"unknown"]);
  var all=C.allDebts(S9);eq("debts screen data: three numbers per debt, no start-amount needed",all.map(function(x){return [x.name,x.total,x.paid,x.remaining]}),[["ALPHA LOGISTICS LLC",600000,100000,500000],["BETA CARRIERS INC",null,20000,null],["GAMMA FREIGHT LLC",350000,50000,null]])})();
 eq("fixture anonymized",/ANVAR|ALAPAEV|WARING|PHILADELPHIA|8008442080/i.test(JSON.stringify(PTi)),false);
+// ===== synthetic layouts (tools/gen-statements.js, fictional companies) =====
+(function(){function rd(n){var r=C.cellRows(fx(n));return C.readAll({texts:[{name:"pdf",text:rowsText(r),rows:r}]})}
+ var A=rd("synth_less_header_pdf_items.json"),kA=C.stmtCalc(A);eq("synthetic: 'LESS:' section + 'Total Deductions' → printed total kept, auto-save",[C.decide(A).act,A.dedTotal,kA.net],["save",76092,537136]);
+ var B=rd("synth_less_deductions_pdf_items.json");eq("synthetic: 'Less Deductions:' summary line is not an unknown charge → auto-save",[C.decide(B).act,C.stmtCalc(B).net],["save",425912]);
+ var P=rd("synth_two_panels_pdf_items.json"),kP=C.stmtCalc(P);eq("synthetic: two side-by-side panels (revenue | charges) read apart; 'Net Revenue 85%' = earnings",[P.gross,kP.earn,P.dedTotal,P.net,kP.net],[1032650,877753,38489,839264,839264]);
+ eq("lblNorm: trailing percentage dropped from a label",[C.lblNorm("Net Revenue 85%"),C.lblNorm("Driver %")],["NET REVENUE","DRIVER %"]);
+ eq("fixtures synthetic only",/ANVAR|ALAPAEV|WARING/i.test(JSON.stringify([fx("synth_two_panels_pdf_items.json")])),false)})();
 console.log("\nPASS "+pass+"  FAIL "+fail+"  NOT RUN "+SKIP);process.exit(fail||SKIP?1:0);
