@@ -114,4 +114,28 @@ eq("week of Nov 5 is Nov 2–8",C.range("week","2026-11-05"),["2026-11-02","2026
 eq("statement counted in its period week, not pay date",C.totals(SS,["2026-11-09","2026-11-15"]).gross,0);
 // float trap
 eq("0.1+0.2 style sums exact",C.sum([{a:C.cents("0.10")},{a:C.cents("0.20")}],"a"),30);
+
+// === smart system ===
+var LG=C.legs([{f:"Clearfield,UT",t:"San Jose,CA",pd:"2026-11-02"},{f:"Oakland,CA",t:"Seattle,WA",pd:"2026-11-03"},{f:"Seattle,WA",t:"Laton,CA",pd:"2026-11-05"},{f:"Fresno,CA",t:"Lockport,IL",pd:"2026-11-06"}]);
+eq("legs: points",LG.pts.length,7);eq("legs: types (no guessed start/end)",LG.types,["loaded","empty","loaded","loaded","empty","loaded"]);
+eq("legs sum",C.sumLegs(LG.types,[1609344,160934.4,1609344,1609344,160934.4,1609344]),{loaded:4000,empty:200});
+var SMi={stmts:[Object.assign({},SP,{miLoaded:4330,miEmpty:400,milesAuto:true})],tx:[],loads:[]},TM=C.totals(SMi,W);
+eq("miles total = loaded+empty",TM.miles,4730);eq("gross RPM ≈ 2.95",TM.rpm.gross,295);eq("net cash RPM ≈ 1.60",TM.rpm.net,160);eq("driver RPM",TM.rpm.driver,260);eq("loaded RPM",TM.rpm.loaded,322);eq("estimated flag",TM.autoMi,true);
+// escrow & company debt repayment are not expenses, but reduce net pay
+var SE={stmts:[{id:"e",d:"2026-11-08",p1:"2026-11-08",gross:500000,rate:10000,ded:[{c:"diesel",a:100000},{c:"escrow",a:5000},{c:"co_debt",a:20000}],net:375000}],tx:[],loads:[]};var TE=C.totals(SE,W),KE=C.stmtCalc(SE.stmts[0]);
+eq("net pay includes all deductions",[KE.net,KE.rec.diff],[375000,0]);eq("expenses exclude escrow/debt",TE.exp,100000);eq("profit ≠ net",[TE.profit,TE.net],[400000,375000]);eq("debt paid tracked",[TE.debtPaid,TE.escrow],[25000,5000]);
+eq("escrow keyword",C.guessCat("ESCROW"),"escrow");eq("chargeback keyword",C.guessCat("DAMAGE CHARGEBACK"),"co_debt");
+// company debt balance: opening + new - payments; payment not an expense
+SE.debts=[{id:"d1",company:"",type:"advance",opening:100000,items:[{d:"2026-11-01",a:30000}]}];var DB=C.debtCalc(SE)[0];
+eq("debt remaining",[DB.opening,DB.newDebt,DB.payments,DB.remaining],[100000,30000,20000,110000]);
+// negative settlement carried as debt
+var SN={stmts:[{id:"n",d:"2026-11-08",p1:"2026-11-08",gross:100000,rate:10000,ded:[{c:"diesel",a:150000}],negCarry:"d2"}],debts:[{id:"d2",company:"",type:"neg",opening:0,items:[]}],tx:[],loads:[]};
+eq("negative net",C.stmtCalc(SN.stmts[0]).net,-50000);eq("negative balance → debt",C.debtCalc(SN)[0].remaining,50000);
+// truck loan: interest vs principal, balance from statement deductions
+var STK={stmts:[{id:"t1",d:"2026-11-08",p1:"2026-11-08",gross:0,ded:[{c:"truck_pay",a:100000}]}],truck:{type:"financed",balance:5200000,aprBp:1000,period:"week"},tx:[],loads:[]};var TK=C.truckCalc(STK);
+eq("loan interest weekly",TK.interest,10000);eq("loan principal",TK.principal,90000);eq("loan balance",TK.balance,5110000);
+eq("weekly lease has no balance split",C.truckCalc({stmts:STK.stmts,truck:{type:"lease"}}).balance,null);
+// shop: $3000 repair, company paid $1000, then statement deductions reduce debt; expense counted once (only deductions)
+var SH={stmts:[{id:"w1",d:"2026-11-08",p1:"2026-11-08",gross:0,ded:[{c:"shop_debt",a:50000,shop:"r1"}]}],shop:[{id:"r1",total:300000,co:100000,drv:0}],tx:[],loads:[]};var SC=C.shopCalc(SH)[0];
+eq("shop remaining",[SC.total,SC.paid,SC.remaining],[300000,150000,150000]);eq("shop deduction counted once as expense",C.totals(SH,W).exp,50000);
 console.log("\nPASS "+pass+"  FAIL "+fail);process.exit(fail?1:0);

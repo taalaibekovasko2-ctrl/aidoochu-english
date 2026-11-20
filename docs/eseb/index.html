@@ -105,6 +105,8 @@ img,video{max-width:100%}
 .chips.col{flex-direction:column}.chips.col b{border-radius:12px;padding:12px}
 .shake{animation:sh .3s}@keyframes sh{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 optgroup{color:#000}
+.grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important}.card{min-width:0}.v,.big{overflow-wrap:anywhere}.tl>span{min-width:0;padding-right:8px}.tl>b{text-align:right;flex:none}
+@media (max-width:360px){.v{font-size:19px}.big{font-size:28px}.card{padding:12px}.nav div{font-size:10.5px}.seg b{font-size:13px}}
 .row2{display:flex;justify-content:space-between;align-items:center}
 .ok2{margin-top:8px;color:#5df0a0;font-weight:700;font-size:14px}
 details.card summary{font-weight:800;cursor:pointer;list-style:none;padding:2px 0}details.card summary::-webkit-details-marker{display:none}details.card summary:after{content:" ▾";color:var(--mu)}details[open].card summary{margin-bottom:6px}
@@ -114,8 +116,8 @@ details.card summary{font-weight:800;cursor:pointer;list-style:none;padding:2px 
 <div id="app"></div>
 <div class="nav" id="nav"></div>
 <input type="file" id="fileIn" accept="image/*" capture="environment" style="display:none">
-<input type="file" id="stIn" accept="image/*,application/pdf,.pdf" multiple style="display:none">
+<input type="file" id="stIn" accept="image/*,application/pdf,.pdf,.csv,.xlsx,.xls,text/csv" multiple style="display:none">
 <input type="file" id="bkIn" accept=".json,application/json" style="display:none">
-<script src="core.js?v=10"></script>
-<script src="app.js?v=10"></script>
+<script src="core.js?v=11"></script>
+<script src="app.js?v=11"></script>
 </body></html>
