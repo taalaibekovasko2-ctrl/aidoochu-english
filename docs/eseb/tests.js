@@ -124,7 +124,7 @@ var SMi={stmts:[Object.assign({},SP,{miLoaded:4330,miEmpty:400,milesAuto:true})]
 eq("miles total = loaded+empty",TM.miles,4730);eq("gross RPM ≈ 2.95",TM.rpm.gross,295);eq("net cash RPM ≈ 1.60",TM.rpm.net,160);eq("driver RPM",TM.rpm.driver,260);eq("loaded RPM",TM.rpm.loaded,322);eq("estimated flag",TM.autoMi,true);
 // escrow & company debt repayment are not expenses, but reduce net pay
 var SE={stmts:[{id:"e",d:"2026-11-08",p1:"2026-11-08",gross:500000,rate:10000,ded:[{c:"diesel",a:100000},{c:"escrow",a:5000},{c:"co_debt",a:20000,debt:"d1"}],net:375000}],tx:[],loads:[]};var TE=C.totals(SE,W),KE=C.stmtCalc(SE.stmts[0]);
-eq("net pay includes all deductions",[KE.net,KE.rec.diff],[375000,0]);eq("expenses exclude escrow/debt",TE.exp,100000);eq("profit ≠ net",[TE.profit,TE.net],[400000,375000]);eq("debt paid tracked",[TE.debtPaid,TE.escrow],[25000,5000]);
+eq("net pay includes all deductions",[KE.net,KE.rec.diff],[375000,0]);eq("expenses exclude escrow/debt",TE.exp,100000);eq("profit ≠ net",[TE.profit,TE.net],[400000,375000]);eq("debt paid / escrow deposit tracked separately",[TE.debtPaid,TE.escrow],[20000,5000]);
 eq("escrow keyword",C.guessCat("ESCROW"),"escrow");eq("chargeback keyword",C.guessCat("DAMAGE CHARGEBACK"),"co_debt");
 // company debt balance: opening + new - payments; payment not an expense
 SE.debts=[{id:"d1",company:"",type:"advance",opening:100000,items:[{d:"2026-11-01",a:30000}]}];var DB=C.debtCalc(SE)[0];
@@ -137,8 +137,8 @@ var STK={stmts:[{id:"t1",d:"2026-11-08",p1:"2026-11-08",gross:0,ded:[{c:"truck_p
 eq("loan interest weekly",TK.interest,10000);eq("loan principal",TK.principal,90000);eq("loan balance",TK.balance,5110000);
 eq("weekly lease has no balance split",C.truckCalc({stmts:STK.stmts,truck:{type:"lease"}}).balance,null);
 // shop: $3000 repair, company paid $1000, then statement deductions reduce debt; expense counted once (only deductions)
-var SH={stmts:[{id:"w1",d:"2026-11-08",p1:"2026-11-08",gross:0,ded:[{c:"shop_debt",a:50000,shop:"r1"}]}],shop:[{id:"r1",total:300000,co:100000,drv:0}],tx:[],loads:[]};var SC=C.shopCalc(SH)[0];
-eq("shop remaining",[SC.total,SC.paid,SC.remaining],[300000,150000,150000]);eq("shop deduction counted once as expense",C.totals(SH,W).exp,50000);
+var SH={stmts:[{id:"w1",d:"2026-11-08",p1:"2026-11-08",gross:0,ded:[{c:"shop_debt",a:50000,shop:"r1"}]}],shop:[{id:"r1",d:"2026-11-03",total:300000,co:100000,drv:0}],tx:[],loads:[]};var SC=C.shopCalc(SH)[0];
+eq("shop remaining",[SC.total,SC.paid,SC.remaining],[300000,150000,150000]);eq("repair counted once (driver share, on repair date); weekly shop deduction is a debt payment",[C.totals(SH,W).exp,C.totals(SH,W).debtPaid],[200000,50000]);
 
 // balances read from statement lines; unknown balances stay unknown
 var RB=C.parseStatement("Shop Repair Loan payment $250.00\nShop loan balance $1,750.00\nCompany Loan Repay $100.00\nLoan balance remaining $900.00");
@@ -185,4 +185,46 @@ eq("truck payments of another company are not mixed in",C.truckCalc({stmts:[{id:
 // shop credit is not a payment; company payment moved to driver is not owed to the shop twice
 eq("shop credit: still owed",C.shopCalc({stmts:[],shop:[{id:"c",total:300000,paidAmt:300000,payer:"credit"}]})[0].remaining,300000);
 var SHT=C.shopCalc({stmts:[],shop:[{id:"t",total:300000,paidAmt:100000,payer:"company",transfer:true}]})[0];eq("company paid & moved to driver: shop owed 2000, company 1000",[SHT.remaining,SHT.owedTo,SHT.movedToCompany],[200000,"company",100000]);
+
+// ===== TZ scenarios A–H (payout, debt, expenses, taxable profit checked separately) =====
+function st0(o){return Object.assign({id:"s"+Math.random(),company:"CO",d:"2026-11-08",p0:"2026-11-02",p1:"2026-11-08",gross:500000,rate:8800,ded:[],loads:[{g:500000}]},o)}
+function run(S){S.tx=S.tx||[];S.loads=S.loads||[];S.status="single";S.stBp=0;var t=C.totals(S,W),x=C.tax(S,2026);return {net:t.net,exp:t.exp,profit:t.profit,debts:C.debtCalc(S).map(function(d){return d.remaining}),taxable:x.ok?x.sc:null}}
+// A: 12% commission only
+var A=run({stmts:[st0({})]});eq("A payout/expenses/profit",[A.net,A.exp,A.profit],[440000,0,440000]);eq("A Schedule C profit (no per diem days)",A.taxable,440000-0);
+// B: 12% + $1,000 truck rental
+var B=run({stmts:[st0({ded:[{c:"truck_pay",a:100000}]})],truck:{type:"rental"}});eq("B rental is an expense",[B.net,B.exp,B.profit],[340000,100000,340000]);
+// C: owes company $2,000, $500 weekly
+var Cc=run({stmts:[st0({ded:[{c:"co_debt",a:50000,debt:"cd"}]})],debts:[{id:"cd",company:"CO",type:"loan",opening:200000,items:[]}]});
+eq("C payout −500, debt 1,500, NOT an expense",[Cc.net,Cc.debts[0],Cc.exp,Cc.profit],[390000,150000,0,440000]);
+// D: owes truck shop $3,000 (on credit), $300 weekly
+var D=run({stmts:[st0({ded:[{c:"shop_debt",a:30000,shop:"sh"}]})],shop:[{id:"sh",d:"2026-11-03",total:300000,paidAmt:0,payer:"credit"}]});var Dsh=C.shopCalc({stmts:[st0({ded:[{c:"shop_debt",a:30000,shop:"sh"}]})],shop:[{id:"sh",d:"2026-11-03",total:300000,paidAmt:0,payer:"credit"}]})[0];
+eq("D payout −300, shop debt 2,700",[D.net,Dsh.remaining],[410000,270000]);eq("D repair counted once (3,000 on repair date), payment not again",D.exp,300000);
+// E: diesel on personal card
+var E1=run({stmts:[st0({})],tx:[{id:"e",kind:"exp",d:"2026-11-04",a:60000,c:"diesel",paidBy:"own"}]});eq("E personal-card diesel: payout unchanged, expense counted",[E1.net,E1.exp,E1.profit],[440000,60000,380000]);
+// F: fuel advance given, then deducted
+var F={stmts:[st0({ded:[{c:"co_debt",a:40000,debt:"fa"}]})],debts:[{id:"fa",company:"CO",type:"fuel_adv",opening:0,items:[{d:"2026-11-03",a:40000,src:"man"}]}],tx:[{id:"f",kind:"exp",d:"2026-11-03",a:40000,c:"diesel",paidBy:"own"}]};var FR=run(F);
+eq("F advance repaid: debt 0, fuel counted once (when bought), repayment not expense",[FR.net,FR.debts[0],FR.exp],[400000,0,40000]);
+// G: truck loan principal + interest
+var G=run({stmts:[st0({ded:[{c:"truck_pay",a:100000}]})],truck:{type:"financed",balance:5200000,aprBp:1000,period:"week"}});eq("G loan: payout −1,000, expense = interest only",[G.net,G.exp,G.profit],[340000,10000,430000]);
+// H: everything at once
+var H={stmts:[st0({other:15000,ded:[{c:"truck_pay",a:100000},{c:"truck_ins",a:36000},{c:"co_debt",a:50000,debt:"hd"},{c:"shop_debt",a:30000,shop:"hs"},{c:"escrow",a:10000}]})],truck:{type:"rental"},debts:[{id:"hd",company:"CO",type:"loan",opening:200000,items:[]}],shop:[{id:"hs",d:"2026-10-01",total:300000,paidAmt:0,payer:"credit"}]};var HR=run(H);
+eq("H payout",HR.net,440000+15000-226000);eq("H expenses (rent+insurance only)",HR.exp,136000);eq("H profit",HR.profit,440000+15000-136000);eq("H company debt",HR.debts[0],150000);eq("H shop debt",C.shopCalc(H)[0].remaining,270000);
+// tax statuses
+var TX={stmts:[st0({})],tx:[],loads:[],status:"single",stBp:0};
+TX.taxSt="w2";var Tw=C.tax(TX,2026);eq("W-2: no self-employment tax",Tw.se,0);
+TX.taxSt="scorp";eq("S-Corp: not enough data, not $0",[C.tax(TX,2026).ok,C.tax(TX,2026).why],[false,"entity"]);
+eq("no data → not $0 but 'insufficient'",C.tax({stmts:[],tx:[],loads:[]},2025).why,"noData");
+TX.taxSt="smllc";var Ts=C.tax(TX,2026);eq("SMLLC: SE tax applies",Ts.se>0,true);
+// depreciation: 3-year MACRS for over-the-road tractor
+var DP={truck:{type:"owned",price:9000000,inService:"2026-03-01",dep:"macrs3"}};eq("MACRS 3y year1/year2",[C.depr(DP,2026),C.depr(DP,2027)],[2999700,4000500]);DP.truck.dep="bonus";eq("bonus 100% first year",C.depr(DP,2026),9000000);
+TX.taxSt="1099";TX.truck={type:"owned",price:9000000,inService:"2026-01-10",dep:"macrs3"};eq("depreciation lowers taxable profit",C.tax(TX,2026).sc,440000-2999700);
+// custom category with its own kind / tax flag
+var CU={stmts:[st0({ded:[{c:"u_club",a:5000},{c:"u_dep",a:7000}]})],cats:[{id:"u_club",name:"Club",kind:"expense",tax:false},{id:"u_dep",name:"Deposit",kind:"deposit"}],tx:[],loads:[]};var TC=C.totals(CU,W);
+eq("custom: expense not taxable, deposit not expense",[TC.exp,TC.nonTax,TC.escrow],[5000,5000,7000]);
+// reconciliation: 'full' only with all checks
+eq("rec full (net+deductions+gross)",C.stmtCalc(Object.assign({},SP,{net:757552,dedTotal:470048})).rec.status,"full");
+eq("rec partial (only net known)",C.stmtCalc(Object.assign({},SP,{net:757552,dedTotal:null,loads:[]})).rec.status,"partial");
+eq("rec mismatch",C.stmtCalc(Object.assign({},SP,{net:757500})).rec.status,"mismatch");
+// per-deduction kind override (e.g. 'Repair advance' marked as debt)
+eq("deduction kind override",C.totals({stmts:[st0({ded:[{c:"truck_repair",a:20000,dk:"debt"}]})],tx:[],loads:[]},W).exp,0);
 console.log("\nPASS "+pass+"  FAIL "+fail+"  NOT RUN "+SKIP);process.exit(fail||SKIP?1:0);

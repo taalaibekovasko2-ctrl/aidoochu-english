@@ -33,11 +33,18 @@ C.CATS=[
  ["ifta","admin","IFTA","IFTA","IFTA"],["eld","admin","ELD / Logbook","ELD / Logbook","ELD / Logbook"],["ifta_eld","admin","IFTA & Logbook — Combined","IFTA & Logbook","IFTA & Logbook"],["phone","admin","Phone / Internet","Телефон / интернет","Телефон / интернет"],["permits","admin","Permits / Registration","Пермит / каттоо","Пермиты / регистрация"],
  ["truck_repair","maint","Truck Repair","Ремонт","Ремонт"],["trailer_repair","maint","Trailer Repair","Трейлер ремонту","Ремонт трейлера"],["pm","maint","Maintenance / PM Service","Тейлөө / PM","ТО / PM сервис"],["parts","maint","Parts","Тетиктер","Запчасти"],["tires","maint","Tires","Дөңгөлөк","Шины"],["wash","maint","Truck Wash","Трак жуу","Мойка трака"],
  ["dispatch","fees","Dispatch Fee","Диспетчер акысы","Оплата диспетчеру"],["factoring","fees","Factoring Fee","Факторинг акысы","Факторинг"],["co_fee","fees","Company Fees","Компаниянын акысы","Сборы компании"],
- ["co_debt","debt","Company Debt Repayment","Компанияга карыз төлөмү","Погашение долга компании"],["escrow","debt","Escrow","Escrow","Escrow"],["reserve","debt","Reserve","Резерв","Резерв"],["shop_debt","maint","Shop Debt Payment","Шопко карыз төлөмү","Оплата долга шопу"],
+ ["co_debt","debt","Company Debt Repayment","Компанияга карыз төлөмү","Погашение долга компании"],["escrow","debt","Escrow","Escrow","Escrow"],["reserve","debt","Reserve","Резерв","Резерв"],["shop_debt","debt","Shop Debt Payment","Шопко карыз төлөмү","Оплата долга шопу"],
  ["other","other","Other Expenses","Башка","Прочее"],["pers","other","Personal (not business)","Жеке (бизнеске кирбейт)","Личное (не бизнес)"]];
 C.MAIN=["diesel","def","truck_ins","bobtail","trailer","parking","toll","ifta","eld","ifta_eld","prepass","pm","wash","tires","truck_repair","permits","escrow","reserve","co_fee","other"];
 C.CAT={};C.CATS.forEach(function(c){C.CAT[c[0]]={id:c[0],g:c[1],en:c[2],kg:c[3],ru:c[4]}});
 C.catGroup=function(c){return (C.CAT[c]||C.CAT.other).g};
+/* every deduction has a KIND: expense | debt | advance | deposit | holdback | adjust | loan (truck loan payment = interest + principal) */
+C.KINDS=["expense","debt","advance","deposit","holdback","adjust"];
+C.KIND_DEF={co_debt:"debt",shop_debt:"debt",escrow:"deposit",reserve:"holdback",pers:"personal"};
+C.isLoanTruck=function(S){var t=(S&&S.truck||{}).type;return t==="financed"||t==="lto"};
+C.custom=function(S,c){var r=null;((S&&S.cats)||[]).forEach(function(x){if(x.id===c)r=x});return r};
+C.kindOf=function(c,S,x){if(x&&x.dk)return x.dk;var u=C.custom(S,c);if(u)return u.kind||"expense";if(c==="truck_pay"&&C.isLoanTruck(S))return "loan";return C.KIND_DEF[c]||"expense"};
+C.isTaxable=function(c,S,x){if(x&&x.tax!=null)return !!x.tax;var u=C.custom(S,c);if(u&&u.tax!=null)return !!u.tax;var k=C.kindOf(c,S,x);return k==="expense"||k==="loan"};
 
 /* keyword → category for statement / receipt lines (order matters: specific first) */
 C.KW=[["escrow",/ESCROW/],["reserve",/RESERVE|MAINT(ENANCE)? (FUND|RESERVE)/],["wash",/TRUCK ?WASH|BLUE ?BEACON|\bWASH\b/],["co_fee",/ADMIN FEE|SERVICE FEE|COMPANY FEE|PROCESSING FEE|PLATFORM FEE/],["tires",/TIRE/],["co_debt",/LOAN REPAY|ADVANCE REPAY|CHARGE ?BACK|COMPANY LOAN|DAMAGE|NEG(ATIVE)? BAL|CARRY ?OVER|PREVIOUS BAL/],["shop_debt",/SHOP (DEBT|LOAN|PAYMENT|INSTALL)|REPAIR (LOAN|INSTALL|ADVANCE)/],["ifta_eld",/\bIF?TA\s*(&|AND|\/|\+)?\s*(LOG|ELD)|(LOG ?BOOK|ELD)\s*(&|AND|\/|\+)\s*IF?TA\b/],["prepass",/PRE ?PASS|BESTPASS|DRIVEWYZE/],["def",/\bDEF\b|DIESEL EXHAUST/],
@@ -67,7 +74,9 @@ C.stmtCalc=function(st){
  var rec={stated:st.net==null?null:st.net,calc:net,diff:st.net==null?null:st.net-net,why:[]};
  if(st.dedTotal!=null&&st.dedTotal!==ded)rec.why.push({k:"dedTotal",stated:st.dedTotal,calc:ded,diff:st.dedTotal-ded});
  if(rec.diff){warn.forEach(function(w){if(w.k=="earnMismatch")rec.why.push(w)});if(!rec.why.length)rec.why.push({k:"unknown",diff:rec.diff})}
- var lg=C.sum(st.loads||[],"g");if(st.loads&&st.loads.length&&lg!==g)rec.why.push({k:"grossLoads",stated:g,calc:lg,diff:g-lg});
+ var lg=C.sum(st.loads||[],"g");
+ var chk={net:st.net!=null?st.net===net:null,ded:st.dedTotal!=null?st.dedTotal===ded:null,gross:(st.loads&&st.loads.length&&g)?lg===g:null};
+ rec.status=chk.net===false||chk.ded===false||chk.gross===false?"mismatch":chk.net&&chk.ded&&chk.gross?"full":chk.net?"partial":"none";rec.chk=chk;if(st.loads&&st.loads.length&&lg!==g)rec.why.push({k:"grossLoads",stated:g,calc:lg,diff:g-lg});
  return {gross:g,grossLoads:lg,fee:fee,earn:earn,ded:ded,adv:adv,reimb:reimb,other:other,net:net,rec:rec,warn:warn}};
 
 /* ---------- transactions & double-count protection ----------
@@ -79,7 +88,7 @@ C.stmtCalc=function(st){
      Such receipts are kept for gallons, prices, MPG and as proof.
   4) Reimbursements received reduce out-of-pocket cost; advances are not expenses. */
 C.isPers=function(t){return !!t.pers||t.c==="pers"};
-C.counts=function(t){return t.kind!="income"&&t.kind!="reimb"&&t.paidBy=="own"&&!t.link&&!t.dupOf&&!C.isPers(t)};
+C.counts=function(t,S){return t.kind!="income"&&t.kind!="reimb"&&t.paidBy=="own"&&!t.link&&!t.dupOf&&!C.isPers(t)&&!/^shp/.test(t.id||"")&&C.kindOf(t.c,S,t)==="expense"};
 C.persCounts=function(t){return t.kind=="exp"&&C.isPers(t)&&!t.dupOf};
 C.sameish=function(a,b,days){ /* candidate duplicate test */
  if(!a||!b||a===b)return 0;if(Math.abs((a.a||0)-(b.a||0))>1)return 0;var dd=Math.abs(C.days(a.d,b.d));if(dd>(days==null?1:days))return 0;
@@ -130,14 +139,16 @@ C.range=function(per,ref,c0,c1){var r=C.pd(ref),d=new Date(r),y=d.getUTCFullYear
 C.inR=function(d,r){return !!d&&d>=r[0]&&d<=r[1]};
 
 /* ---------- period totals ---------- */
-C.totals=function(S,r){
- var o={stDedAll:0,debtPaid:0,escrow:0,pers:0,gross:0,fee:0,earn:0,stDed:0,oop:0,reimb:0,other:0,adv:0,net:0,profit:0,loaded:0,empty:0,
+C.totals=function(S,r){var r0=r;
+ var o={byKind:{},nonTax:0,adjust:0,shopExp:0,ownDebtPaid:0,stDedAll:0,debtPaid:0,escrow:0,pers:0,gross:0,fee:0,earn:0,stDed:0,oop:0,reimb:0,other:0,adv:0,net:0,profit:0,loaded:0,empty:0,
   dieselGal:0,defGal:0,dieselCost:0,fuelCost:0,retail:0,invoice:0,src:{gross:[],fee:[],earn:[],exp:[],net:[],profit:[]},byCat:{},stCount:0,loadCount:0,days:0};
  function addCat(c,a,src){o.byCat[c]=(o.byCat[c]||0)+a;o.src.exp.push(src)}
  (S.stmts||[]).forEach(function(st){if(!C.inR(C.stDay(st),r))return;var k=C.stmtCalc(st);o.stCount++;
   o.gross+=k.gross;o.fee+=k.fee;o.earn+=k.earn;o.stDed+=k.ded;o.stDedAll+=k.ded;o.reimb+=k.reimb;o.other+=k.other;o.adv+=k.adv;o.net+=k.net;o.days+=st.days||0;
   o.src.gross.push({t:"st",id:st.id,a:k.gross});o.src.fee.push({t:"st",id:st.id,a:k.fee});o.src.earn.push({t:"st",id:st.id,a:k.earn});o.src.net.push({t:"st",id:st.id,a:k.net});
-  (st.ded||[]).forEach(function(x,i){if(C.catGroup(x.c)==="debt"){o.debtPaid+=x.a;if(x.c==="escrow"||x.c==="reserve")o.escrow+=x.a;o.stDed-=x.a;return}addCat(x.c,x.a,{t:"stded",id:st.id,i:i,a:x.a,c:x.c})});
+  (st.ded||[]).forEach(function(x,i){var kd=C.kindOf(x.c,S,x);o.byKind[kd]=(o.byKind[kd]||0)+x.a;
+   if(kd==="expense"||kd==="loan"){addCat(x.c,x.a,{t:"stded",id:st.id,i:i,a:x.a,c:x.c});if(!C.isTaxable(x.c,S,x))o.nonTax+=x.a;return}
+   o.stDed-=x.a;if(kd==="debt"||kd==="advance")o.debtPaid+=x.a;else if(kd==="deposit"||kd==="holdback")o.escrow+=x.a;else o.adjust+=x.a});
   var lm=0,ld=0;(st.loads||[]).forEach(function(l){lm+=l.mi||0;ld+=l.dh||0;o.loadCount++});
   if(st.miLoaded!=null){o.loaded+=st.miLoaded;o.empty+=st.miEmpty||0}else if(st.miles){o.loaded+=st.miles;o.empty+=st.dh||0}else{o.loaded+=lm;o.empty+=ld}
   if(st.milesAuto)o.autoMi=true;if(st.miSrc=="doc")o.docMi=true;
@@ -149,14 +160,16 @@ C.totals=function(S,r){
   if(t.kind=="reimb"){o.reimb+=t.a;o.txReimb=(o.txReimb||0)+t.a;return}
   if(t.kind=="income"){o.other+=t.a;o.txIncome=(o.txIncome||0)+t.a;return}
   if(t.c&&C.catGroup(t.c)==="fuel"&&!t.dupOf&&!(t.link&&C.stHasFuelLines(S,t.link)))fuelAdd(t);
-  if(C.counts(t)){o.oop+=t.a;addCat(t.c,t.a,{t:"tx",id:t.id,a:t.a,c:t.c})}else if(C.persCounts(t))o.pers=(o.pers||0)+t.a});
+  if(t.kind=="exp"&&t.paidBy=="own"&&!t.dupOf&&!t.link&&!C.isPers(t)&&C.kindOf(t.c,S,t)!=="expense")o.ownDebtPaid+=t.a;
+  if(C.counts(t,S)){o.oop+=t.a;if(!C.isTaxable(t.c,S,t))o.nonTax+=t.a;addCat(t.c,t.a,{t:"tx",id:t.id,a:t.a,c:t.c})}else if(C.persCounts(t))o.pers=(o.pers||0)+t.a});
  function fuelAdd(f){var cost=f.inv!=null?f.inv:(f.a||0);if(f.c==="def"){o.defGal+=f.gal||0}else if(f.gal){o.dieselGal+=f.gal;o.dieselCost+=cost}
   if(f.ret!=null&&f.inv!=null){o.retail+=f.ret;o.invoice+=f.inv}}
  var tk=C.truckCalc(S);o.principal=0;o.interest=0;tk.pays.forEach(function(p){if(!C.inR(p.d,r))return;o.interest+=p.interest;if(tk.isLoan&&p.principal){o.principal+=p.principal;if(p.src==="st"){o.stDed-=p.principal;o.byCat.truck_pay=(o.byCat.truck_pay||0)-p.principal}}});
- o.exp=o.stDed+o.oop;o.fuelSaved=o.retail&&o.invoice?o.retail-o.invoice:0;
+ C.shopCalc(S).forEach(function(x){var r=x.r;if(!C.inR(r.d,r0)||x.total==null)return;var pa=r.paidAmt!=null?r.paidAmt:(r.drv||0)+(r.co||0),notDriver=(x.payer==="company"&&!r.transfer)||x.payer==="owner"?pa:0;var cost=Math.max(0,x.total-notDriver);if(!cost)return;o.shopExp+=cost;addCat("truck_repair",cost,{t:"shop",id:r.id,a:cost,c:"truck_repair"})});
+ o.exp=o.stDed+o.oop+o.shopExp;o.fuelSaved=o.retail&&o.invoice?o.retail-o.invoice:0;
  o.fuelCost=(o.byCat.diesel||0)+(o.byCat.def||0); /* authoritative: counted fuel expenses only */
- o.profit=o.earn+o.other+o.reimb-o.stDed-o.oop;
- o.cashFlow=o.net-o.oop+(o.txReimb||0)+(o.txIncome||0); /* money actually received minus money spent from own pocket */
+ o.profit=o.earn+o.other+o.reimb-o.stDed-o.oop-o.shopExp;
+ o.cashFlow=o.net-o.oop-o.ownDebtPaid+(o.txReimb||0)+(o.txIncome||0); /* money actually received minus money spent from own pocket */
  o.miles=o.loaded+o.empty;
  o.perMile=function(c){return o.miles>0?Math.round(c/o.miles):null};
  o.rpm={gross:o.perMile(o.gross),driver:o.perMile(o.earn),net:o.perMile(o.net),loaded:o.loaded>0?Math.round(o.gross/o.loaded):null};
@@ -193,10 +206,12 @@ C.shopCalc=function(S){return (S.shop||[]).map(function(r){
   var owedTo=payer==="company"&&r.transfer?"company":"shop";
   return {id:r.id,r:r,total:known?total:null,payer:payer,paid:paid+p2,remaining:known?Math.max(0,total-paid-p2):null,owedTo:owedTo,movedToCompany:owedTo==="company"?pa:0,pays:pays}})};
 /* one source for the Expenses screen: every row and whether it counts */
-C.expRows=function(S,r){var rows=[];
- (S.stmts||[]).forEach(function(s){if(!C.inR(C.stDay(s),r))return;(s.ded||[]).forEach(function(x,i){rows.push({src:"st",id:s.id,i:i,d:C.stDay(s),a:x.a,c:x.c,v:x.v,pers:false,cnt:true})})});
- (S.tx||[]).forEach(function(t){if(t.kind!=="exp"||!C.inR(t.d,r))return;var p=C.isPers(t);rows.push({src:"tx",id:t.id,d:t.d,a:t.a,c:t.c||"other",v:t.v,pers:p,cnt:p?C.persCounts(t):C.counts(t),t:t})});
- rows.sort(function(a,b){return a.d<b.d?1:a.d>b.d?-1:0});var biz=0,pers=0;rows.forEach(function(x){if(!x.cnt)return;if(x.pers)pers+=x.a;else biz+=x.a});return {rows:rows,biz:biz,pers:pers}};
+C.expRows=function(S,r){var rows=[],rr=r;
+ (S.stmts||[]).forEach(function(s){if(!C.inR(C.stDay(s),r))return;(s.ded||[]).forEach(function(x,i){var kd=C.kindOf(x.c,S,x);rows.push({src:"st",id:s.id,i:i,d:C.stDay(s),a:x.a,c:x.c,v:x.v,pers:false,kind:kd,cnt:kd==="expense"||kd==="loan"})})});
+ (S.tx||[]).forEach(function(t){if(t.kind!=="exp"||!C.inR(t.d,r))return;var p=C.isPers(t);rows.push({src:"tx",id:t.id,d:t.d,a:t.a,c:t.c||"other",v:t.v,pers:p,cnt:p?C.persCounts(t):C.counts(t,S),kind:C.kindOf(t.c||"other",S,t),t:t})});
+ C.shopCalc(S).forEach(function(x){var r=x.r;if(!C.inR(r.d,rr)||x.total==null)return;var pa=r.paidAmt!=null?r.paidAmt:(r.drv||0)+(r.co||0),nd=(x.payer==="company"&&!r.transfer)||x.payer==="owner"?pa:0,cost=Math.max(0,x.total-nd);if(cost)rows.push({src:"shop",id:r.id,d:r.d,a:cost,c:"truck_repair",v:r.name||"Shop",kind:"expense",cnt:true})});
+ rows.sort(function(a,b){return a.d<b.d?1:a.d>b.d?-1:0});var biz=0,pers=0,tk=C.truckCalc(S);rows.forEach(function(x){if(!x.cnt)return;if(x.pers)pers+=x.a;else biz+=x.a});
+ tk.pays.forEach(function(p){if(tk.isLoan&&p.src==="st"&&C.inR(p.d,rr))biz-=p.principal});return {rows:rows,biz:biz,pers:pers}};
 /* statement saved after manual entries: own-money entries equal to a statement line are linked (counted once) */
 C.linkCandidates=function(st,S){var out=[];(S.tx||[]).forEach(function(t){if(t.kind!=="exp"||t.link||t.dupOf||C.isPers(t))return;
   var inP=st.p0&&st.p1?(t.d>=C.addDays(st.p0,-7)&&t.d<=C.addDays(st.p1,1)):Math.abs(C.days(t.d,C.stDay(st)))<=7;if(!inP)return;
@@ -211,12 +226,22 @@ C.TAX={BR:{single:[[1240000,1000],[5040000,1200],[10570000,2200],[20177500,2400]
  hoh:[[1770000,1000],[6745000,1200],[10570000,2200],[20175000,2400],[25620000,3200],[64060000,3500],[1e15,3700]]},
  STD:{single:1610000,mfj:3220000,hoh:2415000},SSB:18450000,PD:8000,PDP:8000};
 C.fedTax=function(ti,st){var b=C.TAX.BR[st]||C.TAX.BR.single,t=0,lo=0;for(var i=0;i<b.length&&ti>lo;i++){var hi=b[i][0];t+=C.pct(Math.min(ti,hi)-lo,b[i][1]);lo=hi}return t};
-C.tax=function(S,y){var r=[y+"-01-01",y+"-12-31"],o=C.totals(S,r),days=o.days+C.tripDays(S,r);
- var pdd=C.pct(days*C.TAX.PD,C.TAX.PDP);var sc=o.profit-pdd;var base=C.pct(Math.max(0,sc),9235);
- var se=C.pct(Math.min(base,C.TAX.SSB),1240)+C.pct(base,290);if(S.role==="company")se=0;
- var half=Math.floor(se/2),agi=Math.max(0,sc-half),std=C.TAX.STD[S.status]||C.TAX.STD.single,pre=Math.max(0,agi-std);
- var qbi=Math.min(C.pct(Math.max(0,sc-half),2000),C.pct(pre,2000));var ti=Math.max(0,pre-qbi),fed=C.fedTax(ti,S.status),st=C.pct(agi,S.stBp||0);
- var tot=se+fed+st,paid=(S.paid&&S.paid[y])||0;return {t:o,days:days,pdd:pdd,sc:sc,se:se,agi:agi,qbi:qbi,ti:ti,fed:fed,st:st,tot:tot,paid:paid,left:Math.max(0,tot-paid)}};
+C.TAXST=["w2","1099","sole","smllc","llc_other","scorp"];
+C.taxStatus=function(S){return S.taxSt||(S.role==="company"?"w2":"1099")};
+C.MACRS3=[3333,4445,1481,741]; /* over-the-road tractor units: 3-year MACRS, half-year convention (IRS Pub 946) */
+C.depr=function(S,y){var T=S.truck||{};if(!T.price||!T.inService||!(T.type==="owned"||T.type==="financed"||T.type==="lto"||T.type==="oo"))return 0;var y0=+String(T.inService).slice(0,4),k=y-y0;if(k<0)return 0;
+ if(T.dep==="bonus")return k===0?T.price:0;if(T.dep==="none")return 0;return k<C.MACRS3.length?C.pct(T.price,C.MACRS3[k]):0};
+C.tax=function(S,y,today){var r=[y+"-01-01",y+"-12-31"],o=C.totals(S,r),days=o.days+C.tripDays(S,r),st=C.taxStatus(S),res={status:st,t:o,days:days,ok:true,why:null,prelim:true};
+ var hasData=o.stCount+o.loadCount>0||o.oop>0;if(!hasData){res.ok=false;res.why="noData";return res}
+ if(st==="llc_other"||st==="scorp"){res.ok=false;res.why="entity";return res}
+ var std=C.TAX.STD[S.status]||C.TAX.STD.single;
+ if(st==="w2"){var wages=o.earn+o.other;var ti=Math.max(0,wages-std);res.taxable=ti;res.se=0;res.fed=C.fedTax(ti,S.status);res.stt=C.pct(wages,S.stBp||0);res.pdd=0;res.dep=0;res.sc=null}
+ else{res.pdd=C.pct(days*C.TAX.PD,C.TAX.PDP);res.dep=C.depr(S,y);res.sc=o.profit-o.nonTax-res.pdd-res.dep;
+  var base=C.pct(Math.max(0,res.sc),9235);res.se=C.pct(Math.min(base,C.TAX.SSB),1240)+C.pct(base,290);var half=Math.floor(res.se/2),agi=Math.max(0,res.sc-half),pre=Math.max(0,agi-std);
+  var qbi=Math.min(C.pct(Math.max(0,res.sc-half),2000),C.pct(pre,2000));res.taxable=Math.max(0,pre-qbi);res.fed=C.fedTax(res.taxable,S.status);res.stt=C.pct(agi,S.stBp||0)}
+ res.tot=res.se+res.fed+res.stt;res.paid=(S.paid&&S.paid[y])||0;res.left=Math.max(0,res.tot-res.paid);
+ if(today&&today.slice(0,4)===String(y)){var doy=C.days(y+"-01-01",today)+1;if(doy>=14&&doy<365){res.fcProfit=Math.round(o.profit*365/doy);res.fcTot=Math.round(res.tot*365/doy)}}
+ res.st=res.stt;res.pdd=res.pdd||0;return res};
 C.tripDays=function(S,r){var set={};(S.trips||[]).forEach(function(t){for(var d=t.a;d<=t.b;d=C.addDays(d,1))if(C.inR(d,r))set[d]=1});return Object.keys(set).length};
 
 /* ---------- statement text reader (rules only; unknown stays null — never invented) ---------- */
