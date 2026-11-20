@@ -336,4 +336,28 @@ eq("feedback for the 2nd pass names the difference",/net:\$440\.00≠\$490\.00/.
 var NJ=JSON.parse(JSON.stringify(BJ));NJ.net_pay=null;eq("AI without printed Net Pay → not saved (cannot verify)",C.aiVerdict(C.fromAI(NJ)).why,["noNet"]);
 eq("AI malformed answer rejected",[C.fromAI(null),C.fromAI({loads:"x"}),C.fromAI({deductions:[]})],[null,null,null]);
 var XJ=JSON.parse(JSON.stringify(BJ));XJ.deductions[2].category="hacker";XJ.period_start="next week";var XR=C.fromAI(XJ);eq("AI unknown category → other; bad date → empty (nothing invented)",[XR.ded[2].c,XR.p0],["other",null]);
+
+// ===== free table reader (word positions → rows & columns) + several methods + automatic decision =====
+function fx(n){return JSON.parse(require("fs").readFileSync(require("path").join(__dirname,"fixtures",n),"utf8"))}
+function rowsText(rows){return rows.map(function(r){return r.cells.map(function(c){return c.s}).join("   ")}).join("\n")}
+var PA=C.cellRows(fx("aravan_pdf_items.json")),PB=C.cellRows(fx("layoutB_pdf_items.json")),PC=C.cellRows(fx("layoutC_pdf_items.json"));
+var TA=C.parseTables(PA);eq("table: ARAVAN loads by column (id, PU, DEL, gross, driver amount)",TA.loads.map(function(l){return [l.num,l.f,l.t,l.g,l.earn]}),[["39040005","Clearfield, UT","San Jose, CA",160000,140800],["7278314579","Oakland, CA","Seattle, WA",360000,316800],["39073298","Seattle, WA","Laton, CA",225000,198000],["69839362","Fresno, CA","Lockport, IL",650000,572000]]);
+eq("table: ARAVAN deductions = 8 lines, total 4,700.48; fuel transactions = detail only",[TA.ded.length,C.sum(TA.ded,"a"),TA.detail>=1],[8,470048,true]);
+var TC=C.parseTables(PC);eq("table: unknown layout C — City + separate ST column, loaded & empty miles",TC.loads.map(function(l){return [l.f,l.t,l.mi,l.dh]}),[["Reno, NV","Boise, ID",430,25],["Boise, ID","Salt Lake City, UT",340,0],["Ogden, UT","Las Vegas, NV",420,38]]);
+eq("table: layout C linehaul vs your share (no $ signs)",[C.sum(TC.loads,"g"),C.sum(TC.loads,"earn")],[505000,404000]);
+var BA=C.readAll({texts:[{name:"pdf",text:rowsText(PA),rows:PA}]}),BB=C.readAll({texts:[{name:"pdf",text:rowsText(PB),rows:PB}]}),BC=C.readAll({texts:[{name:"pdf",text:rowsText(PC),rows:PC}]});
+eq("auto: ARAVAN → save",[C.decide(BA).act,C.stmtCalc(BA).net],["save",757552]);
+eq("auto: layout B → save",[C.decide(BB).act,C.stmtCalc(BB).net],["save",44000]);
+eq("auto: layout C — text reader fails, table reader wins → save",[BC.method,C.decide(BC).act,C.stmtCalc(BC).net,BC.net],["pdf+table","save",269955,269955]);
+eq("auto: layout C miles from table",[C.sum(BC.loads,"mi"),C.sum(BC.loads,"dh")],[1190,63]);
+eq("auto: layout C 'Misc 2' explained by the printed total only → not an expense, flagged",BC.ded.filter(function(d){return d.solved}).map(function(d){return [d.v,d.a,d.dk,d.check]}),[["Misc 2 ref 77",1500,"adjust",true]]);
+eq("subset: unique combination only",[C.subsetExplain([500,300,200],500),C.subsetExplain([300,200,500,700],500)],[null,null]);
+eq("subset: one exact match",C.subsetExplain([1500,999,250],1750),[0,2]);
+var bad=C.readAll({texts:[{name:"pdf",text:rowsText(PC).replace("2,699.55","2,600.00"),rows:PC}]});eq("auto: printed Net disagrees with every reading → warn, nothing saved",C.decide(bad).act,"warn");
+var noNet=C.readAll({texts:[{name:"pdf",text:rowsText(PC).replace(/Net Check Amount.*$/m,""),rows:PC}]});eq("auto: no Net Pay printed → cannot verify → warn",[C.decide(noNet).act,C.decide(noNet).v.why[0]],["warn","noNet"]);
+var CSVR=[["Trip","Origin","Destination","Miles","Linehaul","Driver Pay"],["A1","Austin TX","Tulsa OK","460","2,100.00","1,680.00"],["A2","Tulsa OK","Denver CO","690","2,400.00","1,920.00"],["Total","","","1150","4,500.00","3,600.00"],["Description","Amount"],["Fuel","900.00"],["Insurance","150.00"],["Total Deductions","1,050.00"],["Net Pay","2,550.00"]].map(function(r){return {cells:r.map(function(x,i){return {x0:i*100,x1:i*100+90,s:x}}).filter(function(c){return c.s})}});
+var BX=C.readAll({texts:[{name:"excel",text:rowsText(CSVR),rows:CSVR}]});eq("Excel/CSV columns → save",[C.decide(BX).act,BX.gross,C.stmtCalc(BX).earn,C.stmtCalc(BX).net,C.sum(BX.loads,"mi")],["save",450000,360000,255000,1150]);
+var OC=fx("layoutC_pdf_items.json").map(function(i){return {x0:i.x0*3,x1:i.x1*3,y:-i.y*3,h:i.h*3,s:i.s}});var BO=C.readAll({texts:[{name:"ocr",text:"",rows:C.cellRows(OC,true)}].map(function(t){t.text=rowsText(t.rows);return t})});
+eq("OCR-style word boxes (y down, other scale) → same result",[C.decide(BO).act,C.stmtCalc(BO).net],["save",269955]);
+eq("company name never taken from a table header line",C.parseStatement("Load ID   Pickup   Delivery   Miles   Freight Amount\nL1   Dallas, TX   Memphis, TN   452   $2,000.00\nTotal Payable $600.00").company,null);
 console.log("\nPASS "+pass+"  FAIL "+fail+"  NOT RUN "+SKIP);process.exit(fail||SKIP?1:0);
