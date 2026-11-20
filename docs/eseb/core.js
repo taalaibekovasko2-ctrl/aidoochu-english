@@ -371,11 +371,21 @@ C.autoSaveOk=function(st){return !!st&&st.gross>0&&C.stmtCalc(st).rec.status==="
 /* never overwrites an existing backup: a second backup with the same name gets a time suffix */
 C.safeBackup=function(store,key,raw){if(raw==null)return null;try{var k=key;if(store.getItem(k)!=null){k=key+"_"+new Date().toISOString().replace(/[^0-9]/g,"").slice(0,14);var n=1;while(store.getItem(k)!=null)k=key+"_"+new Date().toISOString().replace(/[^0-9]/g,"").slice(0,14)+"_"+(n++)}store.setItem(k,raw);return store.getItem(k)===raw?k:null}catch(e){return null}};
 C.exportData=function(S,drv){return {app:"jolesep",v:2,date:new Date().toISOString(),driver:drv||null,data:S,photos:{}}};
-C.readBackup=function(txt){var o;try{o=JSON.parse(txt)}catch(e){return null}if(!o||typeof o!=="object"||o.app!=="jolesep"||!o.data||typeof o.data!=="object"||Array.isArray(o.data))return null;
- var d;try{d=o.data.v===2?o.data:C.migrate(o.data)}catch(e){return null}if(!d||typeof d!=="object")return null;
- var arrs=["stmts","tx","loads","trips","debts","shop","log"];for(var i=0;i<arrs.length;i++){var v=d[arrs[i]];if(v==null)continue;if(!Array.isArray(v))return null;for(var j=0;j<v.length;j++)if(!v[j]||typeof v[j]!=="object"||Array.isArray(v[j]))return null}
- if(!Array.isArray(d.stmts))return null;
- return {data:d,driver:o.driver&&typeof o.driver==="object"?o.driver:null,date:o.date||null,photos:o.photos&&typeof o.photos==="object"?o.photos:{}}};
+function isObj(x){return !!x&&typeof x==="object"&&!Array.isArray(x)}
+function objArr(v){if(!Array.isArray(v))return false;for(var i=0;i<v.length;i++)if(!isObj(v[i]))return false;return true}
+function optArr(o,k){return o[k]==null||objArr(o[k])}
+/* V2 profile: stmts, tx, loads must be arrays of objects; inside a statement ded/loads/fuel (when present) too */
+C.validV2=function(d){if(!isObj(d)||d.v!==2)return false;if(!objArr(d.stmts)||!objArr(d.tx)||!objArr(d.loads))return false;
+ var ks=["trips","debts","shop","log","cats","rules"];for(var i=0;i<ks.length;i++)if(!optArr(d,ks[i]))return false;
+ for(var j=0;j<d.stmts.length;j++){var st=d.stmts[j];if(!optArr(st,"ded")||!optArr(st,"loads")||!optArr(st,"fuel")||!optArr(st,"tolls"))return false}return true};
+/* V1 backup (old format, no version): at least one of loads/exp must exist; every list present must be a list of objects */
+C.validV1=function(d){if(!isObj(d)||(d.v!=null&&d.v!==1))return false;if(d.loads==null&&d.exp==null)return false;
+ var ks=["loads","exp","stmts","trips"];for(var i=0;i<ks.length;i++)if(!optArr(d,ks[i]))return false;if(d.paid!=null&&!isObj(d.paid))return false;
+ for(var j=0;j<(d.loads||[]).length;j++)if(typeof d.loads[j].d!=="string")return false;for(var k=0;k<(d.exp||[]).length;k++)if(typeof d.exp[k].d!=="string")return false;return true};
+C.readBackup=function(txt){var o;try{o=JSON.parse(txt)}catch(e){return null}if(!isObj(o)||o.app!=="jolesep"||!isObj(o.data))return null;
+ var d;if(o.data.v===2){if(!C.validV2(o.data))return null;d=o.data}
+ else{if(!C.validV1(o.data))return null;try{d=C.migrate(o.data)}catch(e){return null}if(!C.validV2(d))return null}
+ return {data:d,driver:isObj(o.driver)?o.driver:null,date:o.date||null,photos:isObj(o.photos)?o.photos:{}}};
 /* restore: valid file only; the current profile is copied first — if that copy fails, nothing is changed */
 C.restoreInto=function(store,key,txt){var o=C.readBackup(txt);if(!o)return {ok:false,why:"badFile"};var cur=null;try{cur=store.getItem(key)}catch(e){return {ok:false,why:"storage"}}
  var bk=null;if(cur!=null){bk=C.safeBackup(store,key+"_backup_before_restore",cur);if(!bk)return {ok:false,why:"backup"}}

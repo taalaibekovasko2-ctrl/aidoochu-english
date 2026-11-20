@@ -279,4 +279,17 @@ var S3=store();S3.setItem("jolesep_v1","CURRENT");var R3=C.restoreInto(S3,"joles
 eq("restore: success → old profile in backup, new data loaded",[R3.ok,S3.m[R3.backup],JSON.parse(S3.m["jolesep_v1"]).tx.length],[true,"CURRENT",1]);
 var R4=C.restoreInto(S3,"jolesep_v1",GOOD);eq("restore twice: both backups kept",[R4.ok,R4.backup!==R3.backup,S3.m[R3.backup]],[true,true,"CURRENT"]);
 var S5=store();S5.setItem("jolesep_v1@d2","DRIVER2");S5.setItem("jolesep_v1","DRIVER1");C.restoreInto(S5,"jolesep_v1@d2",GOOD);eq("restore: other driver's profile untouched",S5.m["jolesep_v1"],"DRIVER1");
+
+// ===== reported broken files =====
+var BAD1='{"app":"jolesep","data":{}}',BAD2='{"app":"jolesep","data":{"v":2,"stmts":[{"ded":{}}],"tx":[],"loads":[]}}';
+[["empty data {}",BAD1],["v2 with ded:{}",BAD2]].forEach(function(b){var Sx=store();Sx.setItem("jolesep_v1","CURRENT");var Rx=C.restoreInto(Sx,"jolesep_v1",b[1]);
+ eq("bad file ("+b[0]+") → 'Файл туура эмес', profile unchanged",[C.readBackup(b[1]),Rx.ok,Rx.why,Sx.m["jolesep_v1"],Object.keys(Sx.m).length],[null,false,"badFile","CURRENT",1])});
+eq("v2 missing tx/loads rejected",C.readBackup('{"app":"jolesep","data":{"v":2,"stmts":[]}}'),null);
+eq("stmt loads/fuel not arrays rejected",[C.readBackup('{"app":"jolesep","data":{"v":2,"stmts":[{"loads":"x"}],"tx":[],"loads":[]}}'),C.readBackup('{"app":"jolesep","data":{"v":2,"stmts":[{"fuel":{}}],"tx":[],"loads":[]}}'),C.readBackup('{"app":"jolesep","data":{"v":2,"stmts":[{"ded":[1]}],"tx":[],"loads":[]}}')],[null,null,null]);
+eq("fake v1 rejected before migration",[C.readBackup('{"app":"jolesep","data":{"loads":{}}}'),C.readBackup('{"app":"jolesep","data":{"loads":[{"g":5}]}}'),C.readBackup('{"app":"jolesep","data":{"v":7,"loads":[]}}')],[null,null,null]);
+var EMPTY2=C.readBackup('{"app":"jolesep","data":{"v":2,"stmts":[],"tx":[],"loads":[]}}');eq("empty but valid v2 profile opens",!!EMPTY2&&EMPTY2.data.stmts.length===0,true);
+var V1=C.readBackup(JSON.stringify({app:"jolesep",data:{stmts:[{id:"s1",d:"2026-11-08"}],loads:[{id:"l",d:"2026-11-03",g:"1000.00",st:"s1"}],exp:[{id:"e",d:"2026-11-04",a:"50.00",c:"fuel"}]}}));
+eq("valid v1 backup still opens and migrates",[!!V1,V1&&V1.data.v,V1&&V1.data.stmts.length,V1&&V1.data.tx.length],[true,2,1,1]);
+var S6=store();S6.setItem("jolesep_v1","CURRENT");S6.setItem=function(){throw new Error("quota")};var R6=C.restoreInto(S6,"jolesep_v1",JSON.stringify(C.exportData({v:2,stmts:[],tx:[],loads:[]},{id:"main"})));
+eq("backup fails → restore stops, profile unchanged (recheck)",[R6.ok,R6.why,S6.m["jolesep_v1"]],[false,"backup","CURRENT"]);
 console.log("\nPASS "+pass+"  FAIL "+fail+"  NOT RUN "+SKIP);process.exit(fail||SKIP?1:0);
