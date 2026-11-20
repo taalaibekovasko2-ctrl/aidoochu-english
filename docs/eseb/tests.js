@@ -395,4 +395,21 @@ var ALL={stmts:[st0({id:"z1",ded:[{c:"diesel",a:150000},{c:"co_debt",a:30000,deb
  debts:[{id:"d1",opening:200000,items:[]}],shop:[{id:"r1",d:"2026-11-05",total:80000,payer:"credit",paidAmt:0}]};
 var AT=C.totals(ALL,WK);eq("all-in week: exp = fuel+toll+parking+repair+interest (no debt, escrow, principal, company-card, linked receipt)",AT.exp,150000+2500+4000+80000+INT);
 agree("all-in",ALL);eq("all-in: net = sum of statements",C.totals(ALL,YR).net,C.stmtCalc(ALL.stmts[0]).net+C.stmtCalc(ALL.stmts[1]).net);
+
+// ===== ROYCE-like statement: European numbers (18 294,61 / -780,45), dates 01.11.2026, "Driver 88%", DR DEBT (synthetic copy of the values; not the original PDF) =====
+var RYr=C.cellRows(fx("royce_like_pdf_items.json")),RY=C.readAll({texts:[{name:"pdf",text:C.rowsText(RYr),rows:RYr}]}),RK=C.stmtCalc(RY);
+eq("EU: header — company, driver, truck, period 1–7 Nov (not Jan/Jul)",[RY.company,RY.driver,RY.unit,RY.p0,RY.p1,RY.numFmt],["ROYCE LLC","TEST DRIVER","6771","2026-11-01","2026-11-07","eu"]);
+eq("EU: gross 18,294.61 · 88% · commission 2,195.35 · earnings 16,099.26",[RK.gross,RY.rate,RK.fee,RK.earn],[1829461,8800,219535,1609926]);
+eq("EU: deductions 8,816.08 · Net Pay 7,283.18 · full match → saved automatically",[RK.ded,RK.net,RY.net,RK.rec.status,C.decide(RY).act],[881608,728318,728318,"full","save"]);
+eq("EU: 4 loads with ID, date, miles '1 012', pay",RY.loads.map(function(l){return [l.num,l.pd,l.mi,l.g]}),[["RY-30117","2026-11-01",1012,495000],["RY-30142","2026-11-03",1019,534461],["RY-30155","2026-11-04",2182,360000],["RY-30190","2026-11-06",1790,440000]]);
+eq("EU: total miles 6,003",C.sum(RY.loads,"mi"),6003);
+var cat={};RY.ded.forEach(function(d){cat[d.c]=(cat[d.c]||0)+d.a});eq("EU: categories — fuel 5,171.53 − 780.45, log book, IFTA, cargo ins, DR DEBT ×2",[cat.diesel,cat.eld,cat.ifta,cat.cargo_ins,cat.co_debt],[517153-78045,4000,3500,35000,400000]);
+var RT2=C.totals({stmts:[Object.assign({id:"ry"},RY)],tx:[],loads:[]},["2026-11-01","2026-11-07"]);
+eq("EU: DR DEBT is a debt payment, not a business expense",[RT2.debtPaid,RT2.exp,RT2.profit,RT2.cashFlow],[400000,881608-400000,1609926-481608,728318]);
+eq("EU: '$8,000' after the total is kept as information only — not a deduction, not a debt balance",[RY.info&&RY.info.map(function(x){return x.a}),RY.bal||null],[[800000],null]);
+eq("EU numbers: cents parser",[C.cents("18 294,61"),C.cents("18.294,61"),C.cents("-780,45"),C.cents("8 000,00"),C.cents("1,234.56")],[1829461,1829461,-78045,800000,123456]);
+eq("format detection: US documents stay US",[C.numFormat(rowsText(PA)),C.numFormat(rowsText(PB)),C.numFormat("Fuel 5 171,53\nIFTA 35,00")],["us","us","eu"]);
+eq("dates: 07.11.2026 in EU = 7 Nov; 13.11.2026 always DMY; 11/07/2026 US unchanged",[C.normNumbers("a 5,00 b 7,00 07.11.2026").text.slice(-10),C.normNumbers("13.11.2026").text,C.normNumbers("11/07/2026").text],["11/07/2026","11/13/2026","11/07/2026"]);
+var RYdot=C.parseStatement(C.rowsText(RYr).replace(/(\d) (\d{3},\d{2})/g,"$1.$2"));eq("EU with dot thousands (18.294,61) → same result",[RYdot.gross,C.stmtCalc(RYdot).net],[1829461,728318]);
+eq("unreadable PDF never becomes $0 statement",[C.decide(C.readAll({texts:[{name:"pdf",text:""}]})).act,C.decide(C.readAll({texts:[{name:"pdf",text:"[[PAGE 1]]\nROYCE LLC\nWEEK 45\n01.11.2026 - 07.11.2026"}]})).v.why[0]],["warn","noGross"]);
 console.log("\nPASS "+pass+"  FAIL "+fail+"  NOT RUN "+SKIP);process.exit(fail||SKIP?1:0);

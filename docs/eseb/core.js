@@ -9,6 +9,7 @@ C.cents=function(v){ /* "1,234.56", "$12", "(45.10)", "-3.5", 12.3 -> integer ce
  var s=String(v).trim(),neg=/^\(.*\)$/.test(s)||/^-|^−|-\s*\$/.test(s);s=s.replace(/[^\d.,]/g,"");
  if(!s)return null;
  /* decimal comma "12,50" vs thousands "1,250" */
+ if(/^\d{1,3}(\.\d{3})+,\d{2}$/.test(s))s=s.replace(/\./g,""); /* 18.294,61 */
  if(/,\d{2}$/.test(s)&&s.indexOf(".")<0)s=s.replace(/,(\d{2})$/,".$1");
  s=s.replace(/,/g,"");var p=s.split(".");if(p.length>2)return null;
  var w=p[0]||"0",f=(p[1]||"")+"00";if(!/^\d+$/.test(w)||!/^\d*$/.test(f))return null;
@@ -47,7 +48,7 @@ C.kindOf=function(c,S,x){if(x&&x.dk)return x.dk;var u=C.custom(S,c);if(u)return 
 C.isTaxable=function(c,S,x){if(x&&x.tax!=null)return !!x.tax;var u=C.custom(S,c);if(u&&u.tax!=null)return !!u.tax;var k=C.kindOf(c,S,x);return k==="expense"||k==="loan"};
 
 /* keyword → category for statement / receipt lines (order matters: specific first) */
-C.KW=[["escrow",/ESCROW/],["reserve",/RESERVE|MAINT(ENANCE)? (FUND|RESERVE)/],["wash",/TRUCK ?WASH|BLUE ?BEACON|\bWASH\b/],["co_fee",/ADMIN FEE|SERVICE FEE|COMPANY FEE|PROCESSING FEE|PLATFORM FEE/],["tires",/TIRE/],["co_debt",/DRIVER DEBT|DEBT (REPAY|PAYMENT|DEDUCT)|LOAN REPAY|ADVANCE REPAY|CHARGE ?BACK|COMPANY LOAN|DAMAGE|NEG(ATIVE)? BAL|CARRY ?OVER|PREVIOUS BAL/],["shop_debt",/SHOP (DEBT|LOAN|PAYMENT|INSTALL)|REPAIR (LOAN|INSTALL|ADVANCE)/],["ifta_eld",/\bIF?TA\s*(&|AND|\/|\+)?\s*(LOG|ELD)|(LOG ?BOOK|ELD)\s*(&|AND|\/|\+)\s*IF?TA\b/],["prepass",/PRE ?PASS|BESTPASS|DRIVEWYZE/],["def",/\bDEF\b|DIESEL EXHAUST/],
+C.KW=[["escrow",/ESCROW/],["reserve",/RESERVE|MAINT(ENANCE)? (FUND|RESERVE)/],["wash",/TRUCK ?WASH|BLUE ?BEACON|\bWASH\b/],["co_fee",/ADMIN FEE|SERVICE FEE|COMPANY FEE|PROCESSING FEE|PLATFORM FEE/],["tires",/TIRE/],["co_debt",/DRIVER DEBT|\bDR\.?\s*DEBT\b|^(?!.*SHOP).*\bDEBT\b|DEBT (REPAY|PAYMENT|DEDUCT)|LOAN REPAY|ADVANCE REPAY|CHARGE ?BACK|COMPANY LOAN|DAMAGE|NEG(ATIVE)? BAL|CARRY ?OVER|PREVIOUS BAL/],["shop_debt",/SHOP (DEBT|LOAN|PAYMENT|INSTALL)|REPAIR (LOAN|INSTALL|ADVANCE)/],["ifta_eld",/\bIF?TA\s*(&|AND|\/|\+)?\s*(LOG|ELD)|(LOG ?BOOK|ELD)\s*(&|AND|\/|\+)\s*IF?TA\b/],["prepass",/PRE ?PASS|BESTPASS|DRIVEWYZE/],["def",/\bDEF\b|DIESEL EXHAUST/],
  ["bobtail",/BOBTAIL/],["cargo_ins",/CARGO/],["truck_ins",/INSUR|OCC(UPATIONAL)? ?ACC|PHYSICAL DAMAGE|\bPD\b|LIABILITY|\bNTL\b|\bINS\b/],
  ["trailer_repair",/TRAILER (REPAIR|MAINT)|REEFER REPAIR/],["trailer",/TRAILER|\bVAN RENT|REEFER RENT/],["truck_pay",/TRUCK PAY|LEASE|TRACTOR|TRUCK LOAN|TRUCK NOTE|FINANC/],
  ["ifta",/\bIFTA\b|FUEL TAX/],["eld",/\bELD\b|LOG ?BOOK|SAMSARA|MOTIVE|KEEP ?TRUCKIN|OMNITRACS/],["phone",/PHONE|INTERNET|VERIZON|T-?MOBILE|AT&T|TABLET|DATA PLAN/],
@@ -258,6 +259,12 @@ C.tripDays=function(S,r){var set={};(S.trips||[]).forEach(function(t){for(var d=
 
 /* ---------- statement text reader (rules only; unknown stays null — never invented) ---------- */
 var STS="AL|AK|AZ|AR|CA|CO|CT|DE|DC|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|WY|ON|QC|BC|AB|MB";
+/* European format: "18 294,61", "18.294,61", "-780,45", dates 01.11.2026 = 1 November */
+C.numFormat=function(t){t=String(t||"").replace(/[\u00A0\u202F\u2009]/g," ");var eu=(t.match(/(?:^|[^\d,.])-?\d{1,3}(?:[ .]\d{3})*,\d{2}(?![\d,])/g)||[]).length,us=(t.match(/\d,\d{3}\.\d{2}(?!\d)|(?:^|[^\d,])\d{1,3}\.\d{2}(?![\d.,])/g)||[]).length;return eu>us&&eu>=2?"eu":"us"};
+C.normNumbers=function(t){t=String(t||"").replace(/[\u00A0\u202F\u2009]/g," ");var f=C.numFormat(t);
+ if(f==="eu"){t=t.replace(/([-−]?)(\d{1,3}(?:[ .]\d{3})+|\d+),(\d{2})(?![\d,])/g,function(m,sg,i,d){return sg+i.replace(/[ .]/g,"").replace(/\B(?=(\d{3})+$)/g,",")+"."+d})
+  .replace(/(^|[^\d#,.\/-])(\d{1,3}) (\d{3})(?![\d.,\/])/g,"$1$2$3")}
+ t=t.replace(/\b(\d{1,2})\.(\d{1,2})\.(\d{4})\b/g,function(m,a,b,y){var d=+a,mo=+b;if(f!=="eu"&&d<=12)return m;return mo>=1&&mo<=12&&d>=1&&d<=31?C.p2(mo)+"/"+C.p2(d)+"/"+y:m});return {text:t,fmt:f}};
 C.MONEY=/\(?[-−]?\s?\$?\s?(?:\d{1,3}(?:,\d{3})+|\d+)\.\d{2}\)?(?![\d%])/g;
 function moneys(s){var m=s.match(C.MONEY)||[];return m.map(C.cents).filter(function(x){return x!=null})}
 function lastMoney(s){var m=moneys(s);return m.length?m[m.length-1]:null}
@@ -279,7 +286,7 @@ C.fixLig=function(txt){if(String(txt).indexOf("\u00A4")<0)return String(txt);var
  return String(txt).replace(/[A-Za-z]*\u00A4+[A-Za-z]*/g,function(w){var n=(w.match(/\u00A4/g)||[]).length,cs=n>=3?C3:C2,lw=w.toLowerCase(),pick=null;
   for(var i=0;i<cs.length&&!pick;i++){var t=lw.replace(/\u00A4+/,cs[i]);if(C.LIGW.indexOf(t)>=0)pick=cs[i]}if(!pick)pick=cs[0];
   var up=w.replace(/\u00A4+/,"").length&&w.replace(/\u00A4+/,"")===w.replace(/\u00A4+/,"").toUpperCase();return w.replace(/\u00A4+/,up?pick.toUpperCase():pick)})};
-C.parseStatement=function(txt){txt=C.fixLig(txt);
+C.parseStatement=function(txt){txt=C.fixLig(txt);var NF=C.normNumbers(txt);txt=NF.text;
  var lines=String(txt||"").split(/\n/).map(function(l){return l.replace(/\s+/g," ").trim()}).filter(Boolean),U=lines.join("\n").toUpperCase();
  var R={company:null,driver:null,num:null,d:null,p0:null,p1:null,gross:null,rate:null,earn:null,fee:null,adv:null,reimb:null,other:null,net:null,dedTotal:null,loads:[],ded:[],fuel:[],fuelRetail:null,fuelInvoice:null,unknown:[]};
  for(var i=0;i<Math.min(4,lines.length);i++){var cl=lines[i].replace(/\s*(STATEMENT DATE|SETTLEMENT DATE|PERIOD|DATE|PAGE)\b.*$/i,"").trim();if(/[A-Za-z]{3}/.test(cl)&&!/^(STATEMENT|SETTLEMENT|PAGE|DRIVER|PERIOD)/i.test(cl)&&!moneys(cl).length&&(cl.toUpperCase().match(/\b(LOAD|PICK ?UP|DELIVERY|ORIGIN|DESTINATION|MILES|MILEAGE|AMOUNT|RATE|GROSS|TRIP|DATE|DESCRIPTION)\b/g)||[]).length<2){R.company=cl.slice(0,60);break}}
@@ -312,35 +319,41 @@ C.parseStatement=function(txt){txt=C.fixLig(txt);
   if(/^\s*REIMBURSEMENTS?\s*:/.test(u)&&a!=null){R.reimb=Math.abs(a);return}
   if(/^\s*OTHER\s*PAY\s*:/.test(u)&&a!=null){R.other=Math.abs(a);return}
   if(sec==="loads"&&/^TOTAL/.test(u)){var tm=moneys(l);if(tm.length&&R.gross==null)R.gross=tm[0];if(tm.length>1&&R.earn==null)R.earn=tm[tm.length-1];return}
-  if(sec==="ded"&&/^TOTAL/.test(u)&&!/PAY|NET|SETTLEMENT/.test(u)){if(a!=null&&R.dedTotal==null)R.dedTotal=Math.abs(a);return}
+  if(sec==="ded"&&/^TOTAL/.test(u)&&!/PAY|NET|SETTLEMENT/.test(u)){if(a!=null&&R.dedTotal==null){R.dedTotal=Math.abs(a);if(R.ded.length)R._dtAfter=1}return}
   if(/(DRIVER|CONTRACTOR|OWNER OPERATOR|O\/O)\s*(RATE|%|PERCENT)|\bRATE\s*:?\s*\d{1,3}(\.\d+)?\s*%|\b\d{1,3}(\.\d+)?\s*%\s*(DRIVER|TO DRIVER|PAY)/.test(u)&&(mm=u.match(/(\d{1,3}(?:\.\d+)?)\s*%/))&&R.rate==null&&!/COMMISSION|COMPANY|FEE/.test(u))R.rate=C.bp(mm[1]);
   if(ls.length>=2&&a!=null){var nums=u.replace(C.MONEY," ").replace(/\d{1,2}[\/\-.]\d{1,2}[\/\-.]\d{2,4}/g," ").replace(/\d+(\.\d+)?\s*%/g," ").replace(/\b\d{5,}\b/g," ");
    var lr=u.match(/(\d{1,3}(?:\.\d+)?)\s*%/);if(lr&&R.rate==null)R.rate=C.bp(lr[1]);var mi=null,m2=nums.match(/(\d{2,4})\s*(?:MI|MILES?|LM|LOADED)\b/);
    if(m2)mi=+m2[1];else{var ns=(nums.match(/\b\d{2,4}\b/g)||[]).map(Number).filter(function(n){return n>=20&&n<=3500});if(ns.length)mi=ns[ns.length-1]}
-   var lnum=(u.match(/^\s*#?([A-Z]{0,3}\d{4,})/)||[])[1]||null,dd=dates(u);
+   var lnum=(u.match(/^\s*#?([A-Z]{0,4}-?\d{4,})/)||[])[1]||null,dd=dates(u);
    R.loads.push({pg:page,ln:ln,num:lnum,f:ls[0],t:ls[ls.length-1],pd:dd[0]||null,g:Math.max.apply(null,moneys(l)),mi:mi,dh:null});return}
   if(a==null)return;
   if(/GALLONS?|\bGAL\b|\bGL\b/.test(u)&&/(DIESEL|ULSD|DEF|FUEL|PILOT|LOVE|PETRO|\bTA\b|FLYING)/.test(u)&&!/TOTAL/.test(u)){var g=(u.match(/(\d{1,4}(?:\.\d{1,3})?)\s*(?:GALLONS?|GAL|GL)\b/)||[])[1];var ds3=dates(u);
    R.fuel.push({d:ds3[0]||null,v:(l.match(/^[^\d$]{3,30}/)||[""])[0].trim(),gal:g!=null?Math.round(parseFloat(g)*100):null,c:/\bDEF\b/.test(u)?"def":"diesel",a:a,inv:a,ret:null});return}
   if(/RETAIL/.test(u)&&/FUEL|TOTAL/.test(u)){R.fuelRetail=a;return}
   if(/INVOICE|DISCOUNTED/.test(u)&&/FUEL|TOTAL/.test(u)){R.fuelInvoice=a;return}
-  if(/TOTAL\s*DEDUCTION|DEDUCTIONS?\s*TOTAL|TOTAL\s*(EXPENSES|CHARGES)/.test(u)){R.dedTotal=Math.abs(a);return}
+  if(/TOTAL\s*DEDUCTION|DEDUCTIONS?\s*TOTAL|TOTAL\s*(EXPENSES|CHARGES)/.test(u)){R.dedTotal=Math.abs(a);if(R.ded.length)R._dtAfter=1;return}
   if(/FUEL/.test(u)&&/DISCOUNT|REBATE|SAVINGS/.test(u)&&!/TOTAL\s*(EXPENSE|DEDUCT)/.test(u)){R.fuelDisc=(R.fuelDisc||0)+Math.abs(a);return} /* decided after: reduces fuel once, never income */
   if(/NET\s*(PAY|AMOUNT|SETTLEMENT)|AMOUNT\s*PAID|(?:TOTAL|AMOUNT)\s*PAYABLE|CHECK\s*AMOUNT|SETTLEMENT\s*AMOUNT|TOTAL\s*PAY(?!MENT)/.test(u)&&!/YTD|YEAR/.test(u)){R.net=a;return}
   if(/YTD|YEAR TO DATE/.test(u))return;
   if(/BALANCE|REMAINING|OWED|OUTSTANDING/.test(u)&&!/NET|SETTLEMENT|CHECK|PAY\b/.test(u)){var bk=/SHOP|REPAIR/.test(u)?"shop":/ESCROW|RESERVE/.test(u)?"escrow":/TRUCK|LEASE|TRACTOR/.test(u)?"truck":/LOAN|ADVANCE|DEBT|CHARGE/.test(u)?"co":null;if(bk){R.bal=R.bal||[];R.bal.push({k:bk,a:Math.abs(a)});return}}
+  if((mm=u.match(/^(?:DRIVER|CONTRACTOR|O\/O|OWNER(?:\s*OPERATOR)?|YOUR)\b[^%$\d]{0,20}(\d{1,3}(?:\.\d+)?)\s*%/))&&!/DEDUCT|FEE/.test(u)){if(R.rate==null)R.rate=C.bp(mm[1]);if(R.earn==null)R.earn=Math.abs(a);return} /* "Driver 88%   16,099.26" */
+  if((mm=u.match(/^(?:COMPANY|CARRIER)\b[^%$\d]{0,20}(\d{1,3}(?:\.\d+)?)\s*%/))){if(R.fee==null)R.fee=Math.abs(a);return} /* "Company 12%   2,195.35" */
   if(/(DRIVER|CONTRACTOR|YOUR|O\/O)\s*(EARNINGS|GROSS|PAY|SHARE|REVENUE)|EARNINGS\s*\(\s*\d/.test(u)&&R.earn==null){R.earn=a;return}
   if(/COMMISSION|COMPANY\s*(FEE|SHARE|PORTION)|CARRIER\s*(FEE|SHARE)/.test(u)&&R.fee==null){R.fee=Math.abs(a);return}
   if(/GROSS|TOTAL\s*REVENUE|LINE ?HAUL\s*TOTAL|TOTAL\s*LINE ?HAUL|TOTAL\s*LOAD|LOAD\s*TOTAL|TOTAL\s*FREIGHT/.test(u)&&!/NET/.test(u)&&R.gross==null){var gm=moneys(l);if(gm.length>=2&&gm[0]>gm[gm.length-1]){R.gross=gm[0];if(R.earn==null)R.earn=gm[gm.length-1]}else R.gross=a;return} /* "Total  $gross … $driver share" */
   if(/ADVANCE|CASH ADV|COMCHECK/.test(u)&&sec!=="ded"){R.adv=(R.adv||0)+Math.abs(a);return}
-  if(/ADVANCE|CASH ADV|COMCHECK/.test(u)&&sec==="ded"&&!/TOTAL/.test(u)){R.ded.push({pg:page,ln:ln,c:"co_debt",a:Math.abs(a),v:l.replace(C.MONEY,"").replace(/\s+/g," ").trim().slice(0,48)});return}
+  if(/ADVANCE|CASH ADV|COMCHECK/.test(u)&&sec==="ded"&&!/TOTAL/.test(u)){R.ded.push({post:R._dtAfter||undefined,pg:page,ln:ln,c:"co_debt",a:Math.abs(a),v:l.replace(C.MONEY,"").replace(/\s+/g," ").trim().slice(0,48)});return}
   if(/REIMB/.test(u)){R.reimb=(R.reimb||0)+Math.abs(a);return}
   if(/DETENTION|LAYOVER|BONUS|STOP PAY|EXTRA STOP|TARP|OTHER PAY|ACCESSORIAL/.test(u)&&!/DEDUCT/.test(u)){R.other=(R.other||0)+Math.abs(a);return}
   var c=C.guessCat(u);var lab=l.replace(C.MONEY,"").replace(/\d{1,2}[\/\-.]\d{1,2}[\/\-.]\d{2,4}/g,"").replace(/\s+/g," ").trim().slice(0,48);
-  if(c&&!/TOTAL|SUBTOTAL/.test(u)){R.ded.push({pg:page,ln:ln,c:c,a:/REFUND|REBATE|CREDIT|RETURN/.test(u)?-Math.abs(a):Math.abs(a),v:lab,raw:(l.match(C.MONEY)||[]).pop()||""});return}
+  if(c&&!/TOTAL|SUBTOTAL/.test(u)){R.ded.push({post:R._dtAfter||undefined,pg:page,ln:ln,c:c,a:/REFUND|REBATE|CREDIT|RETURN/.test(u)?-Math.abs(a):Math.abs(a),v:lab,raw:(l.match(C.MONEY)||[]).pop()||""});return}
   if(!/TOTAL|SUBTOTAL|BALANCE|PAGE/.test(u))R.unknown.push({pg:page,ln:ln,v:lab||l.slice(0,48),a:Math.abs(a)});
  });
  C.collapseFuel(R);C.fixOcrDollar(R);
+ /* lines printed AFTER the deductions total: deductions only if the total needs them; otherwise information (e.g. a debt balance) — never saved as a balance */
+ if(R._dtAfter&&R.dedTotal!=null){var pre=R.ded.filter(function(x){return !x.post}),post=R.ded.filter(function(x){return x.post}),D0=R.fuelDisc||0,sp=C.sum(pre,"a"),sa=C.sum(R.ded,"a");
+  if(post.length&&(sp===R.dedTotal||sp-D0===R.dedTotal)&&sa!==R.dedTotal&&sa-D0!==R.dedTotal){R.ded=pre;R.info=(R.info||[]).concat(post.map(function(x){return {v:x.v,a:x.a,c:x.c}}))}}
+ R.ded.forEach(function(x){delete x.post});delete R._dtAfter;R.numFmt=NF.fmt;
  if(R.gross==null&&R.loads.length)R.gross=C.sum(R.loads,"g");
  if(R.fuelInvoice!=null){var fd=R.ded.filter(function(x){return x.c==="diesel"});if(!fd.length)R.ded.push({c:"diesel",a:R.fuelInvoice,v:"Fuel (invoice)"})}
  if(R.adv){var advLine=R.ded.filter(function(d){return /ADVANCE|COMCHECK|CASH ADV/i.test(d.v)&&d.a===R.adv})[0];if(advLine){advLine.c="co_debt";R.advInDed=true}}
@@ -411,7 +424,7 @@ function hdrKey(s){var u=String(s).toUpperCase().replace(/[:.]+$/,"").trim();for
 function colOf(cols,c){var m=(c.x0+c.x1)/2,best=-1,bd=1e9;for(var i=0;i<cols.length;i++){var k=cols[i];if(c.x1>=k.lo&&c.x0<=k.hi){var d=Math.abs(m-(k.x0+k.x1)/2);if(d<bd){bd=d;best=i}}}
  if(best<0)for(i=0;i<cols.length;i++){d=Math.abs(m-(cols[i].x0+cols[i].x1)/2);if(d<bd){bd=d;best=i}}return best}
 /* finds header rows (≥3 known column names) and reads the rows under them by column */
-C.parseTables=function(rows){var out={loads:[],ded:[],totals:[],tables:0,detail:0};
+C.parseTables=function(rows,fmt){var out={loads:[],ded:[],totals:[],tables:0,detail:0};
  for(var r=0;r<rows.length;r++){var hc=rows[r].cells,keys=hc.map(function(c){return hdrKey(c.s)}),known=keys.filter(Boolean).length;if(known<3||known<hc.length*0.6)continue;
   /* multi-line header: next row with only header words joins this one */
   var cols=hc.map(function(c,i){return {k:keys[i],x0:c.x0,x1:c.x1,s:c.s}});cols.forEach(function(k,i){if(k.k==="state"&&cols[i-1]&&(cols[i-1].k==="from"||cols[i-1].k==="to"))k.k=cols[i-1].k+"St"});
@@ -425,11 +438,12 @@ C.parseTables=function(rows){var out={loads:[],ded:[],totals:[],tables:0,detail:
    if(/^(SUB)?TOTALS?\b|^TOTAL\s*:/.test(U)){var ms=rc.map(function(c){return C.cents(c.s)}).filter(function(v){return v!=null});out.totals.push({type:isLoads?"loads":isDed?"ded":"detail",row:row,ms:ms});break}
    if(isDetail)continue;
    var amtS=row.amt||row.gross,am=amtS!=null?C.cents(String(amtS).split(" ").pop()):null;
-   if(isLoads){var g=row.gross!=null?C.cents(String(row.gross).split(" ").pop()):null,da=row.amt!=null&&ks.gross?C.cents(String(row.amt).split(" ").pop()):null;
+   if(isLoads){if(row.gross==null&&row.amt==null&&row.rate!=null&&/\d[.,]\d{2}(?!\d)/.test(row.rate))row.gross=row.rate,row.rate=null;
+    var g=row.gross!=null?C.cents(String(row.gross).replace(/^[^\d(−-]*/,"")):null,da=row.amt!=null&&ks.gross?C.cents(String(row.amt).split(" ").pop()):null;
     if(g==null&&am==null){if(++miss>=2)break;continue}miss=0;
     var lo=function(x){x=String(x||"").replace(/\s+/g," ").trim();var m=x.match(/^(.*?)[,\s]+([A-Z]{2})$/i);return m?m[1].replace(/\b[a-z]/g,function(c){return c.toUpperCase()})+", "+m[2].toUpperCase():x};
     var nm=function(x){var v=String(x||"").replace(/[^\d.]/g,"");return v?Math.round(parseFloat(v)):null};
-    out.loads.push({num:row.id?String(row.id).split(" ")[0]:null,f:lo(row.from+(row.fromSt?", "+row.fromSt:"")),t:lo(row.to+(row.toSt?", "+row.toSt:"")),pd:row.date?(function(d){var m=String(d).match(/(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})/);if(!m)return null;var y=+m[3];if(y<100)y+=2000;return y+"-"+C.p2(+m[1])+"-"+C.p2(+m[2])})(row.date):null,
+    out.loads.push({num:row.id?String(row.id).split(" ")[0]:null,f:lo(row.from+(row.fromSt?", "+row.fromSt:"")),t:lo(row.to+(row.toSt?", "+row.toSt:"")),pd:row.date?(function(d){var m=String(d).match(/(\d{1,2})([\/\-.])(\d{1,2})[\/\-.](\d{2,4})/);if(!m)return null;var y=+m[4];if(y<100)y+=2000;var mo=+m[1],da=+m[3];if(fmt==="eu"&&m[2]==="."||mo>12){mo=+m[3];da=+m[1]}return y+"-"+C.p2(mo)+"-"+C.p2(da)})(row.date):null,
      g:g!=null?Math.abs(g):Math.abs(am),earn:da!=null?Math.abs(da):null,mi:nm(row.miles)||0,dh:row.empty!=null?nm(row.empty):null,rate:row.rate?C.bp(String(row.rate).replace(/[^\d.]/g,"")):null,tbl:true})}
    else if(isDed){if(am==null){if(++miss>=3)break;continue}miss=0;var lab=String(row.desc||rc[0].s).replace(C.MONEY,"").trim();if(row.c1&&row.desc&&!C.cents(row.c1))lab+=" "+row.c1;
     var u2=(lab+" "+txt).toUpperCase(),cat=C.guessCat(u2);out.ded.push({c:cat||null,a:/REFUND|REBATE|CREDIT|RETURN/.test(u2)?-Math.abs(am):Math.abs(am),v:lab.slice(0,48),tbl:true})}}
@@ -446,9 +460,9 @@ C.resolveUnknown=function(R){var un=(R.unknown||[]).filter(function(u){return u.
  pick.forEach(function(i){var u=un[i];R.ded.push({c:"other",a:u.a,v:u.v,pg:u.pg||null,ln:u.ln||null,dk:"adjust",check:true,unclear:true,solved:true})});
  R.unknown=un.filter(function(u,i){return pick.indexOf(i)<0});R.solved=pick.length;return R};
 /* combine: the text reader result + the table reader result → candidates; the one whose arithmetic matches the printed totals wins */
-C.readAll=function(src){var cands=[],seen={};function add(name,R){if(!R)return;C.resolveUnknown(R);var key=JSON.stringify([R.gross,R.earn,C.sum(R.ded,"a"),R.net,R.loads.length]);if(seen[key])return;seen[key]=1;R.method=name;R.verdict=C.aiVerdict(R);cands.push(R)}
+C.readAll=function(src){var cands=[],seen={};function add(name,R){if(!R)return;C.resolveUnknown(R);var key=JSON.stringify([R.gross,R.earn,C.sum(R.ded,"a"),R.net,R.loads.map(function(l){return [l.num,l.mi,l.dh,l.g,l.pd]})]);if(seen[key])return;seen[key]=1;R.method=name;R.verdict=C.aiVerdict(R);cands.push(R)}
  (src.texts||[]).forEach(function(t){if(!t||!t.text)return;var A=C.parseStatement(t.text);add(t.name,A);
-  if(t.rows&&t.rows.length){var T=C.parseTables(t.rows);if(T.tables){var B=JSON.parse(JSON.stringify(A)),changed=false;
+  if(t.rows&&t.rows.length){var T=C.parseTables(t.rows,C.numFormat(t.text));if(T.tables){var B=JSON.parse(JSON.stringify(A)),changed=false;
    var miDiff=C.sum(T.loads,"mi")&&T.loads.some(function(l,i){return !B.loads[i]||B.loads[i].mi!==l.mi||(l.dh!=null&&B.loads[i].dh!==l.dh)});
    if(T.loads.length&&(B.loads.length!==T.loads.length||C.sum(B.loads,"g")!==C.sum(T.loads,"g")||miDiff||B.earn==null&&T.loads.every(function(l){return l.earn!=null}))){B.loads=T.loads;changed=true;if(B.gross==null||B.gross===C.sum(A.loads,"g"))B.gross=C.sum(T.loads,"g");B.grossLoads=C.sum(T.loads,"g");
     if(B.earn==null&&T.loads.every(function(l){return l.earn!=null}))B.earn=C.sum(T.loads,"earn");if(B.rate==null){var rs=T.loads.map(function(l){return l.rate}).filter(Boolean);if(rs.length&&rs.every(function(x){return x===rs[0]}))B.rate=rs[0]}}
@@ -457,7 +471,7 @@ C.readAll=function(src){var cands=[],seen={};function add(name,R){if(!R)return;C
    if(T.ded.length){var known=T.ded.filter(function(d){return d.c}),unk=T.ded.filter(function(d){return !d.c});
     if(C.sum(T.ded,"a")!==C.sum(A.ded,"a")||T.ded.length!==A.ded.length){B.ded=known.map(function(d){return {c:d.c,a:d.a,v:d.v,tbl:true}});B.unknown=unk.map(function(d){return {a:Math.abs(d.a),v:d.v}});C.collapseFuel(B);changed=true}}
    if(changed)add(t.name+"+table",B)}}});
- cands.sort(function(a,b){function sc(R){var v=R.verdict;return (v.ok?100:0)+(v.status==="full"?20:v.status==="partial"?10:0)-v.why.length*5-(R.unknown||[]).length-(R.solved||0)*2+(R.loads.length?3:0)}return sc(b)-sc(a)});
+ cands.sort(function(a,b){function sc(R){var v=R.verdict;return (v.ok?100:0)+(v.status==="full"?20:v.status==="partial"?10:0)-v.why.length*5-(R.unknown||[]).length-(R.solved||0)*2+(R.loads.length?3:0)+R.loads.filter(function(l){return l.num&&l.mi}).length*0.5}return sc(b)-sc(a)});
  var best=cands[0]||C.parseStatement("");best.cands=cands.map(function(c){return {m:c.method,ok:c.verdict.ok,st:c.verdict.status,net:C.stmtCalc(c).net,why:c.verdict.why}});
  best.agree=cands.filter(function(c){return c.verdict.ok&&C.stmtCalc(c).net===C.stmtCalc(best).net}).length;return best};
 /* what to do with a reading: save (everything printed matches), confirm (nothing contradicts, but some totals are not printed), warn (cannot trust) */
