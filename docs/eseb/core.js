@@ -26,14 +26,14 @@ C.sum=function(a,k){var t=0;for(var i=0;i<a.length;i++)t+=(k?a[i][k]:a[i])||0;re
 /* ---------- categories: 22 + combined IFTA&Logbook, 6 groups ---------- */
 C.GROUPS=[["fuel","⛽","Күйүүчү май","Топливо"],["ins","🛡","Страховка","Страховка"],["road","🛣","Жол чыгымдары","Дорожные расходы"],["equip","🚛","Жабдуу (трак, трейлер)","Оборудование (трак, трейлер)"],["admin","📋","Административдик","Административные"],["maint","🔧","Ремонт жана тейлөө","Ремонт и обслуживание"],["fees","💼","Диспетчер / факторинг","Диспетчер / факторинг"],["other","🧾","Башка","Другое"]];
 C.CATS=[
- ["diesel","fuel","Fuel — Diesel","Дизель","Дизель"],["def","fuel","DEF","DEF","DEF"],
- ["toll","road","Toll","Toll (акы төлөнүүчү жол)","Toll (платная дорога)"],["scale","road","Scale / CAT Scale","Тараза / CAT Scale","Весы / CAT Scale"],["prepass","road","PrePass","PrePass","PrePass"],["parking","road","Parking","Парковка","Парковка"],
- ["truck_ins","ins","Truck Insurance","Трак страховкасы","Страховка трака"],["bobtail","ins","Bobtail Insurance","Bobtail страховка","Bobtail страховка"],["cargo_ins","ins","Cargo Insurance","Жүк страховкасы","Страховка груза"],
- ["trailer","equip","Trailer Rental / Trailer Van","Трейлер ижарасы","Аренда трейлера"],["truck_pay","equip","Truck Payment / Leasing","Трак төлөмү / лизинг","Платёж за трак / лизинг"],
- ["ifta","admin","IFTA","IFTA","IFTA"],["eld","admin","ELD / Logbook","ELD / Logbook","ELD / Logbook"],["ifta_eld","admin","IFTA & Logbook — Combined","IFTA & Logbook — бириккен","IFTA & Logbook — вместе"],["phone","admin","Phone / Internet","Телефон / интернет","Телефон / интернет"],["permits","admin","Permits / Registration","Пермит / каттоо","Пермиты / регистрация"],
- ["truck_repair","maint","Truck Repair","Трак ремонту","Ремонт трака"],["trailer_repair","maint","Trailer Repair","Трейлер ремонту","Ремонт трейлера"],["pm","maint","Maintenance / PM Service","Тейлөө / PM","ТО / PM сервис"],["parts","maint","Parts / Tires","Тетиктер / дөңгөлөк","Запчасти / шины"],
+ ["diesel","fuel","Fuel — Diesel","Fuel (солярка)","Fuel (солярка)"],["def","fuel","DEF","DEF","DEF"],
+ ["toll","road","Toll","Toll","Toll"],["scale","road","Scale / CAT Scale","Тараза / CAT Scale","Весы / CAT Scale"],["prepass","road","PrePass","PrePass","PrePass"],["parking","road","Parking","Парковка","Парковка"],
+ ["truck_ins","ins","Truck Insurance","Страховка","Страховка"],["bobtail","ins","Bobtail Insurance","Bobtail","Bobtail"],["cargo_ins","ins","Cargo Insurance","Жүк страховкасы","Страховка груза"],
+ ["trailer","equip","Trailer Rental / Trailer Van","Трейлер","Трейлер"],["truck_pay","equip","Truck Payment / Leasing","Трак төлөмү / лизинг","Платёж за трак / лизинг"],
+ ["ifta","admin","IFTA","IFTA","IFTA"],["eld","admin","ELD / Logbook","ELD / Logbook","ELD / Logbook"],["ifta_eld","admin","IFTA & Logbook — Combined","IFTA & Logbook","IFTA & Logbook"],["phone","admin","Phone / Internet","Телефон / интернет","Телефон / интернет"],["permits","admin","Permits / Registration","Пермит / каттоо","Пермиты / регистрация"],
+ ["truck_repair","maint","Truck Repair","Ремонт","Ремонт"],["trailer_repair","maint","Trailer Repair","Трейлер ремонту","Ремонт трейлера"],["pm","maint","Maintenance / PM Service","Тейлөө / PM","ТО / PM сервис"],["parts","maint","Parts / Tires","Тетиктер / дөңгөлөк","Запчасти / шины"],
  ["dispatch","fees","Dispatch Fee","Диспетчер акысы","Оплата диспетчеру"],["factoring","fees","Factoring Fee","Факторинг акысы","Факторинг"],
- ["other","other","Other Expenses","Башка чыгым","Прочие расходы"],["pers","other","Personal (not business)","Жеке (бизнеске кирбейт)","Личное (не бизнес)"]];
+ ["other","other","Other Expenses","Башка","Прочее"],["pers","other","Personal (not business)","Жеке (бизнеске кирбейт)","Личное (не бизнес)"]];
 C.MAIN=["diesel","toll","ifta_eld","truck_ins","bobtail","trailer","prepass","parking","truck_repair","other"];
 C.CAT={};C.CATS.forEach(function(c){C.CAT[c[0]]={id:c[0],g:c[1],en:c[2],kg:c[3],ru:c[4]}});
 C.catGroup=function(c){return (C.CAT[c]||C.CAT.other).g};
