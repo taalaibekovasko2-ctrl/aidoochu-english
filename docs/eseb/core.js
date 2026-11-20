@@ -48,7 +48,7 @@ C.kindOf=function(c,S,x){if(x&&x.dk)return x.dk;var u=C.custom(S,c);if(u)return 
 C.isTaxable=function(c,S,x){if(x&&x.tax!=null)return !!x.tax;var u=C.custom(S,c);if(u&&u.tax!=null)return !!u.tax;var k=C.kindOf(c,S,x);return k==="expense"||k==="loan"};
 
 /* keyword → category for statement / receipt lines (order matters: specific first) */
-C.KW=[["escrow",/ESCROW/],["reserve",/RESERVE|MAINT(ENANCE)? (FUND|RESERVE)/],["wash",/TRUCK ?WASH|BLUE ?BEACON|\bWASH\b/],["co_fee",/ADMIN(ISTRATION|ISTRATIVE)? FEE|SERVICE FEE|COMPANY FEE|PROCESSING FEE|PLATFORM FEE/],["tires",/TIRE/],["co_debt",/DRIVER DEBT|CASH ADVANCE|\bADVANCE\b|\bDR\.?\s*DEBT\b|^(?!.*SHOP).*\bDEBT\b|DEBT (REPAY|PAYMENT|DEDUCT)|LOAN REPAY|ADVANCE REPAY|CHARGE ?BACK|COMPANY LOAN|DAMAGE (CHARGE|CLAIM|DEDUCT|REPAIR|FEE)|CLAIM DEDUCT|NEG(ATIVE)? BAL|CARRY ?OVER|PREVIOUS BAL/],["shop_debt",/SHOP (DEBT|LOAN|PAYMENT|INSTALL)|REPAIR (LOAN|INSTALL|ADVANCE)/],["ifta_eld",/\bIF?TA\s*(&|AND|\/|\+)?\s*(LOG|ELD)|(LOG ?BOOK|ELD)\s*(&|AND|\/|\+)\s*IF?TA\b/],["prepass",/PRE ?PASS|BESTPASS|DRIVEWYZE/],["def",/\bDEF\b|DIESEL EXHAUST/],
+C.KW=[["pers",/FEDERAL\s+(INCOME\s+)?(TAX|WITHHOLDING)|STATE\s+(INCOME\s+)?(TAX|WITHHOLDING)|SOCIAL\s+SECURITY|MEDICARE|\bFICA\b|\bOASDI\b/],["escrow",/ESCROW/],["reserve",/RESERVE|MAINT(ENANCE)? (FUND|RESERVE)/],["wash",/TRUCK ?WASH|BLUE ?BEACON|\bWASH\b/],["co_fee",/ADMIN(ISTRATION|ISTRATIVE)? FEE|SERVICE FEE|COMPANY FEE|PROCESSING FEE|PLATFORM FEE/],["tires",/TIRE/],["co_debt",/DRIVER DEBT|CASH ADVANCE|\bADVANCE\b|\bDR\.?\s*DEBT\b|^(?!.*SHOP).*\bDEBT\b|DEBT (REPAY|PAYMENT|DEDUCT)|LOAN REPAY|ADVANCE REPAY|CHARGE ?BACK|COMPANY LOAN|DAMAGE (CHARGE|CLAIM|DEDUCT|REPAIR|FEE)|CLAIM DEDUCT|NEG(ATIVE)? BAL|CARRY ?OVER|PREVIOUS BAL/],["shop_debt",/SHOP (DEBT|LOAN|PAYMENT|INSTALL)|REPAIR (LOAN|INSTALL|ADVANCE)/],["ifta_eld",/\bIF?TA\s*(&|AND|\/|\+)?\s*(LOG|ELD)|(LOG ?BOOK|ELD)\s*(&|AND|\/|\+)\s*IF?TA\b/],["prepass",/PRE ?PASS|BESTPASS|DRIVEWYZE/],["def",/\bDEF\b|DIESEL EXHAUST/],
  ["bobtail",/BOBTAIL/],["cargo_ins",/CARGO/],["truck_ins",/INSUR|OCC(UPATIONAL)? ?ACC|\bOCCAC\b|PHYSICAL DAMAGE|\bPD\b|LIABILITY|\bNTL\b|\bINS\b/],
  ["trailer_repair",/TRAILER (REPAIR|MAINT)|REEFER REPAIR/],["trailer",/TRAILER|\bVAN RENT|REEFER RENT/],["truck_pay",/TRUCK PAY|LEASE|TRACTOR|TRUCK LOAN|TRUCK NOTE|FINANC/],
  ["ifta",/\bIFTA\b|FUEL TAX|OREGON\s*(MILES?|MILEAGE|TAX|WMT)|WEIGHT[- ]?MILE|\bWMT\b|\bKYU\b|NY\s*HUT|HIGHWAY USE TAX|NM\s*WEIGHT/],["eld",/\bELD\b|LOG ?BOOK|SAMSARA|MOTIVE|KEEP ?TRUCKIN|OMNITRACS/],["phone",/PHONE|INTERNET|VERIZON|T-?MOBILE|AT&T|TABLET|DATA PLAN/],
@@ -479,7 +479,7 @@ function colOf(cols,c){var m=(c.x0+c.x1)/2,best=-1,bd=1e9;for(var i=0;i<cols.len
  if(best<0)for(i=0;i<cols.length;i++){d=Math.abs(m-(cols[i].x0+cols[i].x1)/2);if(d<bd){bd=d;best=i}}return best}
 /* finds header rows (≥3 known column names) and reads the rows under them by column */
 C.parseTables=function(rows,fmt){var out={loads:[],ded:[],totals:[],tables:0,detail:0};
- for(var r=0;r<rows.length;r++){var hc=rows[r].cells,keys=hc.map(function(c){return hdrKey(c.s)}),known=keys.filter(Boolean).length;if(known<3||known<hc.length*0.6)continue;
+ for(var r=0;r<rows.length;r++){var hc=rows[r].cells,keys=hc.map(function(c){return hdrKey(c.s)}),known=keys.filter(Boolean).length,two=known===2&&hc.length===2&&keys.indexOf("desc")>=0&&(keys.indexOf("amt")>=0||keys.indexOf("gross")>=0);if(!two&&(known<3||known<hc.length*0.6))continue; /* also a 2-column "Description | Amount" list */
   /* multi-line header: next row with only header words joins this one */
   var cols=hc.map(function(c,i){return {k:keys[i],x0:c.x0,x1:c.x1,s:c.s}}),skip=0;
   var sub=rows[r+1]&&rows[r+1].cells.every(function(c){return /^(CITY|STATE|ST)$/i.test(c.s)})?rows[r+1].cells:null;
@@ -500,6 +500,7 @@ C.parseTables=function(rows,fmt){var out={loads:[],ded:[],totals:[],tables:0,det
    var lastC=function(k){var a=rcell[k];return a&&a.length?a[a.length-1]:null};
    if(/^(SUB)?TOTALS?\b|^TOTAL\s*:/.test(U)){var ms=rc.map(function(c){return C.cents(c.s)}).filter(function(v){return v!=null});out.totals.push({type:isLoads?"loads":isDed?"ded":"detail",row:row,ms:ms});break}
    if(isDetail)continue;
+   if(isDed&&rc[0]&&C.roleOf(rc[0].s).some(function(x){return /^(gross|earn|net|ded|fee)$/.test(x.role)}))break; /* the summary begins: the list has ended */
    var amtS=lastC("amt")||lastC("gross"),am=amtS!=null?C.cents(amtS):null;
    if(isLoads){if(row.gross==null&&row.amt==null&&row.rate!=null&&/\d[.,]\d{2}(?!\d)/.test(row.rate)){row.gross=row.rate;rcell.gross=rcell.rate;row.rate=null}
     var g=row.gross!=null?C.cents(lastC("gross")):null,da=row.amt!=null&&ks.gross?C.cents(lastC("amt")):null;
@@ -533,6 +534,11 @@ C.resolveUnknown=function(R){var un=(R.unknown||[]).filter(function(u){return u.
 /* combine: the text reader result + the table reader result → candidates; the one whose arithmetic matches the printed totals wins */
 C.readAll=function(src){var cands=[],seen={};function add(name,R){if(!R)return;C.resolveUnknown(R);var key=JSON.stringify([R.gross,R.earn,C.sum(R.ded,"a"),R.net,R.loads.map(function(l){return [l.num,l.mi,l.dh,l.g,l.pd]})]);if(seen[key])return;seen[key]=1;R.method=name;R.verdict=C.aiVerdict(R);cands.push(R)}
  (src.texts||[]).forEach(function(t){if(!t||!t.text)return;var A=C.parseStatement(t.text);add(t.name,A);
+  if(t.rows&&t.rows.length&&!t.noDict){var DA=C.dictCand(A,t.rows,src.learned);if(DA)add(t.name+"·dict",DA);
+   /* pure LAYOUT reading: header fields from the text, trips + deductions only from tables, summary from the dictionary, arithmetic decides */
+   var TL=C.parseTables(t.rows,C.numFormat(t.text));if(TL.loads.length||TL.ded.length){var L0=JSON.parse(JSON.stringify(A));L0.gross=L0.earn=L0.fee=L0.net=L0.dedTotal=null;L0.adv=L0.reimb=L0.other=null;L0.fuel=[];L0.unknown=[];L0.from={};
+    if(TL.loads.length)L0.loads=TL.loads;L0.ded=TL.ded.map(function(d){var o={c:d.c||"other",a:Math.abs(d.a),v:d.v,tbl:true};if(!d.c)o.check=true;["bal","orig","grp"].forEach(function(k){if(d[k]!=null)o[k]=d[k]});return o});
+    var LD=C.dictCand(L0,t.rows,src.learned);if(LD)add(t.name+"·layout",LD)}}
   if(t.rows&&t.rows.length){var T=C.parseTables(t.rows,C.numFormat(t.text));if(T.tables){var B=JSON.parse(JSON.stringify(A)),changed=false;
    var miDiff=C.sum(T.loads,"mi")&&T.loads.some(function(l,i){return !B.loads[i]||B.loads[i].mi!==l.mi||(l.dh!=null&&B.loads[i].dh!==l.dh)});
    if(T.loads.length&&(B.loads.length!==T.loads.length||C.sum(B.loads,"g")!==C.sum(T.loads,"g")||miDiff||B.earn==null&&T.loads.every(function(l){return l.earn!=null}))){B.loads=T.loads;changed=true;if(B.gross==null||B.gross===C.sum(A.loads,"g"))B.gross=C.sum(T.loads,"g");B.grossLoads=C.sum(T.loads,"g");
@@ -549,16 +555,97 @@ C.readAll=function(src){var cands=[],seen={};function add(name,R){if(!R)return;C
    if(T.rate&&B.rate==null){B.rate=T.rate.bp;B.from=B.from||{};B.from.rate={pg:1,ln:0,t:T.rate.t+" (table header)"};changed=true}
    if(changed)add(t.name+"+table",B)}}
   /* summary written as several "label value" pairs on one line → read again pair by pair */
-  if(t.rows&&t.rows.length&&!t.noKV){var KV=C.kvSplit(t.rows);if(KV){var R3=C.readAll({texts:[{name:t.name+"·kv",text:C.rowsText(KV),rows:KV,noKV:true}]});(R3.cands2||[R3]).forEach(function(x){add(x.method,x)})}}
+  if(t.rows&&t.rows.length&&!t.noKV){var KV=C.kvSplit(t.rows);if(KV){var R3=C.readAll({texts:[{name:t.name+"·kv",text:C.rowsText(KV),rows:KV,noKV:true,noDict:true}],learned:src.learned});(R3.cands2||[R3]).forEach(function(x){add(x.method,x)})}}
   /* a Comments/Notes column: its numbers are notes, not money of the statement → read again without them */
-  if(t.rows&&t.rows.length&&!t.noNotes){var DN=C.dropNotes(t.rows);if(DN.found&&DN.notes.length){var R2=C.readAll({texts:[{name:t.name+"−comments",text:C.rowsText(DN.rows),rows:DN.rows,noNotes:true}]});
+  if(t.rows&&t.rows.length&&!t.noNotes){var DN=C.dropNotes(t.rows);if(DN.found&&DN.notes.length){var R2=C.readAll({texts:[{name:t.name+"−comments",text:C.rowsText(DN.rows),rows:DN.rows,noNotes:true,noDict:true}],learned:src.learned});
    (R2.cands2||[R2]).forEach(function(x){x.info=(x.info||[]).concat(DN.notes.filter(function(n){return n.a}));add(x.method,x)})}}});
+ /* the dictionary reader also on top of every table/text reading (it only re-assigns summary numbers; arithmetic decides) */
+ var rows0=null;(src.texts||[]).forEach(function(t){if(!rows0&&t.rows&&t.rows.length&&!t.noDict)rows0=t.rows});
+ if(rows0)cands.slice().forEach(function(c){if(/·dict/.test(c.method))return;var D=C.dictCand(c,rows0,src.learned);if(D){var m=c.method;add(m+"·dict",D)}});
  cands.sort(function(a,b){function sc(R){var v=R.verdict;return (v.ok?100:0)+(v.status==="full"?20:v.status==="partial"?10:0)-v.why.length*5-(R.unknown||[]).length-(R.solved||0)*2+(R.loads.length?3:0)+R.loads.filter(function(l){return l.num&&l.mi}).length*0.5}return sc(b)-sc(a)});
  var best=cands[0]||C.parseStatement("");try{Object.defineProperty(best,"cands2",{value:cands,enumerable:false,configurable:true,writable:true})}catch(e){best.cands2=cands} /* not saved / not serialized */
  /* commission not printed: derived from printed numbers, and checked against the printed percentage */
  if(best.from&&!best.from.fee&&best.gross>0&&best.earn!=null){var dv=best.gross-best.earn,okp=best.rate!=null&&Math.abs(C.pct(best.gross,best.rate)-best.earn)<=1;
   best.from.fee={pg:(best.from.earn||{}).pg||1,ln:(best.from.earn||{}).ln||0,t:"= Gross "+C.fmt(best.gross)+" − Driver "+C.fmt(best.earn)+" = "+C.fmt(dv)+(best.rate!=null?" · "+(best.rate/100)+"% × Gross = "+C.fmt(C.pct(best.gross,best.rate))+(okp?" ✓":" ≠"):"")}}best.cands=cands.map(function(c){return {m:c.method,ok:c.verdict.ok,st:c.verdict.status,net:C.stmtCalc(c).net,why:c.verdict.why}});
- C.finishRead(best,src);best.agree=cands.filter(function(c){return c.verdict.ok&&C.stmtCalc(c).net===C.stmtCalc(best).net}).length;return best};
+ C.finishRead(best,src);if(rows0)best.kvAll=C.kvPairs(rows0,null,true).filter(function(p){return !p.role}).slice(0,80).map(function(p){return {lbl:p.lbl,v:p.v}});best.agree=cands.filter(function(c){return c.verdict.ok&&C.stmtCalc(c).net===C.stmtCalc(best).net}).length;return best};
+/* ===== universal summary reader: field DICTIONARY (data, not code) + token TYPES + POSITION + ARITHMETIC =====
+   A new company wording = one more synonym in C.FIELDS (or learned from a confirmed statement), never a new reading rule. */
+C.FIELDS=[
+ /* role, kind, label pattern (whole label, upper-case, ':' '#' stripped) */
+ ["gross","money",/^(TOTAL\s+)?(TRIP\s+|TRIPS\s+|LOAD\s+|LOADS\s+|FREIGHT\s+|LINE\s*HAUL\s+)?(GROSS|REVENUE)(\s+(AMOUNT|TOTAL|REVENUE|INCOME))?$|^(TOTAL\s+)?LINE\s*HAUL(\s+(TOTAL|AMOUNT))?$|^TOTAL\s+(LOADS?|FREIGHT|TRIPS?)(\s+(PAY|AMOUNT))?$|^GROSS\s+(LOAD|FREIGHT|TRIP)\s+(PAY|AMOUNT)$/],
+ ["gross","money",/^GROSS\s+PAY$/,"earn"],
+ ["earn","money",/^(TOTAL\s+)?(DRIVER|CONTRACTOR|OWNER|O\s*\/?\s*O|OPERATOR|YOUR)?\s*(EARNINGS?|SHARE|COMPENSATION|PORTION)$|^(DRIVER|CONTRACTOR|OWNER\s+OPERATOR|O\s*\/\s*O)\s+(PAY|GROSS|REVENUE|AMOUNT)$|^REVENUE\s+SHARE$/],
+ ["earn","money",/^NET\s+(REVENUE|AMOUNT|EARNINGS?)$/,"net"],
+ ["fee","money",/^(TOTAL\s+)?(COMMISSION|COMPANY\s+(FEE|SHARE|PORTION|CUT|COMMISSION)|CARRIER\s+(FEE|SHARE|PORTION|COMMISSION)|SERVICE\s+FEE\s+TOTAL)$/],
+ ["ded","money",/^(TOTAL\s+)?(DEDUCTIONS?|DEDUCTS|CHARGES|WITHHOLDINGS?|EXPENSES|CHARGEBACKS?)(\s+(TOTAL|AMOUNT))?$|^LESS\s+(TOTAL\s+)?DEDUCTIONS$/],
+ ["net","money",/^(TOTAL\s+)?(NET\s+(PAY|PAYMENT|SETTLEMENT|CHECK|DUE|PAID|TO\s+DRIVER)|PAYOUT|SETTLEMENT(\s+(AMOUNT|TOTAL|PAY|NET))?|CHECK\s+(AMOUNT|TOTAL)|AMOUNT\s+(PAID|DUE|PAYABLE)(\s+TO\s+DRIVER)?|PAYABLE|PAY\s+AMOUNT|DIRECT\s+DEPOSIT(\s+AMOUNT)?|DEPOSIT\s+AMOUNT|BALANCE\s+DUE(\s+(DRIVER|TO\s+DRIVER))?)$/],
+ ["net","money",/^(TOTAL\s+PAY|NET|NET\s+TOTAL)$/,"earn"],
+ ["rate","pct",/^(DRIVER\s+|CONTRACTOR\s+|O\s*\/?\s*O\s+)?(PERCENT(AGE)?|PCT|SPLIT|RATE\s*%?|%)$/],
+ ["miles","miles",/^(TOTAL\s+)?(MILES|MILEAGE)$/],["loaded","miles",/^(TOTAL\s+)?(LOADED|LDD)(\s+MI(LES)?)?$/],["empty","miles",/^(TOTAL\s+)?(DEADHEAD|EMPTY|DHD|DH)(\s+MI(LES)?)?$/],
+ ["num","id",/^(SETTLEMENT|STATEMENT|STMT|PAYROLL|PAY\s+STUB|CHECK)\s*(#|NO\.?|NUMBER|ID)?$/],["trips","count",/^(TOTAL\s+)?(TRIPS|LOADS|NUMBER\s+OF\s+(TRIPS|LOADS))$/]];
+C.SKIPLBL=/\b(YTD|YEAR|PREVIOUS|PRIOR|LAST\s+(WEEK|PERIOD)|TO\s+DATE|ESCROW\s+BALANCE|LIMIT)\b/;
+C.lblNorm=function(s){return String(s||"").toUpperCase().replace(/\(.*?\)/g," ").replace(/[:#*]+/g," ").replace(/[^A-Z0-9%\/&' ]+/g," ").replace(/\s+/g," ").trim()};
+/* what kind of token a cell is: money / miles / pct / date / count / id / text */
+C.tok=function(s){var t=String(s||"").trim(),u=t.toUpperCase(),m;if(!t)return null;
+ if((m=u.match(/^\(?-?\$?\s*([\d,]+(?:\.\d+)?)\s*(MI|MILES|MILE)\.?\)?$/)))return {t:"miles",v:Math.round(parseFloat(m[1].replace(/,/g,""))*100)/100};
+ if((m=u.match(/^([\d.]+)\s*%$/)))return {t:"pct",v:parseFloat(m[1])};
+ if(/^\d{1,2}[\/.\-]\d{1,2}[\/.\-]\d{2,4}$|^(JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)[A-Z]*\.?\s+\d{1,2}/.test(u)||/^\d{4}-\d{2}-\d{2}$/.test(u))return {t:"date",s:t};
+ if((m=t.match(/^(-|\()?\s*\$\s*(-)?\s*([\d,]*\d(?:\.\d{1,2})?)\s*\)?$|^(-|\()?\s*([\d]{1,3}(?:,\d{3})*\.\d{2}|\d+\.\d{2})\s*\)?$/))){var raw=(m[3]||m[5]||"").replace(/,/g,""),neg=!!(m[1]||m[2]||m[4]);var c=Math.round(parseFloat(raw)*100);if(isFinite(c))return {t:"money",v:neg?-c:c,dollar:/\$/.test(t)}}
+ if(/^\d{1,4}$/.test(t))return {t:"count",v:+t,s:t};
+ if(/\d/.test(t)&&t.length<=24)return {t:"id",s:t};
+ return {t:"text",s:t}};
+C.roleOf=function(lbl,learned){var u=C.lblNorm(lbl),out=[];if(!u||C.SKIPLBL.test(u))return out;
+ if(learned&&learned[u])out.push({role:learned[u],kind:learned[u]==="rate"?"pct":/miles|loaded|empty/.test(learned[u])?"miles":"money",learned:true});
+ C.FIELDS.forEach(function(f){if(f[2].test(u)){if(!out.some(function(o){return o.role===f[0]}))out.push({role:f[0],kind:f[1]});if(f[3]&&!out.some(function(o){return o.role===f[3]}))out.push({role:f[3],kind:f[1],alt:true})}});return out};
+/* label → value pairs by position: value to the right on the same line, "Label: value" in one cell, or the value right under a label */
+C.kvPairs=function(rows,learned,all){var out=[];(rows||[]).forEach(function(r,ri){var cs=r.cells,pg=r.y<0?Math.floor(-r.y/5000)+1:1,line=cs.map(function(c){return c.s}).join("  ");
+  function push(lab,valS,cell){var roles=C.roleOf(lab,learned),tk=C.tok(valS);if(!tk)return;if(!roles.length){if(all&&tk.t==="money"&&!C.SKIPLBL.test(C.lblNorm(lab)))out.push({role:null,lab:lab,lbl:C.lblNorm(lab),v:tk.v,pg:pg,t:line.slice(0,120)});return}
+   roles.forEach(function(ro){var ok=ro.kind==="money"?tk.t==="money":ro.kind==="pct"?(tk.t==="pct"||tk.t==="count"&&tk.v<=100):ro.kind==="miles"?(tk.t==="miles"||tk.t==="money"&&!tk.dollar||tk.t==="count"):ro.kind==="id"?(tk.t==="count"||tk.t==="id"):ro.kind==="count"?tk.t==="count":false;
+    if(ok)out.push({role:ro.role,alt:!!ro.alt,learned:!!ro.learned,lab:lab,lbl:C.lblNorm(lab),v:ro.kind==="money"?tk.v:ro.kind==="pct"?C.bp(String(tk.v)):ro.kind==="miles"?tk.v:(tk.s||String(tk.v)),pg:pg,row:ri,t:line.slice(0,120)})})}
+  cs.forEach(function(c,i){var s2=c.s,m;
+   if((m=s2.match(/^(.*?[A-Za-z].*?)\s*[:=]\s*(.+)$/))&&!/\d/.test(m[1])){push(m[1],m[2],c);return}
+   if(/[A-Za-z]{2}/.test(s2)&&!/\d{2}/.test(s2.replace(/#/g,""))){var nx=cs[i+1];if(nx&&/\d/.test(nx.s)&&!/[A-Za-z]{3}/.test(nx.s.replace(/\b(mi|miles|USD)\b/i,""))){push(s2,nx.s,nx);return}
+    /* header cell → the value right under it (summary as a small table) */
+    var below=rows[ri+1];if(below&&cs.length>=2&&cs.filter(function(x){return hdrKey(x.s)}).length<2&&cs.every(function(x){return /[A-Za-z]{2}/.test(x.s)&&!/\d/.test(x.s)})){below.cells.forEach(function(b){if(b.x1>=c.x0-4&&b.x0<=c.x1+4&&/\d/.test(b.s)&&!/[A-Za-z]{3}/.test(b.s))push(s2,b.s,b)})}}})});
+ return out};
+/* chooses which printed number is which, by the arithmetic the statement itself satisfies (no single formula forced) */
+C.solveSummary=function(pairs,A){var P={},lS0=C.sum(A.loads||[],"g");if(lS0>0&&!pairs.some(function(p){return p.role==="gross"&&p.v===lS0}))pairs=pairs.concat([{role:"gross",v:lS0,lab:"Σ trips",lbl:"Σ TRIPS",row:-1,pg:1,t:"Σ "+(A.loads||[]).length+" trips",derived:true}]); /* no printed Gross: the trips table total, checked by the rest */["gross","earn","fee","ded","net"].forEach(function(k){var seen={};P[k]=[null].concat(pairs.filter(function(p){if(p.role!==k||seen[p.v+"|"+p.lbl])return false;seen[p.v+"|"+p.lbl]=1;return true}))});
+ var dSum=C.sum(A.ded||[],"a"),lSum=C.sum(A.loads||[],"g"),adj=(A.reimb||0)+(A.other||0)-(A.advInDed?0:(A.adv||0)),rate=(pairs.filter(function(p){return p.role==="rate"})[0]||{}).v||A.rate||null,best=null;
+ function same(a,b){return a&&b&&a.row===b.row&&a.lbl===b.lbl}
+ P.gross.forEach(function(g){P.earn.forEach(function(e){if(same(g,e))return;P.fee.forEach(function(f){P.ded.forEach(function(d){P.net.forEach(function(n){
+  var used=[g,e,f,d,n].filter(Boolean);for(var i=0;i<used.length;i++)for(var j=i+1;j<used.length;j++)if(same(used[i],used[j]))return;
+  var G=g&&g.v,E=e?e.v:(G!=null&&f?G-f.v:G!=null&&rate!=null?C.pct(G,rate):null),D=d?Math.abs(d.v):dSum,sc=0,fx=[],sub=null;
+  if(g&&e&&f){if(G-f.v===e.v){sc+=3;fx.push(g.lab+" − "+f.lab+" = "+e.lab)}else sc-=3}
+  if(g&&e&&rate!=null&&!f){if(Math.abs(C.pct(G,rate)-e.v)<=1){sc+=2;fx.push((rate/100)+"% × "+g.lab+" = "+e.lab)}else if(Math.abs(C.pct(G,rate)-e.v)>100)sc-=1}
+  if(n&&E!=null){if(E-D+adj===n.v){sc+=5;fx.push((e?e.lab:"Driver")+" − "+(d?d.lab:"Σ deductions")+(adj?" ± adj.":"")+" = "+n.lab)}else sc-=4}
+  if(d&&dSum){if(Math.abs(d.v)===dSum){sc+=2;fx.push("Σ "+(A.ded||[]).length+" lines = "+d.lab)}
+   else{var pos=(A.ded||[]).map(function(x,i){return {i:i,a:x.a}}).filter(function(x){return x.a>0}),pk=C.subsetExplain(pos.map(function(x){return x.a}),Math.abs(d.v));
+    if(pk){sub=pk.map(function(k){return pos[k].i});sc+=1.5;fx.push("Σ "+sub.length+" lines = "+d.lab)}else sc-=1}} /* only ONE set of lines gives the printed total → those are the deductions */
+  if(g&&lSum&&!g.derived){if(G===lSum){sc+=2;fx.push("Σ "+(A.loads||[]).length+" trips = "+g.lab)}else sc-=1}
+  if(g&&g.derived&&!fx.some(function(x){return x.indexOf(g.lab)>=0}))sc-=2; /* a Gross not printed must be confirmed by the % or the fee */
+  used.forEach(function(u){if(u.alt)sc-=0.5;if(u.learned)sc+=0.5;if(u.derived)sc-=0.3});sc+=used.length*0.1;
+  if(!best||sc>best.sc)best={sc:sc,g:g,e:e,f:f,d:d,n:n,fx:fx,sub:sub}})})})})});
+ return best};
+C.dictCand=function(A,rows,learned){var pairs=C.kvPairs(rows,learned);if(!pairs.length)return null;var sol=C.solveSummary(pairs,A);if(!sol||!(sol.g||sol.n))return null;
+ var B=JSON.parse(JSON.stringify(A));B.from=B.from||{};function src(p){return {pg:p.pg,ln:0,t:p.t}}
+ if(sol.g){B.gross=sol.g.v;B.from.gross=src(sol.g)}if(sol.e){B.earn=sol.e.v;B.from.earn=src(sol.e)}if(sol.f){B.fee=Math.abs(sol.f.v);B.from.fee=src(sol.f)}if(sol.d){B.dedTotal=Math.abs(sol.d.v);B.from.dedTotal=src(sol.d)}if(sol.n){B.net=sol.n.v;B.from.net=src(sol.n)}
+ pairs.forEach(function(p){if(p.role==="rate"&&B.rate==null){B.rate=p.v;B.from.rate={pg:p.pg,ln:0,t:p.t}}if(p.role==="num"&&!B.num)B.num=String(p.v);
+  if(p.role==="loaded"&&B.docLoaded==null)B.docLoaded=p.v;if(p.role==="empty"&&B.docEmpty==null)B.docEmpty=p.v;if(p.role==="miles"&&B.docMiles==null)B.docMiles=p.v});
+ if(sol.sub){var keep=sol.sub,out2=[];B.ded=B.ded.filter(function(x,i){if(keep.indexOf(i)>=0)return true;out2.push(x);return false});
+  B.info=(B.info||[]).concat(out2.map(function(x){return {v:x.v,a:x.a,pg:x.pg||null,ln:x.ln||null,notDed:true}}))} /* lines outside the printed total: shown, not counted */
+ B.info=(B.info||[]).filter(function(x){return !x.notDed||[sol.g,sol.e,sol.f,sol.d,sol.n].filter(Boolean).map(function(p){return Math.abs(p.v)}).indexOf(Math.abs(x.a))<0}); /* a summary number caught as a table row */
+ /* a leftover line made only of the summary numbers just explained is not an unknown deduction */
+ var expl=[sol.g,sol.e,sol.f,sol.d,sol.n].filter(Boolean).map(function(p){return Math.abs(p.v)});
+ B.unknown=(B.unknown||[]).filter(function(u){var ms=(String(u.v).match(/\(?-?\$?\s*[\d,]+\.\d{2}\)?/g)||[]).map(function(x){return Math.abs(C.tok(x)?C.tok(x).v||0:0)});return !(ms.length&&ms.every(function(x){return expl.indexOf(x)>=0}))});
+ B.formula=sol.fx;B.pairs=pairs.map(function(p){return {role:p.role,lbl:p.lbl,v:p.v}});return B};
+/* a printed label the dictionary did not know, whose number the driver confirmed as Gross / Driver pay / Deductions / Net → remembered (this device) */
+C.learnLabels=function(S,r,st){var Lr=S.learned=S.learned||{},n=0,F={gross:["gross",st.gross],earn:["earn",st.earn],dedTotal:["ded",st.dedTotal],net:["net",st.net]};
+ Object.keys(F).forEach(function(k){var role=F[k][0],v=F[k][1];if(v==null)return;var ls={};(r.kvAll||[]).forEach(function(p){if(Math.abs(p.v)===Math.abs(v))ls[p.lbl]=1});var lb=Object.keys(ls);
+  if(lb.length===1&&lb[0].length>=3&&!C.roleOf(lb[0]).some(function(x){return x.role===role})&&Lr[lb[0]]!==role){Lr[lb[0]]=role;n++}});return n};
+/* re-check: what differs between a saved statement and a new reading of the same PDF */
+C.stDiff=function(a,b){var ka=C.stmtCalc(a),kb=C.stmtCalc(b),out=[];function ad(k,x,y){if(x!==y&&!(x==null&&y==null))out.push([k,x,y])}
+ ad("company",a.company||null,b.company||null);ad("num",a.num||null,b.num||null);ad("p0",a.p0||null,b.p0||null);ad("p1",a.p1||null,b.p1||null);ad("gross",ka.gross,kb.gross);ad("earn",ka.earn,kb.earn);ad("ded",ka.ded,kb.ded);ad("net",ka.net,kb.net);
+ ad("loads",(a.loads||[]).length,(b.loads||[]).length);ad("miles",a.miles||null,b.miles||null);ad("status",ka.rec.status,kb.rec.status);ad("dedLines",(a.ded||[]).length,(b.ded||[]).length);return out};
 /* after the best reading is chosen: advance repayments, printed remaining balances, per-trip miles/dates from the trips table */
 C.finishRead=function(R,src){var rows=null;(src.texts||[]).forEach(function(t){if(!rows&&t.rows&&t.rows.length)rows=t.rows});
  (R.ded||[]).forEach(function(x){if(x.c==="co_debt"&&!x.dk&&/CASH\s*ADV|\bADVANCE\b|COMCHECK|EFS\s*CHECK/i.test(x.v||""))x.dk="advance"});

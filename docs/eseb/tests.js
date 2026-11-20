@@ -517,5 +517,36 @@ eq("REAL Pro Truck: Cash Advance $3,500 → debts, expenses 1,682.02, profit 8,0
  eq("synthetic layout (not a real statement): 'Charge' = this week's deduction, 'Total Amount' = whole advance, 'Remaining Balance' = what is left",[ca&&ca.a,ca&&ca.orig,ca&&ca.bal,C.sum(R.ded,"a"),R.net,C.decide(R).act,R.bal],[50000,200000,150000,90000,180000,"confirm",[{k:"co",a:150000,t:"Remaining Balance"}]]);
  var st=Object.assign(JSON.parse(JSON.stringify(R)),{id:"sy",d:"2026-11-16"}),S0={stmts:[st],debts:[],tx:[]};C.autoDebts(S0,st,function(){return "x"});var d=C.debtCalc(S0)[0];
  eq("synthetic: debt total $2,000 · paid $500 · left $1,500 (all printed, nothing guessed)",[d.total,d.payments,d.remaining,d.status],[200000,50000,150000,"active"])})();
+/* ===== universal reader: SYNTHETIC layouts (invented companies, not real statements) — each one a different wording / layout ===== */
+function SYMK(spec){return spec.map(function(r){var pg=r[0];return {y:r[1]-pg*5000,cells:r[2].map(function(c){return {x0:c[0],x1:c[0]+String(c[1]).length*5,s:c[1]}})}})}
+function SYRD(spec){var rows=SYMK(spec);return C.readAll({texts:[{name:"pdf",text:C.rowsText(rows),rows:rows}]})}
+var SY1=SYRD([[1,780,[[30,"BLUE RIVER TRANSPORT LLC"]]],[1,760,[[30,"Settlement #"],[110,"A-7781"],[300,"Pay Date"],[380,"11/20/2026"]]],
+ [1,740,[[30,"Total Gross"],[130,"Company Commission"],[250,"Driver Pay"],[340,"Withholdings"],[440,"Settlement Amount"]]],
+ [1,725,[[30,"$5,000.00"],[130,"$1,250.00"],[250,"$3,750.00"],[340,"$900.00"],[440,"$2,850.00"]]],
+ [1,700,[[30,"Load #"],[90,"Origin"],[200,"Destination"],[320,"Miles"],[400,"Gross"]]],[1,685,[[30,"88101"],[90,"Dallas, TX"],[200,"Atlanta, GA"],[320,"780"],[400,"$2,000.00"]]],[1,670,[[30,"88102"],[90,"Atlanta, GA"],[200,"Chicago, IL"],[320,"720"],[400,"$3,000.00"]]],
+ [1,640,[[30,"Description"],[250,"Amount"]]],[1,625,[[30,"Fuel"],[250,"$600.00"]]],[1,610,[[30,"Insurance"],[250,"$200.00"]]],[1,595,[[30,"ELD"],[250,"$100.00"]]]]);
+eq("synthetic 1: summary printed as a small table (labels in one row, values under them) — Total Gross / Company Commission / Driver Pay / Withholdings / Settlement Amount",[SY1.gross,SY1.fee,SY1.earn,SY1.dedTotal,C.sum(SY1.ded,"a"),SY1.net,SY1.num,C.decide(SY1).act,SY1.loads.length],[500000,125000,375000,90000,90000,285000,"A-7781","save",2]);
+eq("synthetic 1: the statement's own formula is found and shown",SY1.formula.slice(0,2),["Total Gross − Company Commission = Driver Pay","Driver Pay − Withholdings = Settlement Amount"]);
+var SY2=SYRD([[1,780,[[30,"GREAT LAKES FREIGHT INC"]]],[1,760,[[30,"Statement No:"],[120,"20461"]]],
+ [1,700,[[30,"Pro #"],[90,"Pickup"],[200,"Delivery"],[320,"Loaded Miles"],[420,"Linehaul"]]],[1,685,[[30,"P-1001"],[90,"Reno, NV"],[200,"Boise, ID"],[320,"430"],[420,"$1,600.00"]]],[1,670,[[30,"P-1002"],[90,"Boise, ID"],[200,"Denver, CO"],[320,"830"],[420,"$2,400.00"]]],
+ [2,760,[[30,"Description"],[200,"Amount"]]],[2,745,[[30,"Fuel Purchases"],[200,"(1,100.00)"]]],[2,730,[[30,"Occupational Accident"],[200,"(45.00)"]]],[2,715,[[30,"Trailer Rental"],[200,"(155.00)"]]],
+ [2,690,[[30,"Net Revenue"],[150,"$3,000.00"],[300,"YTD Net Revenue"],[430,"$88,000.00"]]],[2,675,[[30,"Total Charges"],[150,"($1,300.00)"],[300,"YTD Charges"],[430,"$20,000.00"]]],
+ [2,660,[[30,"Check Amount"],[150,"$1,700.00"],[300,"YTD Check Amount"],[430,"$68,000.00"]]],[2,640,[[30,"Driver Percentage"],[150,"75%"]]]]);
+eq("synthetic 2: a trips-table header (Loaded Miles) is not a summary label — miles = Σ trips 1,260",[SY2.docLoaded==null,C.sum(SY2.loads,"mi")],[true,1260]);
+eq("synthetic 2: 2 pages, deductions + summary on page 2, (negative) amounts, YTD numbers never used; no printed Gross → Σ trips, confirmed by 75%",[SY2.gross,SY2.earn,SY2.dedTotal,SY2.net,SY2.rate,SY2.ded.map(function(d){return [d.c,d.a]}),C.decide(SY2).act,SY2.from.net.pg],[400000,300000,130000,170000,7500,[["diesel",110000],["truck_ins",4500],["trailer",15500]],"save",2]);
+var SY3=SYRD([[1,780,[[30,"MOUNTAIN EXPRESS LINES"]]],[1,730,[[30,"Gross Pay"],[150,"$1,840.00"]]],[1,715,[[30,"Federal Withholding"],[150,"$180.00"]]],[1,700,[[30,"Social Security"],[150,"$114.08"]]],[1,685,[[30,"Medicare"],[150,"$26.68"]]],[1,670,[[30,"Total Deductions"],[150,"$320.76"]]],[1,655,[[30,"Net Pay"],[150,"$1,519.24"]]]]);
+eq("synthetic 3: company-driver pay stub — Gross Pay − Total Deductions = Net Pay; payroll taxes are not business expenses",[SY3.gross,C.stmtCalc(SY3).net,SY3.net,SY3.ded.map(function(d){return d.c}),C.decide(SY3).act],[184000,151924,151924,["pers","pers","pers"],"confirm"]);
+var SY4=SYRD([[1,780,[[30,"SUNRISE CARRIERS LLC"]]],[1,760,[[30,"Total Gross: $4,200.00"]]],[1,745,[[30,"Commission: $420.00"]]],[1,730,[[30,"Driver Earnings: $3,780.00"]]],[1,715,[[30,"Fuel: $700.00"]]],[1,700,[[30,"Tolls: $80.00"]]],[1,685,[[30,"Deductions: $780.00"]]],[1,670,[[30,"Payout: $3,000.00"]]]]);
+eq("synthetic 4: 'Label: value' inside one cell",[SY4.gross,SY4.earn,C.sum(SY4.ded,"a"),SY4.net,C.stmtCalc(SY4).rec.chk.net],[420000,378000,78000,300000,true]);
+eq("token types: money / miles / % / date / id are told apart",["$1,081.31","1,081.31 mi","88%","Nov 10 2026","2026-46","(45.00)","30"].map(function(x){var t=C.tok(x);return t.t}),["money","miles","pct","date","id","money","count"]);
+eq("dictionary: same meaning, different wording",["Total Trip Gross","Trip Gross","Driver Pay","Net Revenue","Withholdings","Charges","Settlement Amount","Payout","Check Amount","YTD Gross","Total Loaded"].map(function(l){return C.roleOf(l).map(function(r){return r.role}).join("/")}),["gross","gross","earn","earn/net","ded","ded","net","net","net","","loaded"]);
+(function(){var spec=[[1,780,[[30,"NORTH STAR HAULING LLC"]]],[1,740,[[30,"Load #"],[90,"Origin"],[200,"Destination"],[320,"Miles"],[400,"Gross"]]],[1,725,[[30,"5001"],[90,"Fresno, CA"],[200,"Phoenix, AZ"],[320,"590"],[400,"$2,000.00"]]],
+  [1,700,[[30,"Driver Share"],[150,"$1,700.00"]]],[1,685,[[30,"Description"],[200,"Amount"]]],[1,670,[[30,"Fuel"],[200,"$500.00"]]],[1,655,[[30,"Amount Remitted"],[150,"$1,200.00"]]]];
+ var rows=SYMK(spec),R1=C.readAll({texts:[{name:"pdf",text:C.rowsText(rows),rows:rows}]});
+ eq("synthetic 5: an unknown wording ('Amount Remitted') is NOT guessed as Net Pay",R1.net==null||C.decide(R1).act!=="save",true);
+ var S5={},st=Object.assign(JSON.parse(JSON.stringify(R1)),{net:120000}),n=C.learnLabels(S5,R1,st);
+ var R2=C.readAll({texts:[{name:"pdf",text:C.rowsText(rows),rows:rows}],learned:S5.learned});
+ eq("synthetic 5: after the driver confirms $1,200.00 as Net Pay once, the wording is learned and the next PDF reads by itself",[n,S5.learned["AMOUNT REMITTED"],R2.net,C.stmtCalc(R2).rec.chk.net],[1,"net",120000,true])})();
+eq("re-check: differences between a saved statement and a new reading are listed, nothing is changed",C.stDiff({gross:100000,earn:90000,net:80000,ded:[{c:"toll",a:10000}],loads:[]},{gross:100000,earn:90000,net:85000,ded:[{c:"toll",a:5000}],loads:[]}).map(function(d){return d[0]}),["ded","net"]);
 eq("fixture anonymized",/ANVAR|ALAPAEV|WARING|PHILADELPHIA|8008442080/i.test(JSON.stringify(PTi)),false);
 console.log("\nPASS "+pass+"  FAIL "+fail+"  NOT RUN "+SKIP);process.exit(fail||SKIP?1:0);
