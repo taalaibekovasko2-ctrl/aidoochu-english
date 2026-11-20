@@ -382,6 +382,29 @@ C.migrate=function(d){if(!d||d.v===2)return d;var o={v:2,lang:d.lang||"kg",role:
 
 /* a statement may be saved without the user's confirmation ONLY when Gross, the deductions total and Net Pay all match */
 C.autoSaveOk=function(st){return !!st&&st.gross>0&&C.stmtCalc(st).rec.status==="full"};
+/* ---------- AI reading (server function → JSON) → the same statement shape as the rule reader ---------- */
+C.AIKIND={expense:null,debt:"debt",advance:"advance",deposit:"deposit",holdback:"holdback",adjust:"adjust",loan:"loan",unclear:"adjust"};
+function aiC(n){return typeof n==="number"&&isFinite(n)?Math.round(n*100):null}
+function aiD(s){return typeof s==="string"&&/^\d{4}-\d{2}-\d{2}$/.test(s)?s:null}
+function aiS(s,n){return typeof s==="string"&&s.trim()?s.trim().slice(0,n||60):null}
+C.fromAI=function(j){if(!j||typeof j!=="object"||!Array.isArray(j.loads)||!Array.isArray(j.deductions))return null;var keys={};C.CATS.forEach(function(c){keys[c[0]]=1});
+ var R={src:"ai",company:aiS(j.company),driver:aiS(j.driver),unit:aiS(j.unit,20),num:aiS(j.statement_number,30),d:aiD(j.statement_date),p0:aiD(j.period_start),p1:aiD(j.period_end),
+  gross:aiC(j.gross_total),earn:aiC(j.driver_earnings),fee:aiC(j.commission_amount),rate:typeof j.driver_percent==="number"&&j.driver_percent>0&&j.driver_percent<=100?Math.round(j.driver_percent*100):null,
+  net:aiC(j.net_pay),dedTotal:j.deductions_total!=null?Math.abs(aiC(j.deductions_total)):null,adv:null,reimb:null,other:null,loads:[],ded:[],fuel:[],unknown:[],aiNotes:[],aiOrder:aiS(j.calculation_order,200)};
+ if(R.dedTotal===null||isNaN(R.dedTotal))R.dedTotal=null;
+ j.loads.forEach(function(l){if(!l||typeof l!=="object")return;var g=aiC(l.gross);if(g==null&&l.load_id==null)return;
+  R.loads.push({num:aiS(l.load_id,30),f:aiS(l.pickup)||"",t:aiS(l.delivery)||"",pd:aiD(l.pickup_date),g:g||0,earn:aiC(l.driver_amount),mi:typeof l.loaded_miles==="number"?Math.round(l.loaded_miles):0,dh:typeof l.empty_miles==="number"?Math.round(l.empty_miles):null,pg:l.page||null})});
+ j.deductions.forEach(function(x){if(!x||typeof x!=="object")return;var a=aiC(x.amount);if(a==null||a===0)return;var c=keys[x.category]?x.category:"other",k=x.kind in C.AIKIND?x.kind:"unclear";
+  var d={c:c,a:a,v:aiS(x.label,48)||c,pg:x.page||null,ai:true,ev:aiS(x.evidence,120)};var dk=C.AIKIND[k];if(dk&&dk!==C.KIND_DEF[c])d.dk=dk;if(k==="unclear"){d.dk="adjust";d.check=true;d.unclear=true}R.ded.push(d)});
+ (Array.isArray(j.additions)?j.additions:[]).forEach(function(x){var a=aiC(x&&x.amount);if(!a)return;a=Math.abs(a);if(x.type==="reimbursement")R.reimb=(R.reimb||0)+a;else if(x.type==="advance_paid_out")R.adv=(R.adv||0)+a;else R.other=(R.other||0)+a});
+ (Array.isArray(j.unreadable)?j.unreadable:[]).forEach(function(u){if(typeof u==="string"&&u.trim())R.aiNotes.push(u.slice(0,160))});
+ if(R.gross==null&&R.loads.length)R.gross=C.sum(R.loads,"g");R.grossDoc=R.gross;R.grossLoads=C.sum(R.loads,"g");if(!R.d)R.d=R.p1;return R};
+/* AI result may be saved automatically only when every printed total it found agrees with our own arithmetic, and Net Pay is printed */
+C.aiVerdict=function(R){if(!R)return {ok:false,why:["noResult"]};if(!(R.gross>0))return {ok:false,why:["noGross"]};var k=C.stmtCalc(R),c=k.rec.chk,why=[];
+ if(c.net==null)why.push("noNet");if(c.net===false)why.push("net:"+C.fmt(k.rec.stated)+"≠"+C.fmt(k.net));if(c.ded===false)why.push("ded:"+C.fmt(R.dedTotal)+"≠"+C.fmt(k.ded));if(c.gross===false)why.push("gross:"+C.fmt(k.gross)+"≠"+C.fmt(k.grossLoads));
+ if(R.earn!=null&&R.rate!=null&&Math.abs(C.pct(R.gross,R.rate)-R.earn)>100&&R.fee==null)why.push("earn:"+C.fmt(R.earn)+"≠"+C.fmt(C.pct(R.gross,R.rate)));
+ return {ok:!why.length,why:why,status:k.rec.status,unclear:R.ded.filter(function(d){return d.unclear}).length}};
+C.aiFeedback=function(R,v){return "Our arithmetic from your values: gross "+C.fmt(R.gross||0)+", driver earnings "+C.fmt(C.stmtCalc(R).earn)+", deductions sum "+C.fmt(C.sum(R.ded,"a"))+", computed net "+C.fmt(C.stmtCalc(R).net)+". Problems: "+v.why.join("; ")+"."};
 /* ---------- data safety ---------- */
 /* never overwrites an existing backup: a second backup with the same name gets a time suffix */
 C.safeBackup=function(store,key,raw){if(raw==null)return null;try{var k=key;if(store.getItem(k)!=null){k=key+"_"+new Date().toISOString().replace(/[^0-9]/g,"").slice(0,14);var n=1;while(store.getItem(k)!=null)k=key+"_"+new Date().toISOString().replace(/[^0-9]/g,"").slice(0,14)+"_"+(n++)}store.setItem(k,raw);return store.getItem(k)===raw?k:null}catch(e){return null}};

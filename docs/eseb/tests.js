@@ -314,4 +314,26 @@ var SYN2=SYN.replace("Total Expenses                                            
 var SR2=C.parseStatement(SYN2);eq("discount already in fuel price → info only, not subtracted again",[SR2.fuelDiscInfo,SR2.ded.some(function(d){return d.disc}),C.stmtCalc(SR2).rec.status],[4000,false,"full"]);
 var EMPTY=C.parseStatement("some unknown document\nno amounts here");eq("unknown document → empty result (nothing invented), never auto-saved",[EMPTY.loads.length,EMPTY.ded.length,EMPTY.gross,EMPTY.net,C.autoSaveOk(EMPTY)],[0,0,null,null,false]);
 if(typeof RR!=="undefined")eq("ARAVAN unchanged after layout changes",[RR.gross,RR.earn,C.sum(RR.ded,"a"),KR.net,RR.num],[1395000,1227600,470048,757552,RR.num]);
+
+// ===== AI reader: what the AI found vs our arithmetic vs the document totals (AI answers mocked — no network) =====
+var AJ={company:"ARAVAN CARGO INC",driver:"DRIVER NAME",unit:"2002N",statement_number:"ST-038914",statement_date:"2026-11-10",period_start:"2026-11-02",period_end:"2026-11-08",
+ gross_total:13950,driver_earnings:12276,commission_amount:1674,driver_percent:88,deductions_total:4700.48,net_pay:7575.52,
+ loads:[{load_id:"39040005",pickup:"Clearfield, UT",delivery:"San Jose, CA",gross:1600},{load_id:"7278314579",pickup:"Oakland, CA",delivery:"Seattle, WA",gross:3600},{load_id:"39073298",pickup:"Seattle, WA",delivery:"Laton, CA",gross:2250},{load_id:"69839362",pickup:"Fresno, CA",delivery:"Lockport, IL",gross:6500}],
+ deductions:[{label:"Fuel",amount:3839.83,category:"diesel",kind:"expense"},{label:"Toll",amount:25.65,category:"toll",kind:"expense"},{label:"IFTA & Logbook",amount:135,category:"ifta_eld",kind:"expense"},{label:"Insurance",amount:360,category:"truck_ins",kind:"expense"},{label:"Bobtail",amount:100,category:"bobtail",kind:"expense"},{label:"Trailer",amount:200,category:"trailer",kind:"expense"},{label:"PrePass",amount:20,category:"prepass",kind:"expense"},{label:"Parking",amount:20,category:"parking",kind:"expense"}],
+ additions:[],unreadable:[]};
+var AR=C.fromAI(AJ),AV=C.aiVerdict(AR);eq("AI ARAVAN: values → statement, verified",[AR.gross,AR.earn,C.sum(AR.ded,"a"),C.stmtCalc(AR).net,AV.ok,AV.status],[1395000,1227600,470048,757552,true,"full"]);
+eq("AI ARAVAN = rule reader (same totals)",[C.stmtCalc(AR).net,C.sum(AR.ded,"a"),AR.loads.length],[KR.net,C.sum(RR.ded,"a"),RR.loads.length]);
+var BJ={company:"NEW CARRIER LLC",gross_total:3500,driver_earnings:1050,driver_percent:30,deductions_total:610,net_pay:440,period_start:"2026-11-02",period_end:"2026-11-08",
+ loads:[{load_id:"L1",pickup:"Dallas, TX",delivery:"Memphis, TN",gross:2000,loaded_miles:452},{load_id:"L2",pickup:"Memphis, TN",delivery:"Atlanta, GA",gross:1500,loaded_miles:391}],
+ deductions:[{label:"Fuel",amount:400,category:"diesel",kind:"expense"},{label:"Fuel Discounts",amount:-40,category:"diesel",kind:"expense"},{label:"IFTA",amount:25,category:"ifta",kind:"expense"},{label:"Insurance",amount:75,category:"truck_ins",kind:"expense"},
+  {label:"DRIVER DEBT",amount:100,category:"co_debt",kind:"debt",evidence:"weekly repayment of driver debt"},{label:"DK DEBT",amount:50,category:"other",kind:"unclear"}],additions:[],unreadable:[]};
+var BR=C.fromAI(BJ),BV=C.aiVerdict(BR),BT=C.totals({stmts:[Object.assign({id:"ai"},BR)],tx:[],loads:[]},["2026-11-02","2026-11-08"]);
+eq("AI unknown company: verified without a template",[BV.ok,C.stmtCalc(BR).net,BR.loads[0].mi],[true,44000,452]);
+eq("AI: fuel discount lowers fuel once, driver debt = debt, unclear = not expense",[BT.byCat.diesel,BT.debtPaid,BT.adjust,BT.profit],[36000,10000,5000,105000-36000-2500-7500]);
+eq("AI: unclear item flagged for the driver",[BV.unclear,BR.ded.filter(function(d){return d.unclear})[0].check],[1,true]);
+var WJ=JSON.parse(JSON.stringify(BJ));WJ.deductions.pop();var WR=C.fromAI(WJ),WV=C.aiVerdict(WR);eq("AI missed a line → net & deductions disagree → NOT saved",[WV.ok,WV.why.length>=2],[false,true]);
+eq("feedback for the 2nd pass names the difference",/net:\$440\.00≠\$490\.00/.test(C.aiFeedback(WR,WV)),true);
+var NJ=JSON.parse(JSON.stringify(BJ));NJ.net_pay=null;eq("AI without printed Net Pay → not saved (cannot verify)",C.aiVerdict(C.fromAI(NJ)).why,["noNet"]);
+eq("AI malformed answer rejected",[C.fromAI(null),C.fromAI({loads:"x"}),C.fromAI({deductions:[]})],[null,null,null]);
+var XJ=JSON.parse(JSON.stringify(BJ));XJ.deductions[2].category="hacker";XJ.period_start="next week";var XR=C.fromAI(XJ);eq("AI unknown category → other; bad date → empty (nothing invented)",[XR.ded[2].c,XR.p0],["other",null]);
 console.log("\nPASS "+pass+"  FAIL "+fail+"  NOT RUN "+SKIP);process.exit(fail||SKIP?1:0);
