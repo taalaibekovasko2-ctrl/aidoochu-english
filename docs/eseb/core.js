@@ -302,7 +302,10 @@ C.parseStatement=function(txt){txt=C.fixLig(txt);var NF=C.normNumbers(txt);txt=N
  });
  if(!R.p0){var ds2=dates(U.split("\n").slice(0,8).join(" "));if(ds2.length>=2){R.p0=ds2[0];R.p1=ds2[1]}}
  var sec="",page=1,ln=0;
- lines.forEach(function(l){ln++;if(/^\[\[PAGE (\d+)\]\]$/.test(l)){page=+l.match(/\d+/)[0];ln=0;return}var u=l.toUpperCase(),a=lastMoney(l),ls=locs(u),mm;
+ /* every key value remembers the page and line it came from */
+ var FK=["gross","earn","fee","rate","net","dedTotal","adv","reimb","other","fuelDisc"];R.from={};
+ lines.forEach(function(l){var b4=FK.map(function(k){return R[k]});one(l);FK.forEach(function(k,i){if(R[k]!==b4[i]&&R[k]!=null)R.from[k]={pg:page,ln:ln,t:String(l).trim().slice(0,110)}})});
+ function one(l){ln++;if(/^\[\[PAGE (\d+)\]\]$/.test(l)){page=+l.match(/\d+/)[0];ln=0;return}var u=l.toUpperCase(),a=lastMoney(l),ls=locs(u),mm;
   if(/^FUEL\s*TRANSACTIONS|^FUEL\s*(PURCHASES|DETAIL)/.test(u)){sec="fuel";return}
   if(/^TOLL\s*TRANSACTIONS|^TOLL\s*DETAIL/.test(u)){sec="toll";return}
   if(/^DEDUCTION\s*TYPE|^(DEDUCTIONS?|EXPENSES?|CHARGES|DEDUCTIONS? (AND|&) EXPENSES)\s*:?$/.test(u)){sec="ded";return}
@@ -348,7 +351,7 @@ C.parseStatement=function(txt){txt=C.fixLig(txt);var NF=C.normNumbers(txt);txt=N
   var c=C.guessCat(u);var lab=l.replace(C.MONEY,"").replace(/\d{1,2}[\/\-.]\d{1,2}[\/\-.]\d{2,4}/g,"").replace(/\s+/g," ").trim().slice(0,48);
   if(c&&!/TOTAL|SUBTOTAL/.test(u)){R.ded.push({post:R._dtAfter||undefined,pg:page,ln:ln,c:c,a:/REFUND|REBATE|CREDIT|RETURN/.test(u)?-Math.abs(a):Math.abs(a),v:lab,raw:(l.match(C.MONEY)||[]).pop()||""});return}
   if(!/TOTAL|SUBTOTAL|BALANCE|PAGE/.test(u))R.unknown.push({pg:page,ln:ln,v:lab||l.slice(0,48),a:Math.abs(a)});
- });
+ }
  C.collapseFuel(R);C.fixOcrDollar(R);
  /* lines printed AFTER the deductions total: deductions only if the total needs them; otherwise information (e.g. a debt balance) — never saved as a balance */
  if(R._dtAfter&&R.dedTotal!=null){var pre=R.ded.filter(function(x){return !x.post}),post=R.ded.filter(function(x){return x.post}),D0=R.fuelDisc||0,sp=C.sum(pre,"a"),sa=C.sum(R.ded,"a");
