@@ -572,4 +572,18 @@ eq("fixture anonymized",/ANVAR|ALAPAEV|WARING|PHILADELPHIA|8008442080/i.test(JSO
  var P=rd("synth_two_panels_pdf_items.json"),kP=C.stmtCalc(P);eq("synthetic: two side-by-side panels (revenue | charges) read apart; 'Net Revenue 85%' = earnings",[P.gross,kP.earn,P.dedTotal,P.net,kP.net],[1032650,877753,38489,839264,839264]);
  eq("lblNorm: trailing percentage dropped from a label",[C.lblNorm("Net Revenue 85%"),C.lblNorm("Driver %")],["NET REVENUE","DRIVER %"]);
  eq("fixtures synthetic only",/ANVAR|ALAPAEV|WARING/i.test(JSON.stringify([fx("synth_two_panels_pdf_items.json")])),false)})();
+// ===== debts from PDFs end to end: 3 weekly statements, 'Total Amount | Charge | Remaining Balance | Comments', merged header cell =====
+(function(){var n=0,uid=function(){return "u"+(++n)},S={stmts:[],debts:[]},ids=["w1","w2","w3"];
+ var R=[1,2,3].map(function(w){var r=C.cellRows(fx("synth_debt_week"+w+"_pdf_items.json"));return C.readAll({texts:[{name:"pdf",text:rowsText(r),rows:r}]})});
+ eq("debt PDFs: all three read and saved automatically",R.map(function(x){return C.decide(x).act}),["save","save","save"]);
+ var dr=R[0].ded.filter(function(d){return d.v==="DR DEBT"})[0];
+ eq("DR DEBT = this week's Charge $500 (not the $200 in Comments), whole debt $3,000, balance $2,500, a company debt (not tires)",[dr.a,dr.orig,dr.bal,dr.c],[50000,300000,250000,"co_debt"]);
+ eq("Comments column never becomes money of the statement",R.every(function(x){return !x.ded.some(function(d){return d.a===20000})}),true);
+ R.forEach(function(x,i){var st=Object.assign({id:ids[i]},x);if(!S.stmts.some(function(o){return C.stmtSame(o,st)})){S.stmts.push(st);C.autoDebts(S,st,uid)}});
+ var again=Object.assign({id:"w2b"},R[1]);eq("same PDF uploaded again is recognised (not counted twice)",S.stmts.some(function(o){return C.stmtSame(o,again)}),true);
+ var D=C.debtCalc(S);eq("one debt record for the company",D.length,1);
+ eq("three numbers: total $3,300 · paid $1,800 (3×$500 + $300 advance) · left $1,500 = last printed balance",[D[0].total,D[0].payments,D[0].remaining,D[0].unknown],[330000,180000,150000,false]);
+ var st0=D[0].items.filter(function(i){return i.printed})[0];eq("history: where the debt began — +$3,000 DR DEBT, first statement, its date (shown only, not added)",[st0&&st0.a,st0&&st0.id,st0&&st0.d,D[0].newDebt],[300000,"w1","2026-11-08",0]);
+ eq("printed balances kept per statement (2,500 → 2,000 → 1,500)",D[0].snaps.map(function(b){return b.a}),[250000,200000,150000]);
+ eq("header 'Description Total Amount' printed as one cell is split into two columns",C.parseTables(C.cellRows(fx("synth_debt_week2_pdf_items.json"))).ded.filter(function(d){return d.v==="DR DEBT"}).map(function(d){return [d.a,d.orig,d.bal]}),[[50000,300000,200000]])})();
 console.log("\nPASS "+pass+"  FAIL "+fail+"  NOT RUN "+SKIP);process.exit(fail||SKIP?1:0);

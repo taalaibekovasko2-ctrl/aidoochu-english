@@ -1,4 +1,4 @@
-var C="jolesep-v40",A=["./","index.html","core.js?v=39","app.js?v=39","manifest.json","icon-192.png","icon-512.png"];
+var C="jolesep-v41",A=["./","index.html","core.js?v=40","app.js?v=40","manifest.json","icon-192.png","icon-512.png"];
 /* reader libraries (PDF.js, OCR, Excel) come from the CDN: kept in their own cache so statements are read without internet after the first time */
 var LIB="jolesep-lib-1",CDN="https://cdn.jsdelivr.net/npm/",PRE=[CDN+"pdfjs-dist@3.11.174/build/pdf.min.js",CDN+"pdfjs-dist@3.11.174/build/pdf.worker.min.js"];
 function libGet(u){return fetch(new Request(u,{mode:"cors",credentials:"omit"})).then(function(r){if(r.ok){var c=r.clone();caches.open(LIB).then(function(x){x.put(u,c)})}return r})}
