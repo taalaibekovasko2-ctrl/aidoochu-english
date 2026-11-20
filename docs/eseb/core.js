@@ -202,20 +202,23 @@ C.truckCalc=function(S){var T=S.truck||{},pays=[],tc=C.norm(T.company);
  pays.forEach(function(p){var it=0,pr=0;if(fin){it=Math.min(p.a,Math.round(bal*apr/10000/per));pr=p.a-it;bal=Math.max(0,bal-pr)}rows.push({d:p.d,a:p.a,interest:it,principal:pr,bal:fin?bal:null,src:p.src,id:p.id,i:p.i});intT+=it;prinT+=pr});
  return {pays:rows,paid:C.sum(pays,"a"),interest:intT,principal:prinT,lease:fin?0:C.sum(pays,"a"),balance:fin?bal:null,isLoan:fin}};
 /* ---------- company debts ---------- */
-C.debtCalc=function(S){var out=[];(S.debts||[]).forEach(function(d){var items=(d.items||[]).map(function(i){return {d:i.d,a:i.a,src:i.src||"man",note:i.note}}),snaps=[];
+C.debtCalc=function(S){var out=[];(S.debts||[]).forEach(function(d){var items=(d.items||[]).map(function(i){return {d:i.d,a:i.a,src:i.src||"man",note:i.note}}),snaps=[],origs={};
   (S.stmts||[]).forEach(function(st){var day=st.p1||st.d||C.stDay(st),mine=false,tag={id:st.id,co:st.company||"",p0:st.p0||null,p1:st.p1||st.d||null};
-   (st.ded||[]).forEach(function(x){if(x.debt===d.id&&C.isCoDebt(x,S)){mine=true;items.push({d:day,a:-x.a,src:"st",id:st.id,st:tag,v:x.v||""})}});
+   (st.ded||[]).forEach(function(x){if(x.debt===d.id&&C.isCoDebt(x,S)){mine=true;items.push({d:day,a:-x.a,src:"st",id:st.id,st:tag,v:x.v||""});
+     if(x.orig!=null){var lk=C.norm(x.v||"");origs[lk]={a:x.orig,d:day,full:x.orig===x.a&&x.bal==null}}}});
    if(st.advDebt===d.id&&st.adv>0&&!st.advInDed){mine=true;items.push({d:day,a:st.adv,src:"st",id:st.id,st:tag,v:"Advance",isNew:1})} /* money advanced on the statement = new debt */
    if(st.negCarry===d.id){var k=C.stmtCalc(st);if(k.net<0){mine=true;items.push({d:day,a:-k.net,src:"neg",id:st.id,st:tag,isNew:1})}}
-   var b=(st.bal||[]).filter(function(x){return x.k==="co"})[0];if(mine&&b)snaps.push({d:day,a:b.a,id:st.id})}); /* balance printed on the statement */
+   var b=(st.bal||[]).filter(function(x){return x.k==="co"})[0];if(mine&&b)snaps.push({d:day,a:b.a,id:st.id,st:tag})}); /* balance printed on the statement */
   items.sort(function(a,b){return a.d<b.d?-1:a.d>b.d?1:(b.a>0?1:-1)});
   var nw=0,pay=0;items.forEach(function(i){if(i.a>0)nw+=i.a;else pay+=-i.a});
   var rem=null,how="unknown";snaps.sort(function(a,b){return a.d<b.d?-1:1});
   if(snaps.length){var sn=snaps[snaps.length-1];rem=sn.a;items.forEach(function(i){if(i.d>sn.d||i.d===sn.d&&i.id!==sn.id&&i.src!=="st")rem+=i.a>0?i.a:i.a});how="statement"} /* latest printed balance, then later movements */
   else if(d.opening!=null&&(d.opening>0||d.zeroOk)){rem=d.opening+nw-pay;how="start"}            /* older data: a start amount that was entered */
   else if(items.length&&items[0].a>0){rem=nw-pay;how="fromZero"}                                 /* the debt began inside the app (first record is new debt) */
-  var st2=d.closed?"paid":rem==null?"unknown":rem<=0?"paid":"active",total=rem==null?null:Math.max(0,rem)+pay;
-  out.push({id:d.id,company:d.company,type:d.type,opening:d.opening==null?null:d.opening,openKnown:how!=="unknown",newDebt:nw,payments:pay,total:total,remaining:rem,unknown:rem==null,how:how,status:st2,closed:!!d.closed,over:rem!=null&&rem<0?-rem:0,items:items})});return out};
+  var ok=Object.keys(origs);if(rem==null&&ok.length&&ok.every(function(k){return origs[k].full})){rem=0;how="printedFull"} /* "Total Amount" = this week's charge: the whole sum was taken at once */
+  var printedTotal=ok.length?ok.reduce(function(t,k){return t+origs[k].a},0):null;              /* the whole debt amount printed on the statement ("Total Amount") */
+  var st2=d.closed?"paid":rem==null?"unknown":rem<=0?"paid":"active",total=rem==null?printedTotal:Math.max(0,rem)+pay;
+  out.push({id:d.id,company:d.company,type:d.type,opening:d.opening==null?null:d.opening,openKnown:how!=="unknown",newDebt:nw,payments:pay,total:total,remaining:rem,unknown:rem==null,how:how,status:st2,closed:!!d.closed,over:rem!=null&&rem<0?-rem:0,items:items,snaps:snaps,printedTotal:printedTotal})});return out};
 C.unassignedDebt=function(S){var u=[];(S.stmts||[]).forEach(function(st){(st.ded||[]).forEach(function(x,i){if(C.isCoDebt(x,S)&&!x.debt)u.push({st:st,i:i,a:x.a,v:x.v})})});return u};
 C.debtCandidates=function(S,st){return (S.debts||[]).filter(function(d){return d.type!=="neg"&&(!d.company||!st.company||C.norm(d.company)===C.norm(st.company))})};
 /* fully automatic: every company-debt line and every advance of a statement goes to that company's debt record */

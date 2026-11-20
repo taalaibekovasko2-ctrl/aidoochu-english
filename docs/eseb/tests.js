@@ -548,5 +548,21 @@ eq("dictionary: same meaning, different wording",["Total Trip Gross","Trip Gross
  var R2=C.readAll({texts:[{name:"pdf",text:C.rowsText(rows),rows:rows}],learned:S5.learned});
  eq("synthetic 5: after the driver confirms $1,200.00 as Net Pay once, the wording is learned and the next PDF reads by itself",[n,S5.learned["AMOUNT REMITTED"],R2.net,C.stmtCalc(R2).rec.chk.net],[1,"net",120000,true])})();
 eq("re-check: differences between a saved statement and a new reading are listed, nothing is changed",C.stDiff({gross:100000,earn:90000,net:80000,ded:[{c:"toll",a:10000}],loads:[]},{gross:100000,earn:90000,net:85000,ded:[{c:"toll",a:5000}],loads:[]}).map(function(d){return d[0]}),["ded","net"]);
+/* ===== debts: a whole series of statements (synthetic numbers) — the 10 rules ===== */
+(function(){var n=0,u=function(){return "q"+(++n)},S9={stmts:[],debts:[],tx:[]};
+ function up(st){S9.stmts.push(st);C.autoDebts(S9,st,u);C.mergeDebts(S9)}
+ up({id:"w1",company:"ALPHA LOGISTICS LLC",p0:"2026-11-02",p1:"2026-11-08",gross:500000,earn:450000,net:400000,ded:[{c:"co_debt",a:50000,v:"Damage Charge"}],bal:[{k:"co",a:450000}],loads:[]});
+ var a1=C.debtCalc(S9)[0];eq("debts series: 1st PDF — the debt it shows ($4,500 left after $500) is recorded: total 5,000 · paid 500 · left 4,500",[S9.debts.length,a1.total,a1.payments,a1.remaining,a1.how],[1,500000,50000,450000,"statement"]);
+ up({id:"w2",company:"ALPHA LOGISTICS LLC",p0:"2026-11-09",p1:"2026-11-15",gross:500000,earn:450000,net:350000,adv:100000,ded:[{c:"co_debt",a:50000,v:"Damage Charge"}],bal:[],loads:[]});
+ C.autoDebts(S9,S9.stmts[1],u);C.autoDebts(S9,S9.stmts[0],u);C.mergeDebts(S9); /* the same statements processed again */
+ var a2=C.debtCalc(S9)[0];eq("debts series: next PDF — new advance +$1,000 added, payment −$500 counted, nothing twice: total 6,000 · paid 1,000 · left 5,000",[S9.debts.length,a2.total,a2.payments,a2.remaining,a2.newDebt],[1,600000,100000,500000,100000]);
+ eq("debts series: every record keeps date, amount and its statement",a2.items.map(function(i){return [i.d,i.a,i.id]}),[["2026-11-08",-50000,"w1"],["2026-11-15",100000,"w2"],["2026-11-15",-50000,"w2"]]);
+ up({id:"w3",company:"BETA CARRIERS INC",p0:"2026-11-09",p1:"2026-11-15",gross:300000,earn:270000,net:250000,ded:[{c:"co_debt",a:20000,v:"Loan Payment"}],bal:[],loads:[]});
+ var b3=C.debtCalc(S9).filter(function(d){return d.company==="BETA CARRIERS INC"})[0];
+ eq("debts series: only a payment shown, no balance → payment is NOT a new debt, no earlier debt invented, left = 'needs check'",[b3.newDebt,b3.payments,b3.total,b3.remaining,b3.status],[0,20000,null,null,"unknown"]);
+ up({id:"w4",company:"GAMMA FREIGHT LLC",p0:"2026-11-09",p1:"2026-11-15",gross:300000,earn:270000,net:220000,ded:[{c:"co_debt",dk:"advance",a:50000,orig:350000,v:"Cash Advance"}],bal:[],loads:[]});
+ var g4=C.debtCalc(S9).filter(function(d){return d.company==="GAMMA FREIGHT LLC"})[0];
+ eq("debts series: 'Total Amount $3,500' printed, $500 taken, no remaining printed → total 3,500 recorded, left = 'needs check' (not guessed)",[g4.total,g4.payments,g4.remaining,g4.status],[350000,50000,null,"unknown"]);
+ var all=C.allDebts(S9);eq("debts screen data: three numbers per debt, no start-amount needed",all.map(function(x){return [x.name,x.total,x.paid,x.remaining]}),[["ALPHA LOGISTICS LLC",600000,100000,500000],["BETA CARRIERS INC",null,20000,null],["GAMMA FREIGHT LLC",350000,50000,null]])})();
 eq("fixture anonymized",/ANVAR|ALAPAEV|WARING|PHILADELPHIA|8008442080/i.test(JSON.stringify(PTi)),false);
 console.log("\nPASS "+pass+"  FAIL "+fail+"  NOT RUN "+SKIP);process.exit(fail||SKIP?1:0);
