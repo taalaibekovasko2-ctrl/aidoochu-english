@@ -413,4 +413,20 @@ eq("dates: 07.11.2026 in EU = 7 Nov; 13.11.2026 always DMY; 11/07/2026 US unchan
 var RYdot=C.parseStatement(C.rowsText(RYr).replace(/(\d) (\d{3},\d{2})/g,"$1.$2"));eq("EU with dot thousands (18.294,61) → same result",[RYdot.gross,C.stmtCalc(RYdot).net],[1829461,728318]);
 eq("unreadable PDF never becomes $0 statement",[C.decide(C.readAll({texts:[{name:"pdf",text:""}]})).act,C.decide(C.readAll({texts:[{name:"pdf",text:"[[PAGE 1]]\nROYCE LLC\nWEEK 45\n01.11.2026 - 07.11.2026"}]})).v.why[0]],["warn","noGross"]);
 eq("source line kept for every key value (page, line, text)",[RY.from.net.ln,/Net Pay/.test(RY.from.net.t),/Total deductions/.test(RY.from.dedTotal.t),/Driver 88%/.test(RY.from.rate.t),RY.ded.every(function(d){return d.pg&&d.ln||d.v==="Fuel discount"||/Fuel/.test(d.v)})],[RYr.findIndex(function(r){return /Net Pay/.test(r.cells[0].s)})+1,true,true,true,true]);
+
+// ===== REAL statement: ROYCE LLC WEEK 45 (Google Sheets PDF, European numbers, Comments column) — anonymized word positions =====
+var RWi=fx("royce_week45_pdf_items.json"),RWr=C.cellRows(RWi),RW=C.readAll({texts:[{name:"pdf",text:C.rowsText(RWr),rows:RWr}]}),RWk=C.stmtCalc(RW);
+eq("REAL ROYCE: company / truck (VIN skipped) / period 1–7 Nov / week 45",[RW.company,RW.unit,RW.p0,RW.p1,RW.week],["ROYCE LLC","6771","2026-11-01","2026-11-07",45]);
+eq("REAL ROYCE: Gross 18,294.61 · 88% (header 'Amount 88%') · commission 2,195.35 · earnings 16,099.26",[RWk.gross,RW.rate,RWk.fee,RWk.earn],[1829461,8800,219535,1609926]);
+eq("REAL ROYCE: commission derived and checked against 88%",/2,195\.35 · 88% × Gross = \$16,099\.26 ✓/.test(RW.from.fee.t),true);
+eq("REAL ROYCE: Total Expenses 8,816.08 · Net 7,283.18 (not the $8,000 in Comments) · full → auto-save",[RWk.ded,RW.net,RWk.net,RWk.rec.status,C.decide(RW).act],[881608,728318,728318,"full","save"]);
+eq("REAL ROYCE: 4 loads — ID, date, route, miles, freight",RW.loads.map(function(l){return [l.num,l.pd,l.f,l.t,l.mi,l.g]}),[["112PXYCGK","2026-11-02","HENDERSON, NV","Sioux Falls, SD",1424,650865],["112S8MCJ7","2026-11-04","Sioux Falls, SD","Kansas City, KS",363,89522],["1144MLX7L","2026-11-04","LENEXA, KS","Spanaway, WA",1927,399074],["1153HRVRR","2026-11-06","Kent, WA","Franklin, IN",2289,690000]]);
+eq("REAL ROYCE: miles 6,003 = printed total row",[C.sum(RW.loads,"mi"),!!RW.from.miles],[6003,true]);
+var RWc={};RW.ded.forEach(function(d){RWc[d.c]=(RWc[d.c]||0)+d.a});eq("REAL ROYCE: categories — Log Book, IFTA, Cargo, Fuel 5,171.53 − 780.45 once, DR DEBT 2×2,000",[RWc.eld,RWc.ifta,RWc.cargo_ins,RWc.diesel,RW.ded.filter(function(d){return d.a<0}).length,RWc.co_debt],[4000,3500,35000,517153-78045,1,400000]);
+var RWt=C.totals({stmts:[Object.assign({id:"rw"},RW)],tx:[],loads:[]},["2026-11-01","2026-11-07"]);
+eq("REAL ROYCE: DR DEBT → debts, business expense 4,816.08, profit 11,283.18, cash 7,283.18",[RWt.debtPaid,RWt.exp,RWt.profit,RWt.cashFlow],[400000,481608,1128318,728318]);
+eq("REAL ROYCE: $8,000 (Comments column) only as information — no balance, no Net, no deduction",[RW.info.map(function(x){return x.a}),RW.bal||null,RW.ded.some(function(d){return d.a===800000})],[[800000,800000],null,false]);
+eq("REAL ROYCE: source lines — Net from TOTAL PAYABLE, deductions total from Total Expenses",[/^TOTAL PAYABLE \$7,283\.18$/.test(RW.from.net.t),/Total Expenses/.test(RW.from.dedTotal.t),/Amount 88%/.test(RW.from.rate.t)],[true,true,true]);
+var RWbad=C.readAll({texts:[{name:"pdf",text:C.rowsText(RWr)}]});eq("REAL ROYCE: without column positions the $8,000 trap is NOT saved (warn)",[C.decide(RWbad).act],["warn"]);
+eq("fixture is anonymized (no name, phone, email, address, VIN)",/NURDOOLOT|URMAT|gmail|LINDEN|DAYTON|274 1161|4V4NC9/i.test(JSON.stringify(RWi)),false);
 console.log("\nPASS "+pass+"  FAIL "+fail+"  NOT RUN "+SKIP);process.exit(fail||SKIP?1:0);

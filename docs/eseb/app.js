@@ -398,8 +398,8 @@ function onStatements(files){sheet("📄 "+L("stmt"),'<div id="stP" class="ocr" 
   finish(r,d)})}
 /* nothing is saved unless the arithmetic is trustworthy; the driver is never asked to type numbers */
 /* where every value was read from: page · line · text */
-function fromHtml(r){var F=r.from||{},N={gross:"Gross",earn:"Driver Earnings",rate:"Driver %",fee:L("feeS"),dedTotal:L("ded")+" (total)",net:"Net Pay",fuelDisc:"Fuel discount",adv:"Advance",reimb:"Reimb.",other:"Other pay"},rows=[];
- Object.keys(N).forEach(function(k){var f=F[k];if(!f&&/adv|reimb|other|fuelDisc/.test(k))return;rows.push('<div class="note" style="margin:3px 0"><b>'+N[k]+'</b> ← '+(f?L("pgS")+" "+f.pg+", "+L("lnS")+" "+f.ln+': «'+esc(f.t)+'»':'<span style="color:#ffd98a">'+L("notFound")+'</span>')+'</div>')});
+function fromHtml(r){var F=r.from||{},N={gross:"Gross",earn:"Driver Earnings",rate:"Driver %",fee:L("feeS"),dedTotal:L("ded")+" (total)",net:"Net Pay",fuelDisc:"Fuel discount",adv:"Advance",reimb:"Reimb.",other:"Other pay",miles:"Miles"},rows=[];
+ Object.keys(N).forEach(function(k){var f=F[k];if(!f&&/adv|reimb|other|fuelDisc|miles/.test(k))return;rows.push('<div class="note" style="margin:3px 0"><b>'+N[k]+'</b> ← '+(f?L("pgS")+" "+f.pg+(f.ln?", "+L("lnS")+" "+f.ln:"")+': «'+esc(f.t)+'»':'<span style="color:#ffd98a">'+L("notFound")+'</span>')+'</div>')});
  (r.ded||[]).forEach(function(x){rows.push('<div class="note" style="margin:3px 0">'+esc(cn(x.c))+' '+M(x.a)+(x.pg?' ← '+L("pgS")+" "+x.pg+", "+L("lnS")+" "+x.ln:"")+(x.v?' «'+esc(x.v)+'»':'')+'</div>')});
  (r.loads||[]).forEach(function(l){rows.push('<div class="note" style="margin:3px 0">🚚 '+esc(l.num||"—")+' '+M(l.g||0)+' · '+(l.mi?l.mi+" mi":L("notFound")+" mi")+(l.pg?' ← '+L("pgS")+" "+l.pg+", "+L("lnS")+" "+l.ln:"")+'</div>')});
  return '<details class="card"><summary>🔎 '+L("fromT")+'</summary>'+rows.join("")+'</details>'}

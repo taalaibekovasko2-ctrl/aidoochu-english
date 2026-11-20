@@ -289,12 +289,13 @@ C.fixLig=function(txt){if(String(txt).indexOf("\u00A4")<0)return String(txt);var
 C.parseStatement=function(txt){txt=C.fixLig(txt);var NF=C.normNumbers(txt);txt=NF.text;
  var lines=String(txt||"").split(/\n/).map(function(l){return l.replace(/\s+/g," ").trim()}).filter(Boolean),U=lines.join("\n").toUpperCase();
  var R={company:null,driver:null,num:null,d:null,p0:null,p1:null,gross:null,rate:null,earn:null,fee:null,adv:null,reimb:null,other:null,net:null,dedTotal:null,loads:[],ded:[],fuel:[],fuelRetail:null,fuelInvoice:null,unknown:[]};
- for(var i=0;i<Math.min(4,lines.length);i++){var cl=lines[i].replace(/\s*(STATEMENT DATE|SETTLEMENT DATE|PERIOD|DATE|PAGE)\b.*$/i,"").trim();if(/[A-Za-z]{3}/.test(cl)&&!/^(STATEMENT|SETTLEMENT|PAGE|DRIVER|PERIOD)/i.test(cl)&&!moneys(cl).length&&(cl.toUpperCase().match(/\b(LOAD|PICK ?UP|DELIVERY|ORIGIN|DESTINATION|MILES|MILEAGE|AMOUNT|RATE|GROSS|TRIP|DATE|DESCRIPTION)\b/g)||[]).length<2){R.company=cl.slice(0,60);break}}
+ for(var i=0;i<Math.min(4,lines.length);i++){var cl=lines[i].replace(/\s*(STATEMENT DATE|SETTLEMENT DATE|PERIOD|DATE|PAGE|DRIVER\s*:|CONTRACTOR\b|UNIT\s*:|CELL\s*:|EMAIL\s*:|PHONE\s*:)(.*)$/i,"").trim();if(/[A-Za-z]{3}/.test(cl)&&!/^(STATEMENT|SETTLEMENT|PAGE|DRIVER|PERIOD)/i.test(cl)&&!moneys(cl).length&&(cl.toUpperCase().match(/\b(LOAD|PICK ?UP|DELIVERY|ORIGIN|DESTINATION|MILES|MILEAGE|AMOUNT|RATE|GROSS|TRIP|DATE|DESCRIPTION)\b/g)||[]).length<2){R.company=cl.slice(0,60);break}}
  lines.forEach(function(l){var u=l.toUpperCase(),mm;
   if(!R.num&&(mm=u.match(/(?:SETTLEMENT|STATEMENT|STMT)\s*(?:#|NO\.?|NUMBER|ID)?\s*[:#]\s*([A-Z]{0,4}-?\d[A-Z0-9\-]{2,})/)))R.num=mm[1];
   if(/PERIOD\s*START|START\s*DATE|PERIOD\s*FROM/.test(u)){var q1=dates(u);if(q1.length)R.p0=q1[0]}
   if(/PERIOD\s*END|END\s*DATE|PERIOD\s*TO|WEEK\s*ENDING/.test(u)){var q2=dates(u);if(q2.length)R.p1=q2[q2.length-1]}
   if(!R.unit&&(mm=u.match(/(?:UNIT|TRUCK|TRACTOR)\s*(?:NUMBER|NO\.?|#)?\s*[:#]?\s*#?([A-Z]{0,3}\d[A-Z0-9\-]{0,9})\b/)))R.unit=mm[1];
+  if((mm=u.match(/\b(?:UNIT|TRUCK|TRACTOR)\b[^A-Z0-9]*[A-HJ-NPR-Z0-9]{17}\s+#?(\d{2,6})\b/)))R.unit=mm[1]; /* VIN + short truck number */
   if(!R.week&&(mm=u.match(/\bWEEK\s*#?\s*(\d{1,2})\b/)))R.week=+mm[1];
   if(!R.driver&&(mm=l.match(/DRIVER(?: NAME)?\s*:\s*([A-Za-z][A-Za-z .'\-]{2,40})/i)))R.driver=mm[1].replace(/\s+(UNIT|TRUCK).*$/i,"").trim();
   if(/PERIOD|WEEK|FROM\b/.test(u)&&!R.p0){var ds=dates(u);if(ds.length>=2){R.p0=ds[0];R.p1=ds[1]}else if(ds.length===1&&/ENDING/.test(u)){R.p1=ds[0];R.p0=C.addDays(ds[0],-6)}}
@@ -419,39 +420,50 @@ C.cellRows=function(items,yDown){var its=(items||[]).filter(function(i){return i
    if(!t)return;cur={x0:it.x0,x1:it.x1,s:s};cells.push(cur)});
   cells.forEach(function(c){c.s=C.fixLig(c.s.replace(/\s+/g," ").trim())});return {y:r.y,cells:cells.filter(function(c){return c.s})}}).filter(function(r){return r.cells.length})};
 var HDR=[["id",/^(LOAD|LOAD\s*(#|NO\.?|NUMBER|ID)|PRO\s*#?|ORDER\s*#?|TRIP\s*#?|REF(ERENCE)?\s*#?|SHIPMENT\s*#?|BOL\s*#?)$/],["from",/^(PU|P\/U|PICK\s*-?UP|ORIGIN|FROM|SHIPPER|PICKUP\s*(CITY|LOCATION))$/],["to",/^(DEL|DELIVERY|DESTINATION|DEST|TO|CONSIGNEE|DROP|DELIVERY\s*(CITY|LOCATION))$/],
- ["date",/DATE$/],["empty",/^(EMPTY|DEADHEAD|DH|EMPTY\s*MI(LES)?|DEADHEAD\s*MI(LES)?|DH\s*MI(LES)?)$/],["miles",/^(LOADED\s*)?(MILES|MILEAGE|MI|LOADED)$/],["rate",/^(RATE|%|PERCENT|PCT|DRIVER\s*%|SPLIT)$/],
+ ["date",/DATE$/],["empty",/^(EMPTY|DEADHEAD|DH|EMPTY\s*MI(LES)?|DEADHEAD\s*MI(LES)?|DH\s*MI(LES)?)$/],["miles",/^(LOADED\s*)?(MILES|MILEAGE|MILAGE|MI|LOADED)$/],["note",/^(COMMENTS?|NOTES?|REMARKS?|MEMO)$/],["rate",/^(RATE|%|PERCENT|PCT|DRIVER\s*%|SPLIT)$/],
  ["gross",/^(LOAD\s*GROSS|GROSS|FREIGHT(\s*AMOUNT|\s*CHARGES?)?|LINE\s*HAUL|LINEHAUL|REVENUE|LOAD\s*(PAY|AMOUNT|TOTAL)|RATE\s*CON(FIRMATION)?|INVOICE\s*AMOUNT)$/],
  ["amt",/^(TOTAL\s*AMOUNT|AMOUNT|DRIVER\s*(AMOUNT|PAY|SHARE|GROSS)|EARNINGS|YOUR\s*SHARE|PAY|NET|TOTAL|TOTAL\s*PAY|SETTLEMENT)$/],
- ["desc",/^(DESCRIPTION|DEDUCTION(\s*TYPE)?|TYPE|ITEM|EXPENSE|CHARGE|CHARGES|DETAIL|MEMO|CATEGORY|CODE)$/],["qty",/^(QTY|QUANTITY|GAL(LONS)?)$/],["state",/^(ST|STATE)$/],["city",/^CITY$/]];
-function hdrKey(s){var u=String(s).toUpperCase().replace(/[:.]+$/,"").trim();for(var i=0;i<HDR.length;i++)if(HDR[i][1].test(u))return HDR[i][0];return null}
+ ["desc",/^(DESCRIPTION|DEDUCTION(\s*TYPE)?|TYPE|ITEM|EXPENSE|CHARGE|CHARGES|DETAIL|CATEGORY|CODE)$/],["qty",/^(QTY|QUANTITY|GAL(LONS)?)$/],["state",/^(ST|STATE)$/],["city",/^CITY$/]];
+function hdrKey(s){var u=String(s).toUpperCase().replace(/[:.]+$/,"").trim().replace(/\s+\d{1,3}(\.\d+)?\s*%$/,"");for(var i=0;i<HDR.length;i++)if(HDR[i][1].test(u))return HDR[i][0];return null}
 function colOf(cols,c){var m=(c.x0+c.x1)/2,best=-1,bd=1e9;for(var i=0;i<cols.length;i++){var k=cols[i];if(c.x1>=k.lo&&c.x0<=k.hi){var d=Math.abs(m-(k.x0+k.x1)/2);if(d<bd){bd=d;best=i}}}
  if(best<0)for(i=0;i<cols.length;i++){d=Math.abs(m-(cols[i].x0+cols[i].x1)/2);if(d<bd){bd=d;best=i}}return best}
 /* finds header rows (≥3 known column names) and reads the rows under them by column */
 C.parseTables=function(rows,fmt){var out={loads:[],ded:[],totals:[],tables:0,detail:0};
  for(var r=0;r<rows.length;r++){var hc=rows[r].cells,keys=hc.map(function(c){return hdrKey(c.s)}),known=keys.filter(Boolean).length;if(known<3||known<hc.length*0.6)continue;
   /* multi-line header: next row with only header words joins this one */
-  var cols=hc.map(function(c,i){return {k:keys[i],x0:c.x0,x1:c.x1,s:c.s}});cols.forEach(function(k,i){if(k.k==="state"&&cols[i-1]&&(cols[i-1].k==="from"||cols[i-1].k==="to"))k.k=cols[i-1].k+"St"});
+  var cols=hc.map(function(c,i){return {k:keys[i],x0:c.x0,x1:c.x1,s:c.s}}),skip=0;
+  var sub=rows[r+1]&&rows[r+1].cells.every(function(c){return /^(CITY|STATE|ST)$/i.test(c.s)})?rows[r+1].cells:null;
+  if(sub){var lab=(rows[r-1]&&rows[r-1].cells||[]).filter(function(c){return /^(FROM|TO|ORIGIN|DESTINATION|PICK\s*UP|DELIVERY)$/i.test(c.s)});var cityN=0;
+   sub.forEach(function(c){var side;if(lab.length){var best=null,bd=1e9;lab.forEach(function(L){var d=Math.abs((L.x0+L.x1)/2-(c.x0+c.x1)/2);if(L.x0<=c.x1+40&&d<bd){bd=d;best=L}});
+     lab.forEach(function(L){if(L.x0<=c.x1+5&&(!best||L.x0>best.x0&&L.x0<=c.x1+5))best=L});side=best&&/^(TO|DESTINATION|DELIVERY)$/i.test(best.s)?"to":"from"}else side=cityN<2?"from":"to";
+    if(/CITY/i.test(c.s))cityN++;cols.push({k:/CITY/i.test(c.s)?side:side+"St",x0:c.x0,x1:c.x1,s:c.s})});
+   cols=cols.filter(function(k){return !/^(FROM|TO)$/i.test(k.s)});cols.sort(function(a,b){return a.x0-b.x0});skip=1}cols.forEach(function(k,i){if(k.k==="state"&&cols[i-1]&&(cols[i-1].k==="from"||cols[i-1].k==="to"))k.k=cols[i-1].k+"St"});
   cols.forEach(function(k,i){var prev=cols[i-1],next=cols[i+1];k.lo=prev?(prev.x1+k.x0)/2:-1e9;k.hi=next?(k.x1+next.x0)/2:1e9});
   var title=(rows[r-1]&&rows[r-1].cells.map(function(c){return c.s}).join(" ").toUpperCase())||"",ks={};cols.forEach(function(k){if(k.k)ks[k.k]=1});
   var isDetail=/TRANSACTION|DETAIL|PURCHASES|FUEL\s*CARD/.test(title)||ks.qty&&ks.state&&!ks.from,isLoads=(ks.from&&ks.to)||(ks.id&&(ks.gross||ks.miles)&&!ks.desc),isDed=!isLoads&&ks.desc&&(ks.amt||ks.gross);
-  if(!isLoads&&!isDed&&!isDetail)continue;out.tables++;if(isDetail)out.detail++;var miss=0;
-  for(var j=r+1;j<rows.length;j++){var rc=rows[j].cells,txt=rc.map(function(c){return c.s}).join(" "),U=txt.toUpperCase();
+  if(!isLoads&&!isDed&&!isDetail)continue;out.tables++;hc.forEach(function(c){var m=String(c.s).match(/AMOUNT\s+(\d{1,3}(?:\.\d+)?)\s*%$/i);if(m&&isLoads&&out.rate==null)out.rate={bp:C.bp(m[1]),t:c.s}});if(isDetail)out.detail++;var miss=0;
+  for(var j=r+1+skip;j<rows.length;j++){var rc=rows[j].cells,txt=rc.map(function(c){return c.s}).join(" "),U=txt.toUpperCase();
    if(/^\[\[PAGE/.test(txt))continue;if(rc.length>=3&&rc.filter(function(c){return hdrKey(c.s)}).length>=3)break; /* next header */
-   var row={};rc.forEach(function(c){var i=colOf(cols,c);if(i<0)return;var k=cols[i].k||("c"+i);row[k]=row[k]?row[k]+" "+c.s:c.s});
+   var row={},rcell={};rc.forEach(function(c){var i=colOf(cols,c);if(i<0)return;var k=cols[i].k||("c"+i);row[k]=row[k]?row[k]+" "+c.s:c.s;(rcell[k]=rcell[k]||[]).push(c.s)});
+   var lastC=function(k){var a=rcell[k];return a&&a.length?a[a.length-1]:null};
    if(/^(SUB)?TOTALS?\b|^TOTAL\s*:/.test(U)){var ms=rc.map(function(c){return C.cents(c.s)}).filter(function(v){return v!=null});out.totals.push({type:isLoads?"loads":isDed?"ded":"detail",row:row,ms:ms});break}
    if(isDetail)continue;
-   var amtS=row.amt||row.gross,am=amtS!=null?C.cents(String(amtS).split(" ").pop()):null;
-   if(isLoads){if(row.gross==null&&row.amt==null&&row.rate!=null&&/\d[.,]\d{2}(?!\d)/.test(row.rate))row.gross=row.rate,row.rate=null;
-    var g=row.gross!=null?C.cents(String(row.gross).replace(/^[^\d(−-]*/,"")):null,da=row.amt!=null&&ks.gross?C.cents(String(row.amt).split(" ").pop()):null;
+   var amtS=lastC("amt")||lastC("gross"),am=amtS!=null?C.cents(amtS):null;
+   if(isLoads){if(row.gross==null&&row.amt==null&&row.rate!=null&&/\d[.,]\d{2}(?!\d)/.test(row.rate)){row.gross=row.rate;rcell.gross=rcell.rate;row.rate=null}
+    var g=row.gross!=null?C.cents(lastC("gross")):null,da=row.amt!=null&&ks.gross?C.cents(lastC("amt")):null;
     if(g==null&&am==null){if(++miss>=2)break;continue}miss=0;
     var lo=function(x){x=String(x||"").replace(/\s+/g," ").trim();var m=x.match(/^(.*?)[,\s]+([A-Z]{2})$/i);return m?m[1].replace(/\b[a-z]/g,function(c){return c.toUpperCase()})+", "+m[2].toUpperCase():x};
-    var nm=function(x){var v=String(x||"").replace(/[^\d.]/g,"");return v?Math.round(parseFloat(v)):null};
+    var nm=function(x){x=String(x||"").trim();if(!x)return null;if(/[.,]\d{2}$/.test(x)){var cc=C.cents(x);return cc==null?null:Math.round(cc/100)}var v=x.replace(/[^\d.]/g,"");return v?Math.round(parseFloat(v)):null};
     out.loads.push({num:row.id?String(row.id).split(" ")[0]:null,f:lo(row.from+(row.fromSt?", "+row.fromSt:"")),t:lo(row.to+(row.toSt?", "+row.toSt:"")),pd:row.date?(function(d){var m=String(d).match(/(\d{1,2})([\/\-.])(\d{1,2})[\/\-.](\d{2,4})/);if(!m)return null;var y=+m[4];if(y<100)y+=2000;var mo=+m[1],da=+m[3];if(fmt==="eu"&&m[2]==="."||mo>12){mo=+m[3];da=+m[1]}return y+"-"+C.p2(mo)+"-"+C.p2(da)})(row.date):null,
      g:g!=null?Math.abs(g):Math.abs(am),earn:da!=null?Math.abs(da):null,mi:nm(row.miles)||0,dh:row.empty!=null?nm(row.empty):null,rate:row.rate?C.bp(String(row.rate).replace(/[^\d.]/g,"")):null,tbl:true})}
    else if(isDed){if(am==null){if(++miss>=3)break;continue}miss=0;var lab=String(row.desc||rc[0].s).replace(C.MONEY,"").trim();if(row.c1&&row.desc&&!C.cents(row.c1))lab+=" "+row.c1;
     var u2=(lab+" "+txt).toUpperCase(),cat=C.guessCat(u2);out.ded.push({c:cat||null,a:/REFUND|REBATE|CREDIT|RETURN/.test(u2)?-Math.abs(am):Math.abs(am),v:lab.slice(0,48),tbl:true})}}
  }
  return out};
+C.dropNotes=function(rows){var notes=[],lo=null,out=[];(rows||[]).forEach(function(r){var nc=r.cells.filter(function(c){return /^(COMMENTS?|NOTES?|REMARKS?)$/i.test(c.s)})[0];if(nc){lo=lo==null?nc.x0-3:Math.min(lo,nc.x0-3)}
+  if(lo==null){out.push(r);return}var keep=[],drop=[];r.cells.forEach(function(c){((c.x0+c.x1)/2>lo&&!nc?drop:keep).push(c)});
+  if(nc)keep=keep.filter(function(c){return c!==nc});
+  drop.forEach(function(c){var a=C.cents(c.s);if(a!=null&&/\d/.test(c.s))notes.push({v:(keep[0]&&keep[0].s||"")+" · Comments",a:a,t:c.s})});if(keep.length)out.push({y:r.y,cells:keep})});return {rows:out,notes:notes,found:lo!=null}};
 C.rowsText=function(rows){return (rows||[]).map(function(r){return r.cells.map(function(c){return c.s}).join("   ")}).join("\n")};
 /* unknown lines: if exactly ONE subset of them explains the printed difference, they are deductions (kind unknown → not an expense) */
 C.subsetExplain=function(vals,target){if(!vals.length||vals.length>18||!target)return null;var n=vals.length,hit=null,cnt=0;
@@ -470,12 +482,20 @@ C.readAll=function(src){var cands=[],seen={};function add(name,R){if(!R)return;C
    if(T.loads.length&&(B.loads.length!==T.loads.length||C.sum(B.loads,"g")!==C.sum(T.loads,"g")||miDiff||B.earn==null&&T.loads.every(function(l){return l.earn!=null}))){B.loads=T.loads;changed=true;if(B.gross==null||B.gross===C.sum(A.loads,"g"))B.gross=C.sum(T.loads,"g");B.grossLoads=C.sum(T.loads,"g");
     if(B.earn==null&&T.loads.every(function(l){return l.earn!=null}))B.earn=C.sum(T.loads,"earn");if(B.rate==null){var rs=T.loads.map(function(l){return l.rate}).filter(Boolean);if(rs.length&&rs.every(function(x){return x===rs[0]}))B.rate=rs[0]}}
    var tt=T.totals.filter(function(x){return x.type==="ded"})[0];if(tt&&B.dedTotal==null&&tt.ms.length)B.dedTotal=Math.abs(tt.ms[tt.ms.length-1]);
-   var lt=T.totals.filter(function(x){return x.type==="loads"})[0];if(lt&&lt.ms.length>=2&&B.earn==null){var lg=C.sum(B.loads,"g"),le=C.sum(B.loads,"earn");if(lt.ms.indexOf(lg)>=0)B.gross=lg;if(le&&lt.ms.indexOf(le)>=0){B.earn=le;changed=true}}
+   var lt=T.totals.filter(function(x){return x.type==="loads"})[0];if(lt&&C.sum(B.loads,"mi")&&lt.ms.indexOf(C.sum(B.loads,"mi")*100)>=0){B.from=B.from||{};B.from.miles={pg:1,ln:0,t:"Σ "+C.sum(B.loads,"mi")+" mi = table total row "+(C.sum(B.loads,"mi")).toLocaleString("en-US")+".00 ✓"};changed=true}
+   if(lt&&lt.ms.length>=2&&B.earn==null){var lg=C.sum(B.loads,"g"),le=C.sum(B.loads,"earn");if(lt.ms.indexOf(lg)>=0)B.gross=lg;if(le&&lt.ms.indexOf(le)>=0){B.earn=le;changed=true}}
    if(T.ded.length){var known=T.ded.filter(function(d){return d.c}),unk=T.ded.filter(function(d){return !d.c});
     if(C.sum(T.ded,"a")!==C.sum(A.ded,"a")||T.ded.length!==A.ded.length){B.ded=known.map(function(d){return {c:d.c,a:d.a,v:d.v,tbl:true}});B.unknown=unk.map(function(d){return {a:Math.abs(d.a),v:d.v}});C.collapseFuel(B);changed=true}}
-   if(changed)add(t.name+"+table",B)}}});
+   if(T.rate&&B.rate==null){B.rate=T.rate.bp;B.from=B.from||{};B.from.rate={pg:1,ln:0,t:T.rate.t+" (table header)"};changed=true}
+   if(changed)add(t.name+"+table",B)}}
+  /* a Comments/Notes column: its numbers are notes, not money of the statement → read again without them */
+  if(t.rows&&t.rows.length&&!t.noNotes){var DN=C.dropNotes(t.rows);if(DN.found&&DN.notes.length){var R2=C.readAll({texts:[{name:t.name+"−comments",text:C.rowsText(DN.rows),rows:DN.rows,noNotes:true}]});
+   (R2.cands2||[R2]).forEach(function(x){x.info=(x.info||[]).concat(DN.notes.filter(function(n){return n.a}));add(x.method,x)})}}});
  cands.sort(function(a,b){function sc(R){var v=R.verdict;return (v.ok?100:0)+(v.status==="full"?20:v.status==="partial"?10:0)-v.why.length*5-(R.unknown||[]).length-(R.solved||0)*2+(R.loads.length?3:0)+R.loads.filter(function(l){return l.num&&l.mi}).length*0.5}return sc(b)-sc(a)});
- var best=cands[0]||C.parseStatement("");best.cands=cands.map(function(c){return {m:c.method,ok:c.verdict.ok,st:c.verdict.status,net:C.stmtCalc(c).net,why:c.verdict.why}});
+ var best=cands[0]||C.parseStatement("");best.cands2=cands;
+ /* commission not printed: derived from printed numbers, and checked against the printed percentage */
+ if(best.from&&!best.from.fee&&best.gross>0&&best.earn!=null){var dv=best.gross-best.earn,okp=best.rate!=null&&Math.abs(C.pct(best.gross,best.rate)-best.earn)<=1;
+  best.from.fee={pg:(best.from.earn||{}).pg||1,ln:(best.from.earn||{}).ln||0,t:"= Gross "+C.fmt(best.gross)+" − Driver "+C.fmt(best.earn)+" = "+C.fmt(dv)+(best.rate!=null?" · "+(best.rate/100)+"% × Gross = "+C.fmt(C.pct(best.gross,best.rate))+(okp?" ✓":" ≠"):"")}}best.cands=cands.map(function(c){return {m:c.method,ok:c.verdict.ok,st:c.verdict.status,net:C.stmtCalc(c).net,why:c.verdict.why}});
  best.agree=cands.filter(function(c){return c.verdict.ok&&C.stmtCalc(c).net===C.stmtCalc(best).net}).length;return best};
 /* what to do with a reading: save (everything printed matches), confirm (nothing contradicts, but some totals are not printed), warn (cannot trust) */
 C.decide=function(R){var v=C.aiVerdict(R);if(v.ok&&v.status==="full"&&!(R.unknown||[]).length)return {act:"save",v:v};if(v.ok)return {act:"confirm",v:v};return {act:"warn",v:v}};
