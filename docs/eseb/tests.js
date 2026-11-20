@@ -267,4 +267,16 @@ eq("export/import: driver A round-trip keeps totals",C.totals(RA.data,W).net,C.t
 eq("export/import: drivers stay separate",[RA.data.stmts.length,RA.data.tx.length,RB.data.stmts.length,RB.data.tx.length],[1,0,0,1]);
 eq("import: bad file rejected",[C.readBackup("{}"),C.readBackup("not json"),C.readBackup(JSON.stringify({app:"other",data:{}}))],[null,null,null]);
 eq("import: old (v1) backup migrated, not lost",C.readBackup(JSON.stringify({app:"jolesep",data:{loads:[{id:"l",d:"2026-11-03",g:100000}],exp:[]}})).data.v,2);
+
+// ===== restore safety =====
+var GOOD=JSON.stringify(C.exportData({v:2,stmts:[],tx:[{id:"n",kind:"exp",d:"2026-11-04",a:900,c:"toll",paidBy:"own"}],loads:[]},{id:"main"}));
+eq("restore: broken JSON rejected",[C.readBackup('{"app":"jolesep","data":{"v":2,"stmts":['),C.readBackup(GOOD.slice(0,-5))],[null,null]);
+eq("restore: wrong structure rejected",[C.readBackup(JSON.stringify({app:"jolesep",data:{v:2,stmts:{}}})),C.readBackup(JSON.stringify({app:"jolesep",data:{v:2,stmts:[],tx:[5,"x"]}})),C.readBackup(JSON.stringify({app:"jolesep",data:[]}))],[null,null,null]);
+var S1=store();S1.setItem("jolesep_v1","CURRENT");eq("restore: bad file → profile unchanged",[C.restoreInto(S1,"jolesep_v1","{bad").ok,S1.m["jolesep_v1"],Object.keys(S1.m).length],[false,"CURRENT",1]);
+var S2=store();S2.m["jolesep_v1"]="CURRENT";S2.setItem=function(){throw new Error("quota")};var R2=C.restoreInto(S2,"jolesep_v1",GOOD);
+eq("restore: backup fails → stops, profile unchanged",[R2.ok,R2.why,S2.m["jolesep_v1"]],[false,"backup","CURRENT"]);
+var S3=store();S3.setItem("jolesep_v1","CURRENT");var R3=C.restoreInto(S3,"jolesep_v1",GOOD);
+eq("restore: success → old profile in backup, new data loaded",[R3.ok,S3.m[R3.backup],JSON.parse(S3.m["jolesep_v1"]).tx.length],[true,"CURRENT",1]);
+var R4=C.restoreInto(S3,"jolesep_v1",GOOD);eq("restore twice: both backups kept",[R4.ok,R4.backup!==R3.backup,S3.m[R3.backup]],[true,true,"CURRENT"]);
+var S5=store();S5.setItem("jolesep_v1@d2","DRIVER2");S5.setItem("jolesep_v1","DRIVER1");C.restoreInto(S5,"jolesep_v1@d2",GOOD);eq("restore: other driver's profile untouched",S5.m["jolesep_v1"],"DRIVER1");
 console.log("\nPASS "+pass+"  FAIL "+fail+"  NOT RUN "+SKIP);process.exit(fail||SKIP?1:0);

@@ -371,6 +371,15 @@ C.autoSaveOk=function(st){return !!st&&st.gross>0&&C.stmtCalc(st).rec.status==="
 /* never overwrites an existing backup: a second backup with the same name gets a time suffix */
 C.safeBackup=function(store,key,raw){if(raw==null)return null;try{var k=key;if(store.getItem(k)!=null){k=key+"_"+new Date().toISOString().replace(/[^0-9]/g,"").slice(0,14);var n=1;while(store.getItem(k)!=null)k=key+"_"+new Date().toISOString().replace(/[^0-9]/g,"").slice(0,14)+"_"+(n++)}store.setItem(k,raw);return store.getItem(k)===raw?k:null}catch(e){return null}};
 C.exportData=function(S,drv){return {app:"jolesep",v:2,date:new Date().toISOString(),driver:drv||null,data:S,photos:{}}};
-C.readBackup=function(txt){var o;try{o=JSON.parse(txt)}catch(e){return null}if(!o||o.app!=="jolesep"||!o.data||typeof o.data!=="object")return null;var d=o.data.v===2?o.data:C.migrate(o.data);if(!d||!Array.isArray(d.stmts||[]))return null;return {data:d,driver:o.driver||null,date:o.date||null,photos:o.photos||{}}};
+C.readBackup=function(txt){var o;try{o=JSON.parse(txt)}catch(e){return null}if(!o||typeof o!=="object"||o.app!=="jolesep"||!o.data||typeof o.data!=="object"||Array.isArray(o.data))return null;
+ var d;try{d=o.data.v===2?o.data:C.migrate(o.data)}catch(e){return null}if(!d||typeof d!=="object")return null;
+ var arrs=["stmts","tx","loads","trips","debts","shop","log"];for(var i=0;i<arrs.length;i++){var v=d[arrs[i]];if(v==null)continue;if(!Array.isArray(v))return null;for(var j=0;j<v.length;j++)if(!v[j]||typeof v[j]!=="object"||Array.isArray(v[j]))return null}
+ if(!Array.isArray(d.stmts))return null;
+ return {data:d,driver:o.driver&&typeof o.driver==="object"?o.driver:null,date:o.date||null,photos:o.photos&&typeof o.photos==="object"?o.photos:{}}};
+/* restore: valid file only; the current profile is copied first — if that copy fails, nothing is changed */
+C.restoreInto=function(store,key,txt){var o=C.readBackup(txt);if(!o)return {ok:false,why:"badFile"};var cur=null;try{cur=store.getItem(key)}catch(e){return {ok:false,why:"storage"}}
+ var bk=null;if(cur!=null){bk=C.safeBackup(store,key+"_backup_before_restore",cur);if(!bk)return {ok:false,why:"backup"}}
+ try{store.setItem(key,JSON.stringify(o.data))}catch(e){try{if(cur!=null)store.setItem(key,cur)}catch(e2){}return {ok:false,why:"storage"}}
+ return {ok:true,backup:bk,res:o}};
 G.JE=C;if(typeof module!=="undefined")module.exports=C;
 })(typeof window!=="undefined"?window:this);
