@@ -138,4 +138,11 @@ eq("weekly lease has no balance split",C.truckCalc({stmts:STK.stmts,truck:{type:
 // shop: $3000 repair, company paid $1000, then statement deductions reduce debt; expense counted once (only deductions)
 var SH={stmts:[{id:"w1",d:"2026-11-08",p1:"2026-11-08",gross:0,ded:[{c:"shop_debt",a:50000,shop:"r1"}]}],shop:[{id:"r1",total:300000,co:100000,drv:0}],tx:[],loads:[]};var SC=C.shopCalc(SH)[0];
 eq("shop remaining",[SC.total,SC.paid,SC.remaining],[300000,150000,150000]);eq("shop deduction counted once as expense",C.totals(SH,W).exp,50000);
+
+// balances read from statement lines; unknown balances stay unknown
+var RB=C.parseStatement("Shop Repair Loan payment $250.00\nShop loan balance $1,750.00\nCompany Loan Repay $100.00\nLoan balance remaining $900.00");
+eq("balances parsed",RB.bal.map(function(b){return b.k+":"+b.a}),["shop:175000","co:90000"]);eq("debt lines categorized",RB.ded.map(function(d){return d.c}),["shop_debt","co_debt"]);
+eq("unknown debt balance stays null",C.debtCalc({stmts:[],debts:[{id:"u",opening:null,items:[]}]})[0].remaining,null);
+eq("unknown shop total stays null",C.shopCalc({stmts:[],shop:[{id:"s"}]})[0].remaining,null);
+eq("different settlement numbers are not duplicates",!!C.stmtDup({id:"x",company:"A",num:"2",p1:"2026-11-15",gross:1395000,d:"2026-11-15"},{stmts:[{id:"y",company:"A",num:"1",p1:"2026-11-08",gross:1395000,d:"2026-11-08"}]}),false);
 console.log("\nPASS "+pass+"  FAIL "+fail);process.exit(fail?1:0);
