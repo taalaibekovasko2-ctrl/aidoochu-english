@@ -202,19 +202,33 @@ C.truckCalc=function(S){var T=S.truck||{},pays=[],tc=C.norm(T.company);
  pays.forEach(function(p){var it=0,pr=0;if(fin){it=Math.min(p.a,Math.round(bal*apr/10000/per));pr=p.a-it;bal=Math.max(0,bal-pr)}rows.push({d:p.d,a:p.a,interest:it,principal:pr,bal:fin?bal:null,src:p.src,id:p.id,i:p.i});intT+=it;prinT+=pr});
  return {pays:rows,paid:C.sum(pays,"a"),interest:intT,principal:prinT,lease:fin?0:C.sum(pays,"a"),balance:fin?bal:null,isLoan:fin}};
 /* ---------- company debts ---------- */
-C.debtCalc=function(S){var out=[];(S.debts||[]).forEach(function(d){var items=(d.items||[]).slice();
-  (S.stmts||[]).forEach(function(st){(st.ded||[]).forEach(function(x){if(x.debt===d.id&&C.isCoDebt(x,S))items.push({d:C.stDay(st),a:-x.a,src:"st",id:st.id})});
-   if(st.negCarry===d.id){var k=C.stmtCalc(st);if(k.net<0)items.push({d:C.stDay(st),a:-k.net,src:"neg",id:st.id})}});
-  var nw=0,pay=0;items.forEach(function(i){if(i.a>0)nw+=i.a;else pay+=-i.a});var unk=(d.opening==null||d.opening===0&&!d.zeroOk)&&!nw; /* 0 typed by default is not a known balance */var rem=unk?null:(d.opening||0)+nw-pay;
-  /* status: paid (green) · active (red) · unknown balance (yellow) */
-  var st=d.closed||rem!=null&&rem<=0&&(nw||d.opening)?"paid":rem==null?"unknown":"active";
-  out.push({id:d.id,company:d.company,type:d.type,opening:d.opening==null?null:d.opening,openKnown:d.opening!=null,newDebt:nw,payments:pay,remaining:rem,unknown:unk,status:st,closed:!!d.closed,over:rem!=null&&rem<0?-rem:0,items:items.sort(function(a,b){return a.d<b.d?-1:1})})});return out};
+C.debtCalc=function(S){var out=[];(S.debts||[]).forEach(function(d){var items=(d.items||[]).map(function(i){return {d:i.d,a:i.a,src:i.src||"man",note:i.note}}),snaps=[];
+  (S.stmts||[]).forEach(function(st){var day=C.stDay(st),mine=false,tag={id:st.id,co:st.company||"",p0:st.p0||null,p1:st.p1||st.d||null};
+   (st.ded||[]).forEach(function(x){if(x.debt===d.id&&C.isCoDebt(x,S)){mine=true;items.push({d:day,a:-x.a,src:"st",id:st.id,st:tag,v:x.v||""})}});
+   if(st.advDebt===d.id&&st.adv>0&&!st.advInDed){mine=true;items.push({d:day,a:st.adv,src:"st",id:st.id,st:tag,v:"Advance",isNew:1})} /* money advanced on the statement = new debt */
+   if(st.negCarry===d.id){var k=C.stmtCalc(st);if(k.net<0){mine=true;items.push({d:day,a:-k.net,src:"neg",id:st.id,st:tag,isNew:1})}}
+   var b=(st.bal||[]).filter(function(x){return x.k==="co"})[0];if(mine&&b)snaps.push({d:day,a:b.a,id:st.id})}); /* balance printed on the statement */
+  items.sort(function(a,b){return a.d<b.d?-1:a.d>b.d?1:(b.a>0?1:-1)});
+  var nw=0,pay=0;items.forEach(function(i){if(i.a>0)nw+=i.a;else pay+=-i.a});
+  var rem=null,how="unknown";snaps.sort(function(a,b){return a.d<b.d?-1:1});
+  if(snaps.length){var sn=snaps[snaps.length-1];rem=sn.a;items.forEach(function(i){if(i.d>sn.d||i.d===sn.d&&i.id!==sn.id&&i.src!=="st")rem+=i.a>0?i.a:i.a});how="statement"} /* latest printed balance, then later movements */
+  else if(d.opening!=null&&(d.opening>0||d.zeroOk)){rem=d.opening+nw-pay;how="start"}            /* older data: a start amount that was entered */
+  else if(items.length&&items[0].a>0){rem=nw-pay;how="fromZero"}                                 /* the debt began inside the app (first record is new debt) */
+  var st2=d.closed?"paid":rem==null?"unknown":rem<=0?"paid":"active",total=rem==null?null:Math.max(0,rem)+pay;
+  out.push({id:d.id,company:d.company,type:d.type,opening:d.opening==null?null:d.opening,openKnown:how!=="unknown",newDebt:nw,payments:pay,total:total,remaining:rem,unknown:rem==null,how:how,status:st2,closed:!!d.closed,over:rem!=null&&rem<0?-rem:0,items:items})});return out};
+C.unassignedDebt=function(S){var u=[];(S.stmts||[]).forEach(function(st){(st.ded||[]).forEach(function(x,i){if(C.isCoDebt(x,S)&&!x.debt)u.push({st:st,i:i,a:x.a,v:x.v})})});return u};
+C.debtCandidates=function(S,st){return (S.debts||[]).filter(function(d){return d.type!=="neg"&&(!d.company||!st.company||C.norm(d.company)===C.norm(st.company))})};
+/* fully automatic: every company-debt line and every advance of a statement goes to that company's debt record */
+C.autoDebts=function(S,st,uid){var lines=(st.ded||[]).filter(function(x){return C.isCoDebt(x,S)}),adv=st.adv>0&&!st.advInDed;if(!lines.length&&!adv)return null;S.debts=S.debts||[];
+ var key=C.norm(st.company||""),dd=S.debts.filter(function(x){return x.type!=="neg"&&C.norm(x.company||"")===key&&!x.closed})[0];
+ if(!dd){var lb=String((lines[0]||{}).v||"").toUpperCase();dd={id:"d"+uid(),company:st.company||"",type:/ADVANCE/.test(lb)||adv?"advance":/FUEL/.test(lb)?"fuel_adv":/REPAIR/.test(lb)?"repair_adv":/CHARGE|DAMAGE/.test(lb)?"damage":"loan",opening:null,items:[],auto:true};S.debts.push(dd)}
+ lines.forEach(function(x){if(!x.debt)x.debt=dd.id});if(adv)st.advDebt=dd.id;return dd};
 /* a hand-entered payment that is already recorded: same day & amount (exact), or the same amount taken from a statement within 7 days (probably the same money) */
 C.debtPayDup=function(S,id,d,a){var c=C.debtCalc(S).filter(function(x){return x.id===id})[0];if(!c)return null;var hit=null;
  c.items.forEach(function(i){if(i.a>=0||hit)return;var amt=-i.a;if(amt!==a)return;if(i.src==="man"&&i.d===d)hit="same";else if(i.src==="st"&&Math.abs(C.days(i.d,d))<=7)hit="statement"});return hit};
 /* all debts in one list for the Debts screen: company · truck loan · truck shop · other */
 C.allDebts=function(S){var out=[],unitOf=function(co){var u=null;(S.stmts||[]).forEach(function(st){if(st.unit&&(!co||C.norm(st.company)===C.norm(co)))u=st.unit});return u||(S.truck&&S.truck.num)||null};
- C.debtCalc(S).forEach(function(d){out.push({grp:d.type==="other"?"other":"co",id:d.id,name:d.company||"",to:d.company||"",unit:unitOf(d.company),opening:d.opening,paid:d.payments,newDebt:d.newDebt,remaining:d.remaining,status:d.status,over:d.over,items:d.items,type:d.type,src:"debt"})});
+ C.debtCalc(S).forEach(function(d){out.push({grp:d.type==="other"?"other":"co",id:d.id,name:d.company||"",to:d.company||"",unit:unitOf(d.company),opening:d.opening,total:d.total,paid:d.payments,newDebt:d.newDebt,remaining:d.remaining,status:d.status,over:d.over,items:d.items,type:d.type,src:"debt"})});
  var tk=C.truckCalc(S),T=S.truck||{};if(tk.isLoan){var op=T.balance||null;out.push({grp:"truck",id:"truck",name:T.owner||T.company||"",to:T.owner||T.company||"",unit:T.num||unitOf(T.company),opening:op,paid:tk.principal,interest:tk.interest,remaining:op==null?null:tk.balance,status:op==null?"unknown":tk.balance<=0?"paid":"active",items:tk.pays.map(function(p){return {d:p.d,a:-p.a,src:p.src,principal:p.principal,interest:p.interest}}),src:"truck"})}
  C.shopCalc(S).forEach(function(x){if(x.owedTo==="company")return; /* moved to a company debt */var r=x.r,owes=x.payer==="credit"||x.payer==="install"||x.pays.length;if(!owes)return;
   out.push({grp:"shop",id:x.id,name:r.name||"Shop",to:r.name||"Shop",unit:unitOf(null),opening:x.total,paid:x.paid,remaining:x.remaining,status:r.closed||x.remaining===0?"paid":x.remaining==null?"unknown":"active",items:x.pays.map(function(p){return {d:p.d,a:-p.a,src:p.src}}),src:"shop"})});

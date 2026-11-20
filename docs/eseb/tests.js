@@ -451,4 +451,23 @@ var GA=C.allDebts(GD);eq("groups: other · truck loan · shop on credit (paid-in
 var RW2=JSON.parse(JSON.stringify(RD));RW2.id="again";eq("same statement again is recognized (number, week, totals)",[C.stmtSame(RW2,RD),!!C.stmtDup(RW2,{stmts:[RD]})],[true,true]);
 var RW3=JSON.parse(JSON.stringify(RD));RW3.ded[0].a+=100;eq("different totals → not 'the same' (user decides)",C.stmtSame(RW3,RD),false);
 var RW4=JSON.parse(JSON.stringify(RD)),RW5=JSON.parse(JSON.stringify(RD));RW4.num="ST-1";RW5.num="ST-2";eq("different settlement number → not the same",C.stmtSame(RW4,RW5),false);
+
+// ===== automatic debts (only what statements show) =====
+var uidN=0;function U(){return "u"+(++uidN)}
+function stW(id,p0,p1,ded,extra){return Object.assign({id:id,company:"ACME",d:p1,p0:p0,p1:p1,gross:300000,rate:10000,loads:[{g:300000}],ded:ded||[]},extra||{})}
+var A1={stmts:[stW("a1","2026-11-02","2026-11-08",[],{adv:50000})],debts:[]};A1.stmts.forEach(function(st){C.autoDebts(A1,st,U)});
+eq("advance on a statement → new debt, recorded automatically",[A1.debts.length,C.debtCalc(A1)[0].newDebt,C.debtCalc(A1)[0].total,C.debtCalc(A1)[0].remaining],[1,50000,50000,50000]);
+A1.stmts.push(stW("a2","2026-11-09","2026-11-15",[{c:"co_debt",a:20000,v:"Advance repayment"}]));C.autoDebts(A1,A1.stmts[1],U);var A1c=C.debtCalc(A1)[0];
+eq("next statement repays 200 → total 500 · paid 200 · left 300 (same debt, not a new one)",[A1.debts.length,A1c.total,A1c.payments,A1c.remaining,A1c.status],[1,50000,20000,30000,"active"]);
+C.autoDebts(A1,A1.stmts[1],U);eq("running again does not add anything twice",[A1.debts.length,C.debtCalc(A1)[0].payments],[1,20000]);
+eq("history: date, amount, which statement",C.debtCalc(A1)[0].items.map(function(i){return [i.d,i.a,i.st.id]}),[["2026-11-08",50000,"a1"],["2026-11-15",-20000,"a2"]]);
+var B1={stmts:[stW("b1","2026-11-02","2026-11-08",[{c:"co_debt",a:200000,v:"DR DEBT"}],{bal:[{k:"co",a:800000}]})],debts:[]};C.autoDebts(B1,B1.stmts[0],U);
+eq("balance printed on the statement → left 8,000, total = paid + left",[C.debtCalc(B1)[0].remaining,C.debtCalc(B1)[0].total,C.debtCalc(B1)[0].how],[800000,1000000,"statement"]);
+B1.stmts.push(stW("b2","2026-11-09","2026-11-15",[{c:"co_debt",a:200000,v:"DR DEBT"}]));C.autoDebts(B1,B1.stmts[1],U);
+eq("later payment without a printed balance → 8,000 − 2,000 = 6,000",[C.debtCalc(B1)[0].remaining,C.debtCalc(B1)[0].total,C.debtCalc(B1)[0].payments],[600000,1000000,400000]);
+var P1={stmts:[stW("p1","2026-11-02","2026-11-08",[{c:"co_debt",a:200000,v:"DR DEBT"},{c:"co_debt",a:200000,v:"DR DEBT"}])],debts:[]};C.autoDebts(P1,P1.stmts[0],U);var P1c=C.debtCalc(P1)[0];
+eq("payments only (ROYCE case) → paid 4,000, total & left 'needs checking', no made-up start",[P1c.payments,P1c.newDebt,P1c.total,P1c.remaining,P1c.status],[400000,0,null,null,"unknown"]);
+var R1={stmts:[Object.assign({id:"rr"},RD)],debts:[]};R1.stmts[0].ded.forEach(function(x){delete x.debt});C.autoDebts(R1,R1.stmts[0],U);var R1c=C.debtCalc(R1)[0];
+eq("real ROYCE PDF: one ROYCE LLC debt, paid 4,000, $8,000 from Comments not used",[R1.debts.length,R1.debts[0].company,R1c.payments,R1c.total,R1c.remaining],[1,"ROYCE LLC",400000,null,null]);
+eq("debts never change Net Pay / business expenses",[C.stmtCalc(R1.stmts[0]).net,C.totals(R1,["2026-11-01","2026-11-07"]).exp],[728318,481608]);
 console.log("\nPASS "+pass+"  FAIL "+fail+"  NOT RUN "+SKIP);process.exit(fail||SKIP?1:0);
