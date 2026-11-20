@@ -47,7 +47,7 @@ C.kindOf=function(c,S,x){if(x&&x.dk)return x.dk;var u=C.custom(S,c);if(u)return 
 C.isTaxable=function(c,S,x){if(x&&x.tax!=null)return !!x.tax;var u=C.custom(S,c);if(u&&u.tax!=null)return !!u.tax;var k=C.kindOf(c,S,x);return k==="expense"||k==="loan"};
 
 /* keyword → category for statement / receipt lines (order matters: specific first) */
-C.KW=[["escrow",/ESCROW/],["reserve",/RESERVE|MAINT(ENANCE)? (FUND|RESERVE)/],["wash",/TRUCK ?WASH|BLUE ?BEACON|\bWASH\b/],["co_fee",/ADMIN FEE|SERVICE FEE|COMPANY FEE|PROCESSING FEE|PLATFORM FEE/],["tires",/TIRE/],["co_debt",/LOAN REPAY|ADVANCE REPAY|CHARGE ?BACK|COMPANY LOAN|DAMAGE|NEG(ATIVE)? BAL|CARRY ?OVER|PREVIOUS BAL/],["shop_debt",/SHOP (DEBT|LOAN|PAYMENT|INSTALL)|REPAIR (LOAN|INSTALL|ADVANCE)/],["ifta_eld",/\bIF?TA\s*(&|AND|\/|\+)?\s*(LOG|ELD)|(LOG ?BOOK|ELD)\s*(&|AND|\/|\+)\s*IF?TA\b/],["prepass",/PRE ?PASS|BESTPASS|DRIVEWYZE/],["def",/\bDEF\b|DIESEL EXHAUST/],
+C.KW=[["escrow",/ESCROW/],["reserve",/RESERVE|MAINT(ENANCE)? (FUND|RESERVE)/],["wash",/TRUCK ?WASH|BLUE ?BEACON|\bWASH\b/],["co_fee",/ADMIN FEE|SERVICE FEE|COMPANY FEE|PROCESSING FEE|PLATFORM FEE/],["tires",/TIRE/],["co_debt",/DRIVER DEBT|DEBT (REPAY|PAYMENT|DEDUCT)|LOAN REPAY|ADVANCE REPAY|CHARGE ?BACK|COMPANY LOAN|DAMAGE|NEG(ATIVE)? BAL|CARRY ?OVER|PREVIOUS BAL/],["shop_debt",/SHOP (DEBT|LOAN|PAYMENT|INSTALL)|REPAIR (LOAN|INSTALL|ADVANCE)/],["ifta_eld",/\bIF?TA\s*(&|AND|\/|\+)?\s*(LOG|ELD)|(LOG ?BOOK|ELD)\s*(&|AND|\/|\+)\s*IF?TA\b/],["prepass",/PRE ?PASS|BESTPASS|DRIVEWYZE/],["def",/\bDEF\b|DIESEL EXHAUST/],
  ["bobtail",/BOBTAIL/],["cargo_ins",/CARGO/],["truck_ins",/INSUR|OCC(UPATIONAL)? ?ACC|PHYSICAL DAMAGE|\bPD\b|LIABILITY|\bNTL\b|\bINS\b/],
  ["trailer_repair",/TRAILER (REPAIR|MAINT)|REEFER REPAIR/],["trailer",/TRAILER|\bVAN RENT|REEFER RENT/],["truck_pay",/TRUCK PAY|LEASE|TRACTOR|TRUCK LOAN|TRUCK NOTE|FINANC/],
  ["ifta",/\bIFTA\b|FUEL TAX/],["eld",/\bELD\b|LOG ?BOOK|SAMSARA|MOTIVE|KEEP ?TRUCKIN|OMNITRACS/],["phone",/PHONE|INTERNET|VERIZON|T-?MOBILE|AT&T|TABLET|DATA PLAN/],
@@ -276,7 +276,8 @@ C.parseStatement=function(txt){txt=C.fixLig(txt);
   if(!R.num&&(mm=u.match(/(?:SETTLEMENT|STATEMENT|STMT)\s*(?:#|NO\.?|NUMBER|ID)?\s*[:#]\s*([A-Z]{0,4}-?\d[A-Z0-9\-]{2,})/)))R.num=mm[1];
   if(/PERIOD\s*START|START\s*DATE|PERIOD\s*FROM/.test(u)){var q1=dates(u);if(q1.length)R.p0=q1[0]}
   if(/PERIOD\s*END|END\s*DATE|PERIOD\s*TO|WEEK\s*ENDING/.test(u)){var q2=dates(u);if(q2.length)R.p1=q2[q2.length-1]}
-  if(!R.unit&&(mm=u.match(/UNIT\s*(?:NUMBER|NO\.?|#)?\s*:?\s*([A-Z0-9]{2,})/)))R.unit=mm[1];
+  if(!R.unit&&(mm=u.match(/(?:UNIT|TRUCK|TRACTOR)\s*(?:NUMBER|NO\.?|#)?\s*[:#]?\s*#?([A-Z]{0,3}\d[A-Z0-9\-]{0,9})\b/)))R.unit=mm[1];
+  if(!R.week&&(mm=u.match(/\bWEEK\s*#?\s*(\d{1,2})\b/)))R.week=+mm[1];
   if(!R.driver&&(mm=l.match(/DRIVER(?: NAME)?\s*:\s*([A-Za-z][A-Za-z .'\-]{2,40})/i)))R.driver=mm[1].replace(/\s+(UNIT|TRUCK).*$/i,"").trim();
   if(/PERIOD|WEEK|FROM\b/.test(u)&&!R.p0){var ds=dates(u);if(ds.length>=2){R.p0=ds[0];R.p1=ds[1]}else if(ds.length===1&&/ENDING/.test(u)){R.p1=ds[0];R.p0=C.addDays(ds[0],-6)}}
   if(!R.d&&/(STATEMENT|SETTLEMENT|CHECK|PAY)\s*DATE/.test(u)){var d1=dates(u);if(d1.length)R.d=d1[0]}
@@ -286,7 +287,7 @@ C.parseStatement=function(txt){txt=C.fixLig(txt);
  lines.forEach(function(l){ln++;if(/^\[\[PAGE (\d+)\]\]$/.test(l)){page=+l.match(/\d+/)[0];ln=0;return}var u=l.toUpperCase(),a=lastMoney(l),ls=locs(u),mm;
   if(/^FUEL\s*TRANSACTIONS|^FUEL\s*(PURCHASES|DETAIL)/.test(u)){sec="fuel";return}
   if(/^TOLL\s*TRANSACTIONS|^TOLL\s*DETAIL/.test(u)){sec="toll";return}
-  if(/^DEDUCTION\s*TYPE|^DEDUCTIONS$/.test(u)){sec="ded";return}
+  if(/^DEDUCTION\s*TYPE|^(DEDUCTIONS?|EXPENSES?|CHARGES|DEDUCTIONS? (AND|&) EXPENSES)\s*:?$/.test(u)){sec="ded";return}
   if(/^EARNINGS$|^LOAD\s*(NUMBER|#)/.test(u)){sec="loads";return}
   if(sec==="toll"){if(a!=null&&!/TOTAL/.test(u)){R.tolls=R.tolls||[];R.tolls.push({d:dates(u)[0]||null,a:a})}return} /* detail of the Toll deduction — info only */
   if(sec==="fuel"){if(a==null)return;var dl=(l.match(/\(?[-−]?\$\s?(?:\d{1,3}(?:,\d{3})+|\d+)\.\d{2}\)?/g)||[]).map(C.cents),ms=dl.length?dl:moneys(l);
@@ -300,7 +301,7 @@ C.parseStatement=function(txt){txt=C.fixLig(txt);
   if(/^\s*REIMBURSEMENTS?\s*:/.test(u)&&a!=null){R.reimb=Math.abs(a);return}
   if(/^\s*OTHER\s*PAY\s*:/.test(u)&&a!=null){R.other=Math.abs(a);return}
   if(sec==="loads"&&/^TOTAL/.test(u)){var tm=moneys(l);if(tm.length&&R.gross==null)R.gross=tm[0];if(tm.length>1&&R.earn==null)R.earn=tm[tm.length-1];return}
-  if(sec==="ded"&&/^TOTAL/.test(u)){if(a!=null&&R.dedTotal==null)R.dedTotal=Math.abs(a);return}
+  if(sec==="ded"&&/^TOTAL/.test(u)&&!/PAY|NET|SETTLEMENT/.test(u)){if(a!=null&&R.dedTotal==null)R.dedTotal=Math.abs(a);return}
   if(/(DRIVER|CONTRACTOR|OWNER OPERATOR|O\/O)\s*(RATE|%|PERCENT)|\bRATE\s*:?\s*\d{1,3}(\.\d+)?\s*%|\b\d{1,3}(\.\d+)?\s*%\s*(DRIVER|TO DRIVER|PAY)/.test(u)&&(mm=u.match(/(\d{1,3}(?:\.\d+)?)\s*%/))&&R.rate==null&&!/COMMISSION|COMPANY|FEE/.test(u))R.rate=C.bp(mm[1]);
   if(ls.length>=2&&a!=null){var nums=u.replace(C.MONEY," ").replace(/\d{1,2}[\/\-.]\d{1,2}[\/\-.]\d{2,4}/g," ").replace(/\d+(\.\d+)?\s*%/g," ").replace(/\b\d{5,}\b/g," ");
    var lr=u.match(/(\d{1,3}(?:\.\d+)?)\s*%/);if(lr&&R.rate==null)R.rate=C.bp(lr[1]);var mi=null,m2=nums.match(/(\d{2,4})\s*(?:MI|MILES?|LM|LOADED)\b/);
@@ -312,13 +313,14 @@ C.parseStatement=function(txt){txt=C.fixLig(txt);
    R.fuel.push({d:ds3[0]||null,v:(l.match(/^[^\d$]{3,30}/)||[""])[0].trim(),gal:g!=null?Math.round(parseFloat(g)*100):null,c:/\bDEF\b/.test(u)?"def":"diesel",a:a,inv:a,ret:null});return}
   if(/RETAIL/.test(u)&&/FUEL|TOTAL/.test(u)){R.fuelRetail=a;return}
   if(/INVOICE|DISCOUNTED/.test(u)&&/FUEL|TOTAL/.test(u)){R.fuelInvoice=a;return}
-  if(/TOTAL\s*DEDUCTION|DEDUCTIONS?\s*TOTAL/.test(u)){R.dedTotal=Math.abs(a);return}
-  if(/NET\s*(PAY|AMOUNT|SETTLEMENT)|AMOUNT\s*PAID|CHECK\s*AMOUNT|SETTLEMENT\s*AMOUNT|TOTAL\s*PAY(?!MENT)/.test(u)&&!/YTD|YEAR/.test(u)){R.net=a;return}
+  if(/TOTAL\s*DEDUCTION|DEDUCTIONS?\s*TOTAL|TOTAL\s*(EXPENSES|CHARGES)/.test(u)){R.dedTotal=Math.abs(a);return}
+  if(/FUEL/.test(u)&&/DISCOUNT|REBATE|SAVINGS/.test(u)&&!/TOTAL\s*(EXPENSE|DEDUCT)/.test(u)){R.fuelDisc=(R.fuelDisc||0)+Math.abs(a);return} /* decided after: reduces fuel once, never income */
+  if(/NET\s*(PAY|AMOUNT|SETTLEMENT)|AMOUNT\s*PAID|(?:TOTAL|AMOUNT)\s*PAYABLE|CHECK\s*AMOUNT|SETTLEMENT\s*AMOUNT|TOTAL\s*PAY(?!MENT)/.test(u)&&!/YTD|YEAR/.test(u)){R.net=a;return}
   if(/YTD|YEAR TO DATE/.test(u))return;
   if(/BALANCE|REMAINING|OWED|OUTSTANDING/.test(u)&&!/NET|SETTLEMENT|CHECK|PAY\b/.test(u)){var bk=/SHOP|REPAIR/.test(u)?"shop":/ESCROW|RESERVE/.test(u)?"escrow":/TRUCK|LEASE|TRACTOR/.test(u)?"truck":/LOAN|ADVANCE|DEBT|CHARGE/.test(u)?"co":null;if(bk){R.bal=R.bal||[];R.bal.push({k:bk,a:Math.abs(a)});return}}
   if(/(DRIVER|CONTRACTOR|YOUR|O\/O)\s*(EARNINGS|GROSS|PAY|SHARE|REVENUE)|EARNINGS\s*\(\s*\d/.test(u)&&R.earn==null){R.earn=a;return}
   if(/COMMISSION|COMPANY\s*(FEE|SHARE|PORTION)|CARRIER\s*(FEE|SHARE)/.test(u)&&R.fee==null){R.fee=Math.abs(a);return}
-  if(/GROSS|TOTAL\s*REVENUE|LINE ?HAUL\s*TOTAL|TOTAL\s*LINE ?HAUL|TOTAL\s*LOAD|LOAD\s*TOTAL|TOTAL\s*FREIGHT/.test(u)&&!/NET/.test(u)&&R.gross==null){R.gross=a;return}
+  if(/GROSS|TOTAL\s*REVENUE|LINE ?HAUL\s*TOTAL|TOTAL\s*LINE ?HAUL|TOTAL\s*LOAD|LOAD\s*TOTAL|TOTAL\s*FREIGHT/.test(u)&&!/NET/.test(u)&&R.gross==null){var gm=moneys(l);if(gm.length>=2&&gm[0]>gm[gm.length-1]){R.gross=gm[0];if(R.earn==null)R.earn=gm[gm.length-1]}else R.gross=a;return} /* "Total  $gross … $driver share" */
   if(/ADVANCE|CASH ADV|COMCHECK/.test(u)&&sec!=="ded"){R.adv=(R.adv||0)+Math.abs(a);return}
   if(/ADVANCE|CASH ADV|COMCHECK/.test(u)&&sec==="ded"&&!/TOTAL/.test(u)){R.ded.push({pg:page,ln:ln,c:"co_debt",a:Math.abs(a),v:l.replace(C.MONEY,"").replace(/\s+/g," ").trim().slice(0,48)});return}
   if(/REIMB/.test(u)){R.reimb=(R.reimb||0)+Math.abs(a);return}
@@ -331,6 +333,10 @@ C.parseStatement=function(txt){txt=C.fixLig(txt);
  if(R.gross==null&&R.loads.length)R.gross=C.sum(R.loads,"g");
  if(R.fuelInvoice!=null){var fd=R.ded.filter(function(x){return x.c==="diesel"});if(!fd.length)R.ded.push({c:"diesel",a:R.fuelInvoice,v:"Fuel (invoice)"})}
  if(R.adv){var advLine=R.ded.filter(function(d){return /ADVANCE|COMCHECK|CASH ADV/i.test(d.v)&&d.a===R.adv})[0];if(advLine){advLine.c="co_debt";R.advInDed=true}}
+ if(R.fuelDisc){var s0=C.sum(R.ded,"a");var known=R.dedTotal!=null||(R.net!=null&&R.earn!=null),withD=R.dedTotal!=null?s0-R.fuelDisc===R.dedTotal:known?R.earn-(s0-R.fuelDisc)===R.net:true;
+  if(withD)R.ded.push({c:"diesel",a:-R.fuelDisc,v:"Fuel discount",disc:true,check:!known}); /* the discount lowers the fuel cost (one time); unverified → user checks */
+  else R.fuelDiscInfo=R.fuelDisc} /* already inside the fuel price → info only, not counted again */
+ if(!R.p0&&R.week){var yr=(U.match(/\b(20\d{2})\b/)||[])[1];if(yr){var j4=Date.UTC(+yr,0,4),dw=(new Date(j4).getUTCDay()+6)%7,mon=j4-dw*864e5+(R.week-1)*7*864e5;R.p0=C.iso(mon);R.p1=C.iso(mon+6*864e5);R.weekGuess=true}}
  R.grossDoc=R.gross;R.grossLoads=C.sum(R.loads,"g");
  if(!R.d)R.d=R.p1||null;
  return R};

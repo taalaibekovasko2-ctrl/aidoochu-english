@@ -299,4 +299,19 @@ eq("ligature: Bu¤¤alo → Buffalo, Je¤¤erson → Jefferson (known words)",C.
 eq("ligature: upper case kept",C.fixLig("SEA¤¤LE,WA"),"SEATTLE,WA");eq("ligature: text without marker unchanged",C.fixLig("Laton,CA"),"Laton,CA");
 if(typeof RT!=="undefined"){var LT=RT.split("Seattle").join("Sea¤¤le").split("Settlement").join("Se¤¤lement"),LR=C.parseStatement(LT);
  eq("real ARAVAN via pdf.js ligatures: cities, number and totals unchanged",[LR.loads[1].t,LR.loads[2].f,LR.num,C.stmtCalc(LR).net,C.stmtCalc(LR).rec.status],["Seattle, WA","Seattle, WA",RR.num,757552,"full"])}
+
+// ===== other company layouts (synthetic, no real data) =====
+var SYN=require("fs").readFileSync(require("path").join(__dirname,"fixtures","synthetic_other_layout.txt"),"utf8"),SR=C.parseStatement(SYN),SK=C.stmtCalc(SR);
+eq("layout B: header (company, driver, truck #, week 45 → period)",[SR.company,SR.driver,SR.unit,SR.week,SR.p0,SR.p1],["TESTCO LOGISTICS LLC","TEST DRIVER","1207",45,"2026-11-02","2026-11-08"]);
+eq("layout B: loads with pickup/delivery/miles/freight",SR.loads.map(function(l){return [l.num,l.f,l.t,l.mi,l.g]}),[["L55102","Dallas, TX","Memphis, TN",452,200000],["L55117","Memphis, TN","Atlanta, GA",391,150000]]);
+eq("layout B: 'Total Gross $3,500 … $1,050' → gross vs driver share",[SR.gross,SR.earn,SR.rate],[350000,105000,3000]);
+eq("layout B: Total Expenses / Total Payable",[SR.dedTotal,SR.net],[61000,44000]);
+eq("layout B: Driver Debt & Advances = debt, not expense",SR.ded.filter(function(d){return C.kindOf(d.c,{},d)==="debt"}).map(function(d){return d.a}),[10000,5000]);
+eq("layout B: fuel discount lowers fuel once (not income)",[C.sum(SR.ded.filter(function(d){return C.catGroup(d.c)==="fuel"}),"a"),SR.other],[36000,null]);
+eq("layout B: full reconciliation",[SK.net,SK.rec.status],[44000,"full"]);
+var SB2=C.totals({stmts:[Object.assign({id:"b"},SR)],tx:[],loads:[]},["2026-11-02","2026-11-08"]);eq("layout B: business profit = 1,050 − (360+25+75)",[SB2.net,SB2.profit,SB2.debtPaid],[44000,59000,15000]);
+var SYN2=SYN.replace("Total Expenses                                                               $610.00","Total Expenses                                                               $650.00").replace("$440.00","$400.00");
+var SR2=C.parseStatement(SYN2);eq("discount already in fuel price → info only, not subtracted again",[SR2.fuelDiscInfo,SR2.ded.some(function(d){return d.disc}),C.stmtCalc(SR2).rec.status],[4000,false,"full"]);
+var EMPTY=C.parseStatement("some unknown document\nno amounts here");eq("unknown document → empty result (nothing invented), never auto-saved",[EMPTY.loads.length,EMPTY.ded.length,EMPTY.gross,EMPTY.net,C.autoSaveOk(EMPTY)],[0,0,null,null,false]);
+if(typeof RR!=="undefined")eq("ARAVAN unchanged after layout changes",[RR.gross,RR.earn,C.sum(RR.ded,"a"),KR.net,RR.num],[1395000,1227600,470048,757552,RR.num]);
 console.log("\nPASS "+pass+"  FAIL "+fail+"  NOT RUN "+SKIP);process.exit(fail||SKIP?1:0);

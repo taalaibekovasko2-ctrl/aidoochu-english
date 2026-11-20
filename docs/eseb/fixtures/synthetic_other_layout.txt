@@ -1,0 +1,16 @@
+TESTCO LOGISTICS LLC
+WEEK 45 DRIVER STATEMENT 2026
+Driver: TEST DRIVER    Truck # 1207
+Load ID   Pickup        Delivery        Miles   Freight Amount   Driver %   Driver Amount
+L55102    Dallas, TX    Memphis, TN     452     $2,000.00        30%        $600.00
+L55117    Memphis, TN   Atlanta, GA     391     $1,500.00        30%        $450.00
+Total Gross                                     $3,500.00                   $1,050.00
+Expenses
+Fuel                                                                         $400.00
+Fuel Discounts                                                               $40.00
+IFTA                                                                         $25.00
+Insurance                                                                    $75.00
+Driver Debt                                                                  $100.00
+Advances                                                                     $50.00
+Total Expenses                                                               $610.00
+Total Payable                                                                $440.00
