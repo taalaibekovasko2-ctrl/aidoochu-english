@@ -88,6 +88,8 @@ C.stmtCalc=function(st){
      Such receipts are kept for gallons, prices, MPG and as proof.
   4) Reimbursements received reduce out-of-pocket cost; advances are not expenses. */
 C.isPers=function(t){return !!t.pers||t.c==="pers"};
+/* a pay-statement line that repays the company (Debts section) */
+C.isCoDebt=function(x,S){if(!x||x.c==='shop_debt'||x.c==='truck_pay'||x.c==='escrow'||x.c==='reserve')return false;if(x.c==='co_debt')return true;var k=C.kindOf(x.c,S||{},x);return k==='debt'||k==='advance'};
 C.counts=function(t,S){return t.kind!="income"&&t.kind!="reimb"&&t.paidBy=="own"&&!t.link&&!t.dupOf&&!C.isPers(t)&&!/^shp/.test(t.id||"")&&C.kindOf(t.c,S,t)==="expense"};
 C.persCounts=function(t){return t.kind=="exp"&&C.isPers(t)&&!t.dupOf};
 C.sameish=function(a,b,days){ /* candidate duplicate test */
@@ -139,15 +141,19 @@ C.range=function(per,ref,c0,c1){var r=C.pd(ref),d=new Date(r),y=d.getUTCFullYear
 C.inR=function(d,r){return !!d&&d>=r[0]&&d<=r[1]};
 
 /* ---------- period totals ---------- */
-C.totals=function(S,r){var r0=r;
- var o={byKind:{},nonTax:0,adjust:0,shopExp:0,ownDebtPaid:0,stDedAll:0,debtPaid:0,escrow:0,pers:0,gross:0,fee:0,earn:0,stDed:0,oop:0,reimb:0,other:0,adv:0,net:0,profit:0,loaded:0,empty:0,
+/* loan payment: only the interest is a business expense; principal never. Unknown split → nothing counted, flagged. */
+C.loanMap=function(S){var tk=C.truckCalc(S),m={};tk.pays.forEach(function(p){m[p.src+":"+p.id+":"+(p.i==null?"":p.i)]=p});return {tk:tk,m:m}};
+C.loanPart=function(LM,src,id,i,a){var p=LM.m[src+":"+id+":"+(i==null?"":i)];if(!p||!LM.tk.isLoan)return {exp:0,principal:p?0:a,unsplit:p?0:a};return {exp:p.interest,principal:p.principal,unsplit:0}};
+C.totals=function(S,r){var r0=r,LM=C.loanMap(S);
+ var o={byKind:{},principal:0,interest:0,loanUnsplit:0,loanIntOwn:0,manDebtPaid:0,nonTax:0,adjust:0,shopExp:0,ownDebtPaid:0,stDedAll:0,debtPaid:0,escrow:0,pers:0,gross:0,fee:0,earn:0,stDed:0,oop:0,reimb:0,other:0,adv:0,net:0,profit:0,loaded:0,empty:0,
   dieselGal:0,defGal:0,dieselCost:0,fuelCost:0,retail:0,invoice:0,src:{gross:[],fee:[],earn:[],exp:[],net:[],profit:[]},byCat:{},stCount:0,loadCount:0,days:0};
  function addCat(c,a,src){o.byCat[c]=(o.byCat[c]||0)+a;o.src.exp.push(src)}
  (S.stmts||[]).forEach(function(st){if(!C.inR(C.stDay(st),r))return;var k=C.stmtCalc(st);o.stCount++;
   o.gross+=k.gross;o.fee+=k.fee;o.earn+=k.earn;o.stDed+=k.ded;o.stDedAll+=k.ded;o.reimb+=k.reimb;o.other+=k.other;o.adv+=k.adv;o.net+=k.net;o.days+=st.days||0;
   o.src.gross.push({t:"st",id:st.id,a:k.gross});o.src.fee.push({t:"st",id:st.id,a:k.fee});o.src.earn.push({t:"st",id:st.id,a:k.earn});o.src.net.push({t:"st",id:st.id,a:k.net});
   (st.ded||[]).forEach(function(x,i){var kd=C.kindOf(x.c,S,x);o.byKind[kd]=(o.byKind[kd]||0)+x.a;
-   if(kd==="expense"||kd==="loan"){addCat(x.c,x.a,{t:"stded",id:st.id,i:i,a:x.a,c:x.c});if(!C.isTaxable(x.c,S,x))o.nonTax+=x.a;return}
+   if(kd==="expense"){addCat(x.c,x.a,{t:"stded",id:st.id,i:i,a:x.a,c:x.c});if(!C.isTaxable(x.c,S,x))o.nonTax+=x.a;return}
+   if(kd==="loan"){var lp=C.loanPart(LM,"st",st.id,i,x.a);o.stDed-=x.a-lp.exp;o.principal+=lp.principal;o.loanUnsplit+=lp.unsplit;if(lp.exp){addCat(x.c,lp.exp,{t:"stded",id:st.id,i:i,a:lp.exp,c:x.c});o.interest+=lp.exp}return}
    o.stDed-=x.a;if(kd==="debt"||kd==="advance")o.debtPaid+=x.a;else if(kd==="deposit"||kd==="holdback")o.escrow+=x.a;else o.adjust+=x.a});
   var lm=0,ld=0;(st.loads||[]).forEach(function(l){lm+=l.mi||0;ld+=l.dh||0;o.loadCount++});
   if(st.miLoaded!=null){o.loaded+=st.miLoaded;o.empty+=st.miEmpty||0}else if(st.miles){o.loaded+=st.miles;o.empty+=st.dh||0}else{o.loaded+=lm;o.empty+=ld}
@@ -161,16 +167,18 @@ C.totals=function(S,r){var r0=r;
   if(t.kind=="income"){o.other+=t.a;o.txIncome=(o.txIncome||0)+t.a;return}
   if(t.c&&C.catGroup(t.c)==="fuel"&&!t.dupOf&&!(t.link&&C.stHasFuelLines(S,t.link)))fuelAdd(t);
   if(t.kind=="exp"&&t.paidBy=="own"&&!t.dupOf&&!t.link&&!C.isPers(t)&&C.kindOf(t.c,S,t)!=="expense")o.ownDebtPaid+=t.a;
+  if(t.kind=="exp"&&t.paidBy=="own"&&!t.dupOf&&!t.link&&!C.isPers(t)&&C.kindOf(t.c,S,t)==="loan"){var lq=C.loanPart(LM,"tx",t.id,null,t.a);o.principal+=lq.principal;o.loanUnsplit+=lq.unsplit;if(lq.exp){o.loanIntOwn+=lq.exp;o.interest+=lq.exp;addCat(t.c,lq.exp,{t:"tx",id:t.id,a:lq.exp,c:t.c})}}
   if(C.counts(t,S)){o.oop+=t.a;if(!C.isTaxable(t.c,S,t))o.nonTax+=t.a;addCat(t.c,t.a,{t:"tx",id:t.id,a:t.a,c:t.c})}else if(C.persCounts(t))o.pers=(o.pers||0)+t.a});
  function fuelAdd(f){var cost=f.inv!=null?f.inv:(f.a||0);if(f.c==="def"){o.defGal+=f.gal||0}else if(f.gal){o.dieselGal+=f.gal;o.dieselCost+=cost}
   if(f.ret!=null&&f.inv!=null){o.retail+=f.ret;o.invoice+=f.inv}}
- var tk=C.truckCalc(S);o.principal=0;o.interest=0;tk.pays.forEach(function(p){if(!C.inR(p.d,r))return;o.interest+=p.interest;if(tk.isLoan&&p.principal){o.principal+=p.principal;if(p.src==="st"){o.stDed-=p.principal;o.byCat.truck_pay=(o.byCat.truck_pay||0)-p.principal}}});
+ /* debt paid by hand (Debts → payment) is the driver's own money */
+ (S.debts||[]).forEach(function(d){(d.items||[]).forEach(function(i){if(i.src==="man"&&i.a<0&&C.inR(i.d,r0))o.manDebtPaid+=-i.a})});
  C.shopCalc(S).forEach(function(x){var r=x.r;if(!C.inR(r.d,r0)||x.total==null)return;var pa=r.paidAmt!=null?r.paidAmt:(r.drv||0)+(r.co||0),notDriver=(x.payer==="company"&&!r.transfer)||x.payer==="owner"?pa:0;var cost=Math.max(0,x.total-notDriver);if(!cost)return;o.shopExp+=cost;addCat("truck_repair",cost,{t:"shop",id:r.id,a:cost,c:"truck_repair"})});
  o.shopOwnPaid=0;C.shopCalc(S).forEach(function(x){var r=x.r;if(x.payer==="driver"&&C.inR(r.d,r0))o.shopOwnPaid+=r.paidAmt!=null?r.paidAmt:(r.drv||0);}); /* later own-money payments to the shop are 'shop_debt' tx → already in ownDebtPaid */
- o.exp=o.stDed+o.oop+o.shopExp;o.fuelSaved=o.retail&&o.invoice?o.retail-o.invoice:0;
+ o.exp=o.stDed+o.oop+o.shopExp+o.loanIntOwn;o.fuelSaved=o.retail&&o.invoice?o.retail-o.invoice:0;
  o.fuelCost=(o.byCat.diesel||0)+(o.byCat.def||0); /* authoritative: counted fuel expenses only */
- o.profit=o.earn+o.other+o.reimb-o.stDed-o.oop-o.shopExp;
- o.cashFlow=o.net-o.oop-o.ownDebtPaid-o.shopOwnPaid+(o.txReimb||0)+(o.txIncome||0); /* money actually received minus money spent from own pocket */
+ o.profit=o.earn+o.other+o.reimb-o.stDed-o.oop-o.shopExp-o.loanIntOwn;
+ o.cashFlow=o.net-o.oop-o.ownDebtPaid-o.manDebtPaid-o.shopOwnPaid+(o.txReimb||0)+(o.txIncome||0); /* money actually received minus money spent from own pocket */
  o.miles=o.loaded+o.empty;
  o.perMile=function(c){return o.miles>0?Math.round(c/o.miles):null};
  o.rpm={gross:o.perMile(o.gross),driver:o.perMile(o.earn),net:o.perMile(o.net),loaded:o.loaded>0?Math.round(o.gross/o.loaded):null};
@@ -187,16 +195,17 @@ C.sumLegs=function(types,meters,pts){var list=types.map(function(t,i){return {ty
 C.truckCalc=function(S){var T=S.truck||{},pays=[],tc=C.norm(T.company);
  (S.stmts||[]).forEach(function(st){if(tc&&st.company&&C.norm(st.company)!==tc)return;if(T.num&&st.unit&&C.norm(st.unit).indexOf(C.norm(T.num))<0&&C.norm(T.num).indexOf(C.norm(st.unit))<0)return;
   (st.ded||[]).forEach(function(x,i){if(x.c==="truck_pay")pays.push({d:C.stDay(st),a:x.a,src:"st",id:st.id,i:i})})});
+ (S.tx||[]).forEach(function(t){if(t.kind==="exp"&&t.c==="truck_pay"&&t.paidBy==="own"&&!t.dupOf&&!t.link&&!C.isPers(t))pays.push({d:t.d,a:t.a,src:"tx",id:t.id})});
  (T.manual||[]).forEach(function(p){pays.push({d:p.d,a:p.a,src:"man",id:p.id})});pays.sort(function(a,b){return a.d<b.d?-1:1});
  var fin=T.type==="financed"||T.type==="lto",bal=T.balance||0,apr=T.aprBp||0,per=T.period==="month"?12:52,intT=0,prinT=0,rows=[];
  pays.forEach(function(p){var it=0,pr=0;if(fin){it=Math.min(p.a,Math.round(bal*apr/10000/per));pr=p.a-it;bal=Math.max(0,bal-pr)}rows.push({d:p.d,a:p.a,interest:it,principal:pr,bal:fin?bal:null,src:p.src,id:p.id,i:p.i});intT+=it;prinT+=pr});
  return {pays:rows,paid:C.sum(pays,"a"),interest:intT,principal:prinT,lease:fin?0:C.sum(pays,"a"),balance:fin?bal:null,isLoan:fin}};
 /* ---------- company debts ---------- */
 C.debtCalc=function(S){var out=[];(S.debts||[]).forEach(function(d){var items=(d.items||[]).slice();
-  (S.stmts||[]).forEach(function(st){(st.ded||[]).forEach(function(x){if(x.c==="co_debt"&&x.debt===d.id)items.push({d:C.stDay(st),a:-x.a,src:"st",id:st.id})});
+  (S.stmts||[]).forEach(function(st){(st.ded||[]).forEach(function(x){if(x.debt===d.id&&C.isCoDebt(x,S))items.push({d:C.stDay(st),a:-x.a,src:"st",id:st.id})});
    if(st.negCarry===d.id){var k=C.stmtCalc(st);if(k.net<0)items.push({d:C.stDay(st),a:-k.net,src:"neg",id:st.id})}});
   var nw=0,pay=0;items.forEach(function(i){if(i.a>0)nw+=i.a;else pay+=-i.a});var unk=d.opening==null&&!nw;out.push({id:d.id,company:d.company,type:d.type,opening:d.opening||0,newDebt:nw,payments:pay,remaining:unk?null:(d.opening||0)+nw-pay,unknown:unk,items:items.sort(function(a,b){return a.d<b.d?-1:1})})});return out};
-C.unassignedDebt=function(S){var u=[];(S.stmts||[]).forEach(function(st){(st.ded||[]).forEach(function(x,i){if(x.c==="co_debt"&&!x.debt)u.push({st:st,i:i,a:x.a,v:x.v})})});return u};
+C.unassignedDebt=function(S){var u=[];(S.stmts||[]).forEach(function(st){(st.ded||[]).forEach(function(x,i){if(C.isCoDebt(x,S)&&!x.debt)u.push({st:st,i:i,a:x.a,v:x.v})})});return u};
 C.debtCandidates=function(S,st){return (S.debts||[]).filter(function(d){return d.type!=="neg"&&(!d.company||!st.company||C.norm(d.company)===C.norm(st.company))})};
 /* ---------- truck shop ---------- */
 C.shopCalc=function(S){return (S.shop||[]).map(function(r){
@@ -207,12 +216,14 @@ C.shopCalc=function(S){return (S.shop||[]).map(function(r){
   var owedTo=payer==="company"&&r.transfer?"company":"shop";
   return {id:r.id,r:r,total:known?total:null,payer:payer,paid:paid+p2,remaining:known?Math.max(0,total-paid-p2):null,owedTo:owedTo,movedToCompany:owedTo==="company"?pa:0,pays:pays}})};
 /* one source for the Expenses screen: every row and whether it counts */
-C.expRows=function(S,r){var rows=[],rr=r;
- (S.stmts||[]).forEach(function(s){if(!C.inR(C.stDay(s),r))return;(s.ded||[]).forEach(function(x,i){var kd=C.kindOf(x.c,S,x);rows.push({src:"st",id:s.id,i:i,d:C.stDay(s),a:x.a,c:x.c,v:x.v,pers:false,kind:kd,cnt:kd==="expense"||kd==="loan"})})});
- (S.tx||[]).forEach(function(t){if(t.kind!=="exp"||!C.inR(t.d,r))return;var p=C.isPers(t);rows.push({src:"tx",id:t.id,d:t.d,a:t.a,c:t.c||"other",v:t.v,pers:p,cnt:p?C.persCounts(t):C.counts(t,S),kind:C.kindOf(t.c||"other",S,t),t:t})});
- C.shopCalc(S).forEach(function(x){var r=x.r;if(!C.inR(r.d,rr)||x.total==null)return;var pa=r.paidAmt!=null?r.paidAmt:(r.drv||0)+(r.co||0),nd=(x.payer==="company"&&!r.transfer)||x.payer==="owner"?pa:0,cost=Math.max(0,x.total-nd);if(cost)rows.push({src:"shop",id:r.id,d:r.d,a:cost,c:"truck_repair",v:r.name||"Shop",kind:"expense",cnt:true})});
- rows.sort(function(a,b){return a.d<b.d?1:a.d>b.d?-1:0});var biz=0,pers=0,tk=C.truckCalc(S);rows.forEach(function(x){if(!x.cnt)return;if(x.pers)pers+=x.a;else biz+=x.a});
- tk.pays.forEach(function(p){if(tk.isLoan&&p.src==="st"&&C.inR(p.d,rr))biz-=p.principal});return {rows:rows,biz:biz,pers:pers}};
+C.expRows=function(S,r){var rows=[],rr=r,LM=C.loanMap(S);
+ (S.stmts||[]).forEach(function(s){if(!C.inR(C.stDay(s),r))return;(s.ded||[]).forEach(function(x,i){var kd=C.kindOf(x.c,S,x),ca=kd==="expense"?x.a:kd==="loan"?C.loanPart(LM,"st",s.id,i,x.a).exp:0;
+  rows.push({src:"st",id:s.id,i:i,d:C.stDay(s),a:x.a,ca:ca,c:x.c,v:x.v,pers:false,kind:kd,cnt:ca!==0})})});
+ (S.tx||[]).forEach(function(t){if(t.kind!=="exp"||!C.inR(t.d,r))return;var p=C.isPers(t),kd=C.kindOf(t.c||"other",S,t),cnt=p?C.persCounts(t):C.counts(t,S),ca=cnt?t.a:0;
+  if(!p&&kd==="loan"&&t.paidBy==="own"&&!t.dupOf&&!t.link){ca=C.loanPart(LM,"tx",t.id,null,t.a).exp;cnt=ca!==0}
+  rows.push({src:"tx",id:t.id,d:t.d,a:t.a,ca:ca,c:t.c||"other",v:t.v,pers:p,cnt:cnt,kind:kd,t:t})});
+ C.shopCalc(S).forEach(function(x){var r=x.r;if(!C.inR(r.d,rr)||x.total==null)return;var pa=r.paidAmt!=null?r.paidAmt:(r.drv||0)+(r.co||0),nd=(x.payer==="company"&&!r.transfer)||x.payer==="owner"?pa:0,cost=Math.max(0,x.total-nd);if(cost)rows.push({src:"shop",id:r.id,d:r.d,a:cost,ca:cost,c:"truck_repair",v:r.name||"Shop",kind:"expense",cnt:true})});
+ rows.sort(function(a,b){return a.d<b.d?1:a.d>b.d?-1:0});var biz=0,pers=0;rows.forEach(function(x){if(!x.cnt)return;if(x.pers)pers+=x.ca;else biz+=x.ca});return {rows:rows,biz:biz,pers:pers}};
 /* statement saved after manual entries: own-money entries equal to a statement line are linked (counted once) */
 C.linkCandidates=function(st,S){var out=[];(S.tx||[]).forEach(function(t){if(t.kind!=="exp"||t.link||t.dupOf||C.isPers(t))return;
   var inP=st.p0&&st.p1?(t.d>=C.addDays(st.p0,-7)&&t.d<=C.addDays(st.p1,1)):Math.abs(C.days(t.d,C.stDay(st)))<=7;if(!inP)return;

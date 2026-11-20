@@ -360,4 +360,39 @@ var BX=C.readAll({texts:[{name:"excel",text:rowsText(CSVR),rows:CSVR}]});eq("Exc
 var OC=fx("layoutC_pdf_items.json").map(function(i){return {x0:i.x0*3,x1:i.x1*3,y:-i.y*3,h:i.h*3,s:i.s}});var BO=C.readAll({texts:[{name:"ocr",text:"",rows:C.cellRows(OC,true)}].map(function(t){t.text=rowsText(t.rows);return t})});
 eq("OCR-style word boxes (y down, other scale) → same result",[C.decide(BO).act,C.stmtCalc(BO).net],["save",269955]);
 eq("company name never taken from a table header line",C.parseStatement("Load ID   Pickup   Delivery   Miles   Freight Amount\nL1   Dallas, TX   Memphis, TN   452   $2,000.00\nTotal Payable $600.00").company,null);
+
+// ===== money in every section agrees (regression) =====
+var WK=["2026-11-02","2026-11-08"],YR=["2026-01-01","2026-12-31"];
+function agree(name,S){[WK,YR].forEach(function(r){var t=C.totals(S,r),x=C.expRows(S,r),cats=0;for(var c in t.byCat)cats+=t.byCat[c];
+ eq(name+" ["+r[0].slice(5)+"]: Expenses tab = business expenses = sum of categories = earn−profit",[x.biz,cats,t.earn+t.other+t.reimb-t.profit],[t.exp,t.exp,t.exp])})}
+// the example from the task: Gross 1,000, Fuel 200, debt payment 300
+var EX={stmts:[st0({gross:100000,rate:10000,loads:[{g:100000}],ded:[{c:"diesel",a:20000,v:"Fuel"},{c:"co_debt",a:30000,v:"Driver debt"}]})],tx:[],loads:[]};var EXT=C.totals(EX,WK);
+eq("example: Net 500, business expense 200, profit 800, cash 500, debt paid 300",[EXT.net,EXT.exp,EXT.profit,EXT.cashFlow,EXT.debtPaid],[50000,20000,80000,50000,30000]);agree("example",EX);
+// company debt: balance goes down automatically
+var DB={stmts:[st0({id:"a1",ded:[{c:"co_debt",a:30000,debt:"d1"}]}),st0({id:"a2",p0:"2026-11-09",p1:"2026-11-15",d:"2026-11-15",ded:[{c:"other",a:20000,v:"DK repayment",dk:"debt",debt:"d1"}]})],tx:[],loads:[],debts:[{id:"d1",company:"CO",opening:100000,items:[{d:"2026-11-16",a:-10000,src:"man"}]}]};
+var DC=C.debtCalc(DB)[0];eq("debts: 1,000 − 300 − 200 (any debt-kind line) − 100 paid by hand = 400",[DC.payments,DC.remaining],[60000,40000]);
+eq("debts: hand payment lowers cash flow that week, not profit",[C.totals(DB,["2026-11-16","2026-11-22"]).cashFlow,C.totals(DB,["2026-11-16","2026-11-22"]).profit],[-10000,0]);
+eq("debts: debt-kind line with no debt chosen is listed for assignment",C.unassignedDebt({stmts:[st0({ded:[{c:"other",a:500,dk:"advance"},{c:"escrow",a:700}]})]}).length,1);agree("debts",DB);
+// escrow & reserve are never expenses
+var ES={stmts:[st0({ded:[{c:"escrow",a:5000},{c:"reserve",a:2500},{c:"toll",a:1000}]})],tx:[],loads:[]},EST=C.totals(ES,WK);eq("escrow/reserve kept by company: not expense",[EST.exp,EST.escrow],[1000,7500]);agree("escrow",ES);
+// truck loan: interest only, from any source
+var TK={type:"financed",company:"CO",balance:5000000,aprBp:1200,period:"week"},INT=Math.round(5000000*1200/10000/52);
+var LS1={stmts:[st0({ded:[{c:"truck_pay",a:100000}]})],tx:[],loads:[],truck:TK},L1=C.totals(LS1,WK);eq("loan from statement: only interest is expense",[L1.exp,L1.interest,L1.principal],[INT,INT,100000-INT]);agree("loan st",LS1);
+var LS2={stmts:[st0({})],tx:[{id:"lt",kind:"exp",paidBy:"own",d:"2026-11-05",a:100000,c:"truck_pay"}],loads:[],truck:TK},L2=C.totals(LS2,WK);
+eq("loan paid from own money: interest is expense (was missing), full amount leaves cash",[L2.exp,L2.cashFlow,L2.principal],[INT,C.stmtCalc(LS2.stmts[0]).net-100000,100000-INT]);agree("loan tx",LS2);
+var LS3={stmts:[st0({company:"OTHER CO",ded:[{c:"truck_pay",a:100000}]})],tx:[],loads:[],truck:TK},L3=C.totals(LS3,WK);eq("loan line from another company: principal never counted, flagged",[L3.exp,L3.loanUnsplit],[0,100000]);agree("loan other",LS3);
+var LS4={stmts:[st0({ded:[{c:"other",a:80000,dk:"loan"}]})],tx:[],loads:[]};eq("loan marked by kind without truck setup: not expense, flagged",[C.totals(LS4,WK).exp,C.totals(LS4,WK).loanUnsplit],[0,80000]);
+var LS5={stmts:[st0({ded:[{c:"truck_pay",a:100000}]})],tx:[],loads:[],truck:{type:"lease",company:"CO"}};eq("lease / rent payment: full expense",C.totals(LS5,WK).exp,100000);agree("lease",LS5);
+// shop debt: repair once, repayments never again
+var SH={stmts:[st0({id:"h1",ded:[{c:"shop_debt",a:50000,shop:"r1"}]}),st0({id:"h2",p0:"2026-11-09",p1:"2026-11-15",d:"2026-11-15",ded:[{c:"shop_debt",a:50000,shop:"r1"}]})],tx:[],loads:[],shop:[{id:"r1",d:"2026-11-04",total:300000,payer:"credit",paidAmt:0}]};
+eq("shop: repair 3,000 counted in the repair week only",[C.totals(SH,WK).exp,C.totals(SH,["2026-11-09","2026-11-15"]).exp],[300000,0]);
+eq("shop: balance 3,000 − 500 − 500 = 2,000",C.shopCalc(SH)[0].remaining,200000);eq("shop: over the year expense = 3,000 once",C.totals(SH,YR).exp,300000);agree("shop",SH);
+// categories from statement wording
+eq("categories: fuel / repair / insurance / toll / IFTA / ELD / parking",["FUEL","TRUCK REPAIR","INSURANCE","TOLL","IFTA","ELD","PARKING"].map(function(w){return C.guessCat(w)}),["diesel","truck_repair","truck_ins","toll","ifta","eld","parking"]);
+// everything at once, several weeks
+var ALL={stmts:[st0({id:"z1",ded:[{c:"diesel",a:150000},{c:"co_debt",a:30000,debt:"d1"},{c:"escrow",a:5000},{c:"truck_pay",a:100000},{c:"shop_debt",a:20000,shop:"r1"},{c:"toll",a:2500}]}),st0({id:"z2",p0:"2026-11-09",p1:"2026-11-15",d:"2026-11-15",ded:[{c:"diesel",a:120000},{c:"truck_pay",a:100000}]})],
+ tx:[{id:"q1",kind:"exp",paidBy:"own",d:"2026-11-03",a:4000,c:"parking"},{id:"q2",kind:"exp",paidBy:"company",d:"2026-11-03",a:9000,c:"diesel"},{id:"q3",kind:"exp",paidBy:"own",d:"2026-11-04",a:150000,c:"diesel",link:"z1"}],loads:[],truck:TK,
+ debts:[{id:"d1",opening:200000,items:[]}],shop:[{id:"r1",d:"2026-11-05",total:80000,payer:"credit",paidAmt:0}]};
+var AT=C.totals(ALL,WK);eq("all-in week: exp = fuel+toll+parking+repair+interest (no debt, escrow, principal, company-card, linked receipt)",AT.exp,150000+2500+4000+80000+INT);
+agree("all-in",ALL);eq("all-in: net = sum of statements",C.totals(ALL,YR).net,C.stmtCalc(ALL.stmts[0]).net+C.stmtCalc(ALL.stmts[1]).net);
 console.log("\nPASS "+pass+"  FAIL "+fail+"  NOT RUN "+SKIP);process.exit(fail||SKIP?1:0);
