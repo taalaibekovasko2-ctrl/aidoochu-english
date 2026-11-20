@@ -227,4 +227,44 @@ eq("rec partial (only net known)",C.stmtCalc(Object.assign({},SP,{net:757552,ded
 eq("rec mismatch",C.stmtCalc(Object.assign({},SP,{net:757500})).rec.status,"mismatch");
 // per-deduction kind override (e.g. 'Repair advance' marked as debt)
 eq("deduction kind override",C.totals({stmts:[st0({ded:[{c:"truck_repair",a:20000,dk:"debt"}]})],tx:[],loads:[]},W).exp,0);
+
+// ===== Audit 2 regressions =====
+// 1) taxable profit: non-deductible expense lowers Business Profit but is ADDED BACK for tax
+var NT={stmts:[st0({gross:100000,rate:10000,loads:[{g:100000}],ded:[{c:"u_nd",a:10000}]})],cats:[{id:"u_nd",name:"Fine",kind:"expense",tax:false}],tx:[],loads:[],taxSt:"1099",status:"single",stBp:0};
+var NTt=C.totals(NT,W),NTx=C.tax(NT,2026);eq("tax: income 1,000 − non-deductible 100 → profit 900",NTt.profit,90000);eq("tax: taxable profit 1,000 (non-deductible added back)",NTx.sc,100000);
+var NT2={stmts:[st0({gross:100000,rate:10000,loads:[{g:100000}],ded:[{c:"truck_ins",a:10000}]})],tx:[],loads:[],taxSt:"1099",status:"single",stBp:0};eq("tax: deductible 100 → taxable 900",C.tax(NT2,2026).sc,90000);
+var NT3={stmts:[st0({gross:100000,rate:10000,loads:[{g:100000}]})],cats:[{id:"u_nd",name:"Fine",kind:"expense",tax:false}],tx:[{id:"n1",kind:"exp",d:"2026-11-04",a:10000,c:"u_nd",paidBy:"own"}],loads:[],taxSt:"sole",status:"single",stBp:0};
+eq("tax: own-paid non-deductible → profit 900, taxable 1,000",[C.totals(NT3,W).profit,C.tax(NT3,2026).sc],[90000,100000]);
+NT3.trips=[{a:"2026-11-02",b:"2026-11-03"}];eq("tax: per diem still subtracted after add-back",C.tax(NT3,2026).sc,100000-C.pct(2*8000,8000));
+NT2.truck={type:"owned",price:9000000,inService:"2026-01-10",dep:"macrs3"};eq("tax: depreciation still subtracted",C.tax(NT2,2026).sc,90000-2999700);
+// 2) Truck Shop & cash flow
+function shopS(rec,tx){var S={stmts:[st0({gross:500000,rate:10000,loads:[{g:500000}]})],shop:[rec],tx:tx||[],loads:[]};return C.totals(S,W)}
+var SH1=shopS({id:"r1",d:"2026-11-04",total:100000,paidAmt:100000,payer:"driver",drv:100000},[{id:"shpr1",kind:"exp",paidBy:"own",d:"2026-11-04",a:100000,c:"truck_repair"}]);
+eq("shop: driver paid 1,000 now → Net 5,000, Cash Flow 4,000",[SH1.net,SH1.cashFlow],[500000,400000]);eq("shop: repair expense counted once",[SH1.exp,SH1.byCat.truck_repair,SH1.profit],[100000,100000,400000]);
+var SH2=shopS({id:"r2",d:"2026-11-04",total:100000,paidAmt:0,payer:"credit"});eq("shop on credit: cash flow unchanged, expense once",[SH2.cashFlow,SH2.exp],[500000,100000]);
+var SH3=shopS({id:"r3",d:"2026-11-04",total:100000,paidAmt:0,payer:"credit",pays:[{d:"2026-11-06",a:30000,src:"man"}]},[{id:"tp",kind:"exp",paidBy:"own",d:"2026-11-06",a:30000,c:"shop_debt"}]);
+eq("shop credit, 300 paid later from own money: cash −300, expense still 1,000",[SH3.cashFlow,SH3.exp],[470000,100000]);
+var SH4=shopS({id:"r4",d:"2026-11-04",total:100000,paidAmt:100000,payer:"company",co:100000});eq("shop paid by company (no transfer): no cash, no expense",[SH4.cashFlow,SH4.exp],[500000,0]);
+var SH5=shopS({id:"r5",d:"2026-11-04",total:100000,paidAmt:40000,payer:"driver",drv:40000},[{id:"shpr5",kind:"exp",paidBy:"own",d:"2026-11-04",a:40000,c:"truck_repair"}]);
+eq("shop partly paid now (400 of 1,000): cash −400, expense 1,000, owed 600",[SH5.cashFlow,SH5.exp,C.shopCalc({shop:[{id:"r5",total:100000,paidAmt:40000,payer:"driver"}],stmts:[]})[0].remaining],[460000,100000,60000]);
+// 3) reconciliation gate for automatic save
+var FULL=Object.assign({},SP,{net:757552,dedTotal:470048});eq("auto-save allowed only on full reconciliation",C.autoSaveOk(FULL),true);
+eq("Net Pay only → partial → user must confirm",C.autoSaveOk(Object.assign({},SP,{net:757552,dedTotal:null,loads:[]})),false);
+eq("Net Pay matches but no deductions total → not full",C.stmtCalc(Object.assign({},SP,{net:757552,dedTotal:null})).rec.status,"partial");
+eq("deductions total wrong → mismatch, no auto-save",[C.stmtCalc(Object.assign({},FULL,{dedTotal:470000})).rec.status,C.autoSaveOk(Object.assign({},FULL,{dedTotal:470000}))],["mismatch",false]);
+eq("gross ≠ loads → mismatch",C.stmtCalc(Object.assign({},FULL,{gross:1395100,earn:null,rate:8800})).rec.status,"mismatch");
+eq("no Net Pay at all → not auto",C.autoSaveOk(Object.assign({},FULL,{net:null})),false);
+if(typeof RR!=="undefined")eq("real ARAVAN: full reconciliation → auto-save",[C.stmtCalc(RR).rec.status,C.autoSaveOk(RR)],["full",true]);
+// 4) data safety
+function store(fail){var m={};return {m:m,getItem:function(k){return m.hasOwnProperty(k)?m[k]:null},setItem:function(k,v){if(fail)throw new Error("quota");m[k]=String(v)}}}
+var ST=store();var k1=C.safeBackup(ST,"jolesep_v1_backup_before_v16","OLD-1"),k2=C.safeBackup(ST,"jolesep_v1_backup_before_v16","NEW-2");
+eq("backup: first copy written",[k1,ST.m[k1]],["jolesep_v1_backup_before_v16","OLD-1"]);eq("backup: existing copy NOT overwritten",ST.m["jolesep_v1_backup_before_v16"],"OLD-1");
+eq("backup: second copy kept under a new name",[k2!==k1,ST.m[k2]],[true,"NEW-2"]);var k3=C.safeBackup(ST,"jolesep_v1_backup_before_v16","N3");eq("backup: third copy also kept",[Object.keys(ST.m).length,ST.m[k3]],[3,"N3"]);
+eq("backup: failed write reported (null), not marked done",C.safeBackup(store(true),"x","y"),null);
+var SA={v:2,stmts:[SP],tx:[],loads:[],debts:[],shop:[]},SB={v:2,stmts:[],tx:[{id:"b",kind:"exp",d:"2026-11-04",a:500,c:"toll",paidBy:"own"}],loads:[]};
+var EA=JSON.stringify(C.exportData(SA,{id:"main",name:"A"})),EB=JSON.stringify(C.exportData(SB,{id:"d2",name:"B"}));var RA=C.readBackup(EA),RB=C.readBackup(EB);
+eq("export/import: driver A round-trip keeps totals",C.totals(RA.data,W).net,C.totals(SA,W).net);eq("export/import: driver id kept",[RA.driver.id,RB.driver.id],["main","d2"]);
+eq("export/import: drivers stay separate",[RA.data.stmts.length,RA.data.tx.length,RB.data.stmts.length,RB.data.tx.length],[1,0,0,1]);
+eq("import: bad file rejected",[C.readBackup("{}"),C.readBackup("not json"),C.readBackup(JSON.stringify({app:"other",data:{}}))],[null,null,null]);
+eq("import: old (v1) backup migrated, not lost",C.readBackup(JSON.stringify({app:"jolesep",data:{loads:[{id:"l",d:"2026-11-03",g:100000}],exp:[]}})).data.v,2);
 console.log("\nPASS "+pass+"  FAIL "+fail+"  NOT RUN "+SKIP);process.exit(fail||SKIP?1:0);

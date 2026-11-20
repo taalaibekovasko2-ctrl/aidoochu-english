@@ -166,10 +166,11 @@ C.totals=function(S,r){var r0=r;
   if(f.ret!=null&&f.inv!=null){o.retail+=f.ret;o.invoice+=f.inv}}
  var tk=C.truckCalc(S);o.principal=0;o.interest=0;tk.pays.forEach(function(p){if(!C.inR(p.d,r))return;o.interest+=p.interest;if(tk.isLoan&&p.principal){o.principal+=p.principal;if(p.src==="st"){o.stDed-=p.principal;o.byCat.truck_pay=(o.byCat.truck_pay||0)-p.principal}}});
  C.shopCalc(S).forEach(function(x){var r=x.r;if(!C.inR(r.d,r0)||x.total==null)return;var pa=r.paidAmt!=null?r.paidAmt:(r.drv||0)+(r.co||0),notDriver=(x.payer==="company"&&!r.transfer)||x.payer==="owner"?pa:0;var cost=Math.max(0,x.total-notDriver);if(!cost)return;o.shopExp+=cost;addCat("truck_repair",cost,{t:"shop",id:r.id,a:cost,c:"truck_repair"})});
+ o.shopOwnPaid=0;C.shopCalc(S).forEach(function(x){var r=x.r;if(x.payer==="driver"&&C.inR(r.d,r0))o.shopOwnPaid+=r.paidAmt!=null?r.paidAmt:(r.drv||0);}); /* later own-money payments to the shop are 'shop_debt' tx → already in ownDebtPaid */
  o.exp=o.stDed+o.oop+o.shopExp;o.fuelSaved=o.retail&&o.invoice?o.retail-o.invoice:0;
  o.fuelCost=(o.byCat.diesel||0)+(o.byCat.def||0); /* authoritative: counted fuel expenses only */
  o.profit=o.earn+o.other+o.reimb-o.stDed-o.oop-o.shopExp;
- o.cashFlow=o.net-o.oop-o.ownDebtPaid+(o.txReimb||0)+(o.txIncome||0); /* money actually received minus money spent from own pocket */
+ o.cashFlow=o.net-o.oop-o.ownDebtPaid-o.shopOwnPaid+(o.txReimb||0)+(o.txIncome||0); /* money actually received minus money spent from own pocket */
  o.miles=o.loaded+o.empty;
  o.perMile=function(c){return o.miles>0?Math.round(c/o.miles):null};
  o.rpm={gross:o.perMile(o.gross),driver:o.perMile(o.earn),net:o.perMile(o.net),loaded:o.loaded>0?Math.round(o.gross/o.loaded):null};
@@ -236,7 +237,7 @@ C.tax=function(S,y,today){var r=[y+"-01-01",y+"-12-31"],o=C.totals(S,r),days=o.d
  if(st==="llc_other"||st==="scorp"){res.ok=false;res.why="entity";return res}
  var std=C.TAX.STD[S.status]||C.TAX.STD.single;
  if(st==="w2"){var wages=o.earn+o.other;var ti=Math.max(0,wages-std);res.taxable=ti;res.se=0;res.fed=C.fedTax(ti,S.status);res.stt=C.pct(wages,S.stBp||0);res.pdd=0;res.dep=0;res.sc=null}
- else{res.pdd=C.pct(days*C.TAX.PD,C.TAX.PDP);res.dep=C.depr(S,y);res.sc=o.profit-o.nonTax-res.pdd-res.dep;
+ else{res.pdd=C.pct(days*C.TAX.PD,C.TAX.PDP);res.dep=C.depr(S,y);res.sc=o.profit+o.nonTax-res.pdd-res.dep; /* non-deductible expenses lowered Business Profit but are not deductible → add back */
   var base=C.pct(Math.max(0,res.sc),9235);res.se=C.pct(Math.min(base,C.TAX.SSB),1240)+C.pct(base,290);var half=Math.floor(res.se/2),agi=Math.max(0,res.sc-half),pre=Math.max(0,agi-std);
   var qbi=Math.min(C.pct(Math.max(0,res.sc-half),2000),C.pct(pre,2000));res.taxable=Math.max(0,pre-qbi);res.fed=C.fedTax(res.taxable,S.status);res.stt=C.pct(agi,S.stBp||0)}
  res.tot=res.se+res.fed+res.stt;res.paid=(S.paid&&S.paid[y])||0;res.left=Math.max(0,res.tot-res.paid);
@@ -364,5 +365,12 @@ C.migrate=function(d){if(!d||d.v===2)return d;var o={v:2,lang:d.lang||"kg",role:
  Object.keys(byS).forEach(function(k){byS[k].earn=byS[k].gross;o.stmts.push(byS[k])});
  o.log.push({t:new Date().toISOString(),a:"migrate",s:"v1→v2"});return o};
 
+/* a statement may be saved without the user's confirmation ONLY when Gross, the deductions total and Net Pay all match */
+C.autoSaveOk=function(st){return !!st&&st.gross>0&&C.stmtCalc(st).rec.status==="full"};
+/* ---------- data safety ---------- */
+/* never overwrites an existing backup: a second backup with the same name gets a time suffix */
+C.safeBackup=function(store,key,raw){if(raw==null)return null;try{var k=key;if(store.getItem(k)!=null){k=key+"_"+new Date().toISOString().replace(/[^0-9]/g,"").slice(0,14);var n=1;while(store.getItem(k)!=null)k=key+"_"+new Date().toISOString().replace(/[^0-9]/g,"").slice(0,14)+"_"+(n++)}store.setItem(k,raw);return store.getItem(k)===raw?k:null}catch(e){return null}};
+C.exportData=function(S,drv){return {app:"jolesep",v:2,date:new Date().toISOString(),driver:drv||null,data:S,photos:{}}};
+C.readBackup=function(txt){var o;try{o=JSON.parse(txt)}catch(e){return null}if(!o||o.app!=="jolesep"||!o.data||typeof o.data!=="object")return null;var d=o.data.v===2?o.data:C.migrate(o.data);if(!d||!Array.isArray(d.stmts||[]))return null;return {data:d,driver:o.driver||null,date:o.date||null,photos:o.photos||{}}};
 G.JE=C;if(typeof module!=="undefined")module.exports=C;
 })(typeof window!=="undefined"?window:this);
