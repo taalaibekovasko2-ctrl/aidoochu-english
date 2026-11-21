@@ -592,5 +592,8 @@ eq("fixture anonymized",/ANVAR|ALAPAEV|WARING|PHILADELPHIA|8008442080/i.test(JSO
  var a={id:"m1",p0:"2026-11-02",p1:"2026-11-08",gross:500000,rate:10000,ded:[],net:500000,miLoaded:1800,miEmpty:200,miles:2000,loads:[]},
      b={id:"m2",p0:"2026-11-09",p1:"2026-11-15",gross:400000,rate:10000,ded:[],net:400000,loads:[]},
      T=C.totals({stmts:[a,b],tx:[],loads:[],trips:[]},["2026-11-01","2026-11-30"]);
+ var c={id:"m3",p0:"2026-11-16",p1:"2026-11-22",gross:300000,rate:10000,ded:[],net:300000,loads:[],miLoaded:2100,miEmpty:0,miles:2100,fuel:[{c:"diesel",a:100000,gal:30000}]},
+     T2=C.totals({stmts:[a,c],tx:[],loads:[],trips:[]},["2026-11-01","2026-11-30"]);
+ eq("MPG never mixed: 300 gal of one statement ÷ ITS 2,100 mi = 7.00 (not 4,100 mi ÷ 300 = 13.67)",[T2.miles,T2.mpg],[4100,7]);
  eq("RPM never mixed: a statement without miles is left out ($5,000 ÷ 2,000 mi = $2.50, not $9,000 ÷ 2,000 = $4.50)",[T.miles,T.rpm.gross,T.rpm.loaded,T.rpm.driver,T.rpm.net,T.rpm.skipped],[2000,250,278,250,250,1])})();
 console.log("\nPASS "+pass+"  FAIL "+fail+"  NOT RUN "+SKIP);process.exit(fail||SKIP?1:0);

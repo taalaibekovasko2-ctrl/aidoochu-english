@@ -146,7 +146,7 @@ C.inR=function(d,r){return !!d&&d>=r[0]&&d<=r[1]};
 C.loanMap=function(S){var tk=C.truckCalc(S),m={};tk.pays.forEach(function(p){m[p.src+":"+p.id+":"+(p.i==null?"":p.i)]=p});return {tk:tk,m:m}};
 C.loanPart=function(LM,src,id,i,a){var p=LM.m[src+":"+id+":"+(i==null?"":i)];if(!p||!LM.tk.isLoan)return {exp:0,principal:p?0:a,unsplit:p?0:a};return {exp:p.interest,principal:p.principal,unsplit:0}};
 C.totals=function(S,r){var r0=r,LM=C.loanMap(S);
- var o={r:{g:0,e:0,n:0,mi:0,miSt:0,ld:0,skip:0},byKind:{},principal:0,interest:0,loanUnsplit:0,loanIntOwn:0,manDebtPaid:0,nonTax:0,adjust:0,shopExp:0,ownDebtPaid:0,stDedAll:0,debtPaid:0,escrow:0,pers:0,gross:0,fee:0,earn:0,stDed:0,oop:0,reimb:0,other:0,adv:0,net:0,profit:0,loaded:0,empty:0,
+ var o={r:{g:0,e:0,n:0,mi:0,miSt:0,ld:0,skip:0,gal:0,galMi:0},byKind:{},principal:0,interest:0,loanUnsplit:0,loanIntOwn:0,manDebtPaid:0,nonTax:0,adjust:0,shopExp:0,ownDebtPaid:0,stDedAll:0,debtPaid:0,escrow:0,pers:0,gross:0,fee:0,earn:0,stDed:0,oop:0,reimb:0,other:0,adv:0,net:0,profit:0,loaded:0,empty:0,
   dieselGal:0,defGal:0,dieselCost:0,fuelCost:0,retail:0,invoice:0,src:{gross:[],fee:[],earn:[],exp:[],net:[],profit:[]},byCat:{},stCount:0,loadCount:0,days:0};
  function addCat(c,a,src){o.byCat[c]=(o.byCat[c]||0)+a;o.src.exp.push(src)}
  (S.stmts||[]).forEach(function(st){if(!C.inR(C.stDay(st),r))return;var k=C.stmtCalc(st);o.stCount++;
@@ -161,7 +161,7 @@ C.totals=function(S,r){var r0=r,LM=C.loanMap(S);
   /* RPM only from statements whose miles are known: a statement without miles never inflates $/mile */
   var dL=o.loaded-lL,dT=dL+o.empty-lE;if(dT>0){o.r.g+=k.gross;o.r.e+=k.earn;o.r.n+=k.net;o.r.mi+=dT;o.r.miSt+=dT;o.r.ld+=dL}else if(k.gross>0)o.r.skip++;
   if(st.milesAuto)o.autoMi=true;if(st.miSrc=="doc")o.docMi=true;
-  (st.fuel||[]).forEach(function(f){fuelAdd(f)});
+  var g0=o.dieselGal;(st.fuel||[]).forEach(function(f){fuelAdd(f)});if(o.dieselGal>g0&&dT>0){o.r.gal+=o.dieselGal-g0;o.r.galMi+=dT} /* MPG: gallons and miles of the SAME statements */
   if(st.fuelRetail!=null&&st.fuelInvoice!=null&&!(st.fuel||[]).some(function(f){return f.ret!=null})){o.retail+=st.fuelRetail;o.invoice+=st.fuelInvoice}});
  (S.loads||[]).forEach(function(l){if(!C.inR(l.d,r))return;var e=l.earn!=null?l.earn:l.g;if((l.mi||0)+(l.dh||0)>0){o.r.g+=l.g;o.r.e+=e;o.r.mi+=(l.mi||0)+(l.dh||0);o.r.ld+=l.mi||0}else if(l.g>0)o.r.skip++;o.gross+=l.g;o.earn+=e;o.fee+=l.g-e;o.loaded+=l.mi||0;o.empty+=l.dh||0;o.loadCount++;
   o.src.gross.push({t:"load",id:l.id,a:l.g});o.src.earn.push({t:"load",id:l.id,a:e});o.src.fee.push({t:"load",id:l.id,a:l.g-e})});
@@ -185,7 +185,7 @@ C.totals=function(S,r){var r0=r,LM=C.loanMap(S);
  o.miles=o.loaded+o.empty;
  o.perMile=function(c){return o.miles>0?Math.round(c/o.miles):null};
  var q=function(a,b){return b>0?Math.round(a/b):null};o.rpm={gross:q(o.r.g,o.r.mi),driver:q(o.r.e,o.r.mi),net:q(o.r.n,o.r.miSt),loaded:q(o.r.g,o.r.ld),skipped:o.r.skip};
- o.mpg=o.miles>0&&o.dieselGal>0?Math.round(o.miles*10000/o.dieselGal)/100:null; /* gal stored as hundredths */
+ o.mpg=o.r.gal>0?Math.round(o.r.galMi*10000/o.r.gal)/100:o.miles>0&&o.dieselGal>0&&!o.r.skip?Math.round(o.miles*10000/o.dieselGal)/100:null; /* gal stored as hundredths; never gallons of one statement over miles of others */
  return o};
 
 /* route legs for estimated miles: PU→DEL is loaded; previous DEL→next PU is empty; no guessed start/end legs */
