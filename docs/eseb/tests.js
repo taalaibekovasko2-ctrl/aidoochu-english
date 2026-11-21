@@ -565,4 +565,45 @@ eq("re-check: differences between a saved statement and a new reading are listed
  eq("debts series: 'Total Amount $3,500' printed, $500 taken, no remaining printed → total 3,500 recorded, left = 'needs check' (not guessed)",[g4.total,g4.payments,g4.remaining,g4.status],[350000,50000,null,"unknown"]);
  var all=C.allDebts(S9);eq("debts screen data: three numbers per debt, no start-amount needed",all.map(function(x){return [x.name,x.total,x.paid,x.remaining]}),[["ALPHA LOGISTICS LLC",600000,100000,500000],["BETA CARRIERS INC",null,20000,null],["GAMMA FREIGHT LLC",350000,50000,null]])})();
 eq("fixture anonymized",/ANVAR|ALAPAEV|WARING|PHILADELPHIA|8008442080/i.test(JSON.stringify(PTi)),false);
+// ===== synthetic layouts (tools/gen-statements.js, fictional companies) =====
+(function(){function rd(n){var r=C.cellRows(fx(n));return C.readAll({texts:[{name:"pdf",text:rowsText(r),rows:r}]})}
+ var A=rd("synth_less_header_pdf_items.json"),kA=C.stmtCalc(A);eq("synthetic: 'LESS:' section + 'Total Deductions' → printed total kept, auto-save",[C.decide(A).act,A.dedTotal,kA.net],["save",76092,537136]);
+ var B=rd("synth_less_deductions_pdf_items.json");eq("synthetic: 'Less Deductions:' summary line is not an unknown charge → auto-save",[C.decide(B).act,C.stmtCalc(B).net],["save",425912]);
+ var P=rd("synth_two_panels_pdf_items.json"),kP=C.stmtCalc(P);eq("synthetic: two side-by-side panels (revenue | charges) read apart; 'Net Revenue 85%' = earnings",[P.gross,kP.earn,P.dedTotal,P.net,kP.net],[1032650,877753,38489,839264,839264]);
+ eq("lblNorm: trailing percentage dropped from a label",[C.lblNorm("Net Revenue 85%"),C.lblNorm("Driver %")],["NET REVENUE","DRIVER %"]);
+ eq("fixtures synthetic only",/ANVAR|ALAPAEV|WARING/i.test(JSON.stringify([fx("synth_two_panels_pdf_items.json")])),false)})();
+// ===== debts from PDFs end to end: 3 weekly statements, 'Total Amount | Charge | Remaining Balance | Comments', merged header cell =====
+(function(){var n=0,uid=function(){return "u"+(++n)},S={stmts:[],debts:[]},ids=["w1","w2","w3"];
+ var R=[1,2,3].map(function(w){var r=C.cellRows(fx("synth_debt_week"+w+"_pdf_items.json"));return C.readAll({texts:[{name:"pdf",text:rowsText(r),rows:r}]})});
+ eq("debt PDFs: all three read and saved automatically",R.map(function(x){return C.decide(x).act}),["save","save","save"]);
+ var dr=R[0].ded.filter(function(d){return d.v==="DR DEBT"})[0];
+ eq("DR DEBT = this week's Charge $500 (not the $200 in Comments), whole debt $3,000, balance $2,500, a company debt (not tires)",[dr.a,dr.orig,dr.bal,dr.c],[50000,300000,250000,"co_debt"]);
+ eq("Comments column never becomes money of the statement",R.every(function(x){return !x.ded.some(function(d){return d.a===20000})}),true);
+ R.forEach(function(x,i){var st=Object.assign({id:ids[i]},x);if(!S.stmts.some(function(o){return C.stmtSame(o,st)})){S.stmts.push(st);C.autoDebts(S,st,uid)}});
+ var again=Object.assign({id:"w2b"},R[1]);eq("same PDF uploaded again is recognised (not counted twice)",S.stmts.some(function(o){return C.stmtSame(o,again)}),true);
+ var D=C.debtCalc(S);eq("one debt record for the company",D.length,1);
+ eq("three numbers: total $3,300 · paid $1,800 (3×$500 + $300 advance) · left $1,500 = last printed balance",[D[0].total,D[0].payments,D[0].remaining,D[0].unknown],[330000,180000,150000,false]);
+ var st0=D[0].items.filter(function(i){return i.printed})[0];eq("history: where the debt began — +$3,000 DR DEBT, first statement, its date (shown only, not added)",[st0&&st0.a,st0&&st0.id,st0&&st0.d,D[0].newDebt],[300000,"w1","2026-11-08",0]);
+ eq("printed balances kept per statement (2,500 → 2,000 → 1,500)",D[0].snaps.map(function(b){return b.a}),[250000,200000,150000]);
+ eq("header 'Description Total Amount' printed as one cell is split into two columns",C.parseTables(C.cellRows(fx("synth_debt_week2_pdf_items.json"))).ded.filter(function(d){return d.v==="DR DEBT"}).map(function(d){return [d.a,d.orig,d.bal]}),[[50000,300000,200000]])})();
+// ===== miles & RPM =====
+(function(){var r=C.cellRows(fx("synth_bobtail_miles_pdf_items.json")),B=C.readAll({texts:[{name:"pdf",text:rowsText(r),rows:r}]});
+ eq("miles printed: 'Total Loaded Miles 1,850' + 'Bobtail Miles 140' (bobtail = empty miles; 'Bobtail Insurance' is not miles)",[B.docLoaded,B.docEmpty,C.decide(B).act],[1850,140,"save"]);
+ var a={id:"m1",p0:"2026-11-02",p1:"2026-11-08",gross:500000,rate:10000,ded:[],net:500000,miLoaded:1800,miEmpty:200,miles:2000,loads:[]},
+     b={id:"m2",p0:"2026-11-09",p1:"2026-11-15",gross:400000,rate:10000,ded:[],net:400000,loads:[]},
+     T=C.totals({stmts:[a,b],tx:[],loads:[],trips:[]},["2026-11-01","2026-11-30"]);
+ var c={id:"m3",p0:"2026-11-16",p1:"2026-11-22",gross:300000,rate:10000,ded:[],net:300000,loads:[],miLoaded:2100,miEmpty:0,miles:2100,fuel:[{c:"diesel",a:100000,gal:30000}]},
+     T2=C.totals({stmts:[a,c],tx:[],loads:[],trips:[]},["2026-11-01","2026-11-30"]);
+ eq("MPG never mixed: 300 gal of one statement ÷ ITS 2,100 mi = 7.00 (not 4,100 mi ÷ 300 = 13.67)",[T2.miles,T2.mpg],[4100,7]);
+ eq("RPM never mixed: a statement without miles is left out ($5,000 ÷ 2,000 mi = $2.50, not $9,000 ÷ 2,000 = $4.50)",[T.miles,T.rpm.gross,T.rpm.loaded,T.rpm.driver,T.rpm.net,T.rpm.skipped],[2000,250,278,250,250,1])})();
+// ===== ST-005856 check numbers (synthetic copy, two layouts): Total 3,035.30 / Loaded 3,026.79 mi, Other Pay, fuel gallons =====
+(function(){["synth_st005856_table_pdf_items.json","synth_st005856_text_pdf_items.json"].forEach(function(n,i){var r=C.cellRows(fx(n)),R=C.readAll({texts:[{name:"pdf",text:rowsText(r),rows:r}]}),k=C.stmtCalc(R),MO=C.milesOf(R);
+  eq("ST-005856 "+(i?"text":"table")+": Gross / Earnings / Deductions / Other Pay / Net (printed = calculated) / auto",[R.gross,k.earn,k.ded,k.other+k.reimb,R.net,k.net,C.decide(R).act],[844297,759867,316790,28422,471499,471499,"save"]);
+  eq("ST-005856 "+(i?"text":"table")+": miles Total 3,035.30 (not 180, not one trip), Loaded 3,026.79, empty = Total − Loaded; trips 1,180.24 kept to 0.01 and checked against the total",[MO.total,MO.loaded,MO.empty,MO.src.em,R.loads.length,R.loads[2].mi,MO.chk.ok],[3035.3,3026.79,8.51,"diff",4,1180.24,true]);
+  eq("ST-005856 "+(i?"text":"table")+": fuel $2,717.90 with 411.02 gal",[C.sum(R.ded.filter(function(d){return d.c==="diesel"}),"a"),C.sum(R.fuel||[],"gal")],[271790,41102]);
+  var st=Object.assign({id:"x"+i},R,{miLoaded:MO.loaded,miEmpty:MO.empty,miles:MO.total}),T=C.totals({stmts:[st],tx:[],loads:[],trips:[]},["2026-11-01","2026-11-30"]);
+  eq("ST-005856 "+(i?"text":"table")+": Gross RPM 2.78 · Driver RPM 2.50 · fuel/mi 0.90 · MPG 7.38",[T.rpm.gross,T.rpm.driver,Math.round(T.fuelCost/T.miles),T.mpg],[278,250,90,7.38])});
+ var P=C.parseStatement("X LLC\nLoad 101 11/09/2026 CHICAGO, IL DALLAS, TX $2,100.00\nTotal Gross $2,100.00\nNet Pay $2,000.00");eq("a load number is never taken as miles (no 'mi', no Miles column)",P.loads[0].mi,null);
+ eq("only Total printed → loaded and empty unknown (null, not 0)",JSON.stringify(C.milesOf({docMiles:1500,loads:[]})),JSON.stringify({total:1500,loaded:null,empty:null,src:{tot:"printed",ld:null,em:null},chk:null}));
+ eq("'Miles 3,035.30', 'Total Mileage 3,035.30 mi', 'Mileage: 3,035.30' all read",["Miles 3,035.30","Total Mileage 3,035.30 mi","Mileage: 3,035.30"].map(function(x){return C.parseStatement("X LLC\n"+x+"\nNet Pay $1.00").docMiles}),[3035.3,3035.3,3035.3])})();
 console.log("\nPASS "+pass+"  FAIL "+fail+"  NOT RUN "+SKIP);process.exit(fail||SKIP?1:0);
