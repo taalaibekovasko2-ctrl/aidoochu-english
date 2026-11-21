@@ -37,6 +37,13 @@ jobs:
             -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' \
             -derivedDataPath build CODE_SIGNING_ALLOWED=NO build | tail -40
           ls build/Build/Products/Debug-iphonesimulator/App.app
+      - name: Release archive for a real iPhone, unsigned (same build TestFlight will use; nothing uploaded)
+        working-directory: ios-app/ios/App
+        run: |
+          xcodebuild -project App.xcodeproj -scheme App -configuration Release \
+            -destination 'generic/platform=iOS' -archivePath "$RUNNER_TEMP/App.xcarchive" \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO archive | tail -20
+          ls "$RUNNER_TEMP/App.xcarchive/Products/Applications/App.app" >/dev/null && echo "Release archive OK"
       - name: Run in the Simulator and take screenshots (app works offline)
         working-directory: ios-app/ios/App
         run: |

@@ -11,6 +11,9 @@
   var css = ".inst{display:none!important}.fadm{display:none!important}iframe.gfm{display:none!important}" +
     /* in the app the full version is bought through Apple; buying a code from a seller (WhatsApp / phone / "send ID to seller") is website-only */
     ".lock>p:not(.ae-keep),.lock>.did,.lock>.lrow,.lock>#acode,.lock>[data-lk=ok],.lock>a.wa{display:none!important}" +
+    /* promo codes (free partner unlocks) are website-only: Apple 3.1.1 does not allow unlocking with own codes inside the app;
+       promo users move with the transfer code, which carries their promo */
+    ".lock>.promo{display:none!important}" +
     "#ae-iap{margin:12px 0;padding:14px;border-radius:14px;background:#fff1dc;text-align:left}#ae-iap b{font-size:16px}" +
     "#ae-iap button{display:block;width:100%;margin-top:8px;padding:12px;border-radius:12px;border:0;font-weight:800;font-size:15px}" +
     "#ae-buy{background:#111;color:#fff}#ae-buy:disabled{background:#999}#ae-restore{background:transparent;color:#111;border:1.5px solid #111!important}#ae-iap-msg{font-size:13px;margin-top:6px}";
@@ -92,24 +95,55 @@
         "Вставьте код переноса с сайта. Ваш код и прогресс перейдут в это приложение.",
         "Paste the transfer code from the website. Your code and progress move into this app."],
     b: ["Көчүрүү", "Көшіру", "Перенести", "Transfer"],
-    bad: ["Көчүрүү коду туура эмес.", "Көшіру коды қате.", "Неверный код переноса.", "Wrong transfer code."]
+    bad: ["Көчүрүү коду туура эмес.", "Көшіру коды қате.", "Неверный код переноса.", "Wrong transfer code."],
+    limit: ["Бул сатып алуу 3 iPhone'го көчүрүлүп бүткөн. Жардам: taalaibekovasko2@gmail.com", "Бұл сатып алу 3 iPhone-ға көшірілген. Көмек: taalaibekovasko2@gmail.com", "Эта покупка уже перенесена на 3 iPhone. Помощь: taalaibekovasko2@gmail.com", "This purchase has already moved to 3 iPhones. Help: taalaibekovasko2@gmail.com"]
   };
   function li() { var v = null; try { v = localStorage.getItem("lang"); } catch (e) {} var n = ["KG", "KZ", "RU", "US"].indexOf(v); return n < 0 ? 0 : n; }
   function b64uDec(s) { s = String(s).replace(/-/g, "+").replace(/_/g, "/"); while (s.length % 4) s += "="; var bin = atob(s), u = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return new TextDecoder().decode(u); }
-  // format: "AEX1." + base64url(JSON {did, act, game?, lang?, promoOk?})  — made by the website in phase 2
+  // format: "AEX1." + base64url(JSON {v, did, act?, game?, lang?, promoOk?, t})  — made by the website ("Move to the iPhone app")
+  // Security: size limit; every field checked by type and shape; only known progress fields kept (no __proto__ / unknown objects);
+  // the activation code still has to pass the seller's signature check for this device ID (checkCode), so a made-up code unlocks nothing;
+  // optional server limit: one purchase moves to at most 3 iPhone apps (supabase/transfer-claim.sql).
+  var KEEP_NUM = { xp: 1, streak: 1, pend: 1, mtry: 1 };
+  function cleanGame(g) {
+    if (!g || typeof g !== "object" || Array.isArray(g)) return null;
+    var o = { done: {}, xp: 0, streak: 0, day: "" };
+    if (g.done && typeof g.done === "object") Object.keys(g.done).forEach(function (k) { var v = g.done[k]; if (/^\d{1,3}$/.test(k) && +k < 1000 && typeof v === "number" && v >= 0 && v <= 3) o.done[k] = v; });
+    Object.keys(KEEP_NUM).forEach(function (k) { var v = g[k]; if (typeof v === "number" && isFinite(v) && v >= 0 && v <= 1e7) o[k] = Math.floor(v); });
+    if (typeof g.day === "string" && /^\d{4}-\d{2}-\d{2}$/.test(g.day)) o.day = g.day;
+    if (typeof g.pid === "string" && /^[A-Za-z0-9_-]{4,40}$/.test(g.pid)) o.pid = g.pid;
+    if (typeof g.nm === "string" && g.nm.length <= 20 && !/[<>]/.test(g.nm) && (typeof nameOk !== "function" || nameOk(g.nm))) o.nm = g.nm;
+    ["bg", "st"].forEach(function (k) { var v = g[k]; if (v && typeof v === "object" && !Array.isArray(v)) { var c = {}; Object.keys(v).slice(0, 200).forEach(function (kk) { var x = v[kk]; if (/^[A-Za-z0-9_]{1,30}$/.test(kk) && (typeof x === "number" || typeof x === "boolean" || (typeof x === "string" && x.length <= 40))) c[kk] = x; }); o[k] = c; } });
+    return o;
+  }
+  function parseCode(raw) {
+    var s = String(raw || "").trim().replace(/\s+/g, ""); if (s.length > 20000) return null;
+    var m = s.match(/^AEX1\.([A-Za-z0-9_-]+)$/); if (!m) return null;
+    var o; try { o = JSON.parse(b64uDec(m[1])); } catch (e) { return null; }
+    if (!o || typeof o !== "object" || !/^[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(o.did || "")) return null;
+    if (o.act != null && !(typeof o.act === "string" && /^[A-Za-z0-9_-]{20,200}$/.test(o.act))) return null;
+    return o;
+  }
+  function installId() { var v = null; try { v = localStorage.getItem("aeInst"); } catch (e) {} if (!v) { var r = crypto.getRandomValues(new Uint8Array(12)); v = Array.prototype.map.call(r, function (b) { return ("0" + b.toString(16)).slice(-2); }).join(""); try { localStorage.setItem("aeInst", v); } catch (e) {} } return v; }
+  // server limit → "ok" | "limit"; when the function is not installed yet or there is no internet → "ok" (the transfer is never blocked by our server being absent)
+  function claim(did) {
+    try { if (typeof SB_URL === "undefined" || typeof SB_KEY === "undefined") return Promise.resolve("ok"); } catch (e) { return Promise.resolve("ok"); }
+    var ctl = window.AbortController ? new AbortController() : null, tm = setTimeout(function () { if (ctl) ctl.abort(); }, 8000);
+    return fetch(SB_URL + "/rest/v1/rpc/transfer_claim", { method: "POST", headers: { apikey: SB_KEY, "Content-Type": "application/json" }, body: JSON.stringify({ p_did: did, p_install: installId() }), signal: ctl && ctl.signal })
+      .then(function (r) { clearTimeout(tm); if (!r.ok) return "ok"; return r.json().then(function (v) { return v === false ? "limit" : "ok"; }, function () { return "ok"; }); }, function () { clearTimeout(tm); return "ok"; });
+  }
+  function save(o) {
+    var g = cleanGame(o.game), cur = null; try { cur = JSON.parse(localStorage.getItem("game") || "null"); } catch (e) {}
+    localStorage.setItem("did", o.did);
+    if (o.act) localStorage.setItem("act", o.act);
+    if (g && !(cur && (cur.xp || 0) > (g.xp || 0))) localStorage.setItem("game", JSON.stringify(g));   // never replace more progress with less
+    if (/^(KG|KZ|RU|US)$/.test(o.lang || "")) localStorage.setItem("lang", o.lang);
+    if (typeof o.promoOk === "string" && /^[A-Z]{2,20}$/.test(o.promoOk)) { localStorage.setItem("promo", o.promoOk); localStorage.setItem("promoOk", o.promoOk); }
+  }
+  // returns Promise<"ok" | "bad" | "limit">
   window.aidoochuImport = function (raw) {
-    var s = String(raw || "").trim().replace(/\s+/g, ""), m = s.match(/^AEX1\.([A-Za-z0-9_-]+)$/);
-    if (!m) return false;
-    var o; try { o = JSON.parse(b64uDec(m[1])); } catch (e) { return false; }
-    if (!o || !/^[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(o.did || "") || (o.act && !/^[A-Za-z0-9_-]{20,200}$/.test(o.act))) return false;
-    try {
-      localStorage.setItem("did", o.did);
-      if (o.act) localStorage.setItem("act", o.act);
-      if (o.game && typeof o.game === "object") localStorage.setItem("game", JSON.stringify(o.game));
-      if (/^(KG|KZ|RU|US)$/.test(o.lang || "")) localStorage.setItem("lang", o.lang);
-      if (o.promoOk && /^[A-Z]{2,20}$/.test(o.promoOk)) { localStorage.setItem("promo", o.promoOk); localStorage.setItem("promoOk", o.promoOk); }
-    } catch (e) { return false; }
-    return true;
+    var o = parseCode(raw); if (!o) return Promise.resolve("bad");
+    return claim(o.did).then(function (c) { if (c !== "ok") return c; try { save(o); return "ok"; } catch (e) { return "bad"; } });
   };
   function addTransferBox() {
     var pc = document.getElementById("pcode");
@@ -121,11 +155,14 @@
       '<textarea id="ae-xfer-in" rows="3" style="width:100%;box-sizing:border-box;font:13px monospace" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea>' +
       '<button id="ae-xfer-go" style="margin-top:6px;padding:10px 16px;border-radius:10px;border:0;background:#ff9000;color:#fff;font-weight:700">' + TX.b[i] + '</button>' +
       '<div id="ae-xfer-err" style="color:#d63a2b;font-size:13px;margin-top:4px"></div>';
-    var host = pc.closest("div") || pc.parentNode;
+    var host = pc.closest(".promo") || pc.closest("div") || pc.parentNode;   // after the (hidden in app) promo box, not inside it
     host.parentNode.insertBefore(box, host.nextSibling);
     document.getElementById("ae-xfer-go").onclick = function () {
-      if (window.aidoochuImport(document.getElementById("ae-xfer-in").value)) location.reload();
-      else document.getElementById("ae-xfer-err").textContent = TX.bad[li()];
+      var btn = this, err = document.getElementById("ae-xfer-err"); btn.disabled = true; err.textContent = "⏳";
+      window.aidoochuImport(document.getElementById("ae-xfer-in").value).then(function (r) {
+        if (r === "ok") { location.reload(); return; }
+        btn.disabled = false; err.textContent = (r === "limit" ? TX.limit : TX.bad)[li()];
+      });
     };
   }
   function onDom() { addIapBox(); addTransferBox(); }
