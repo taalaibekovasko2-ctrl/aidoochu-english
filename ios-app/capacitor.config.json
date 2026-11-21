@@ -1,0 +1,10 @@
+{
+  "appId": "com.aidoochu.english",
+  "appName": "Aidoochu English",
+  "webDir": "www",
+  "ios": {
+    "contentInset": "never",
+    "scheme": "Aidoochu English",
+    "limitsNavigationsToAppBoundDomains": false
+  }
+}

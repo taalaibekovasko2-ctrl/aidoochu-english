@@ -1,0 +1,19 @@
+{
+  "name": "aidoochu-english-ios",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Aidoochu English — iPhone test build (Capacitor). The website in docs/ is NOT changed: the app copies it at build time.",
+  "scripts": {
+    "build:www": "node scripts/build-www.mjs",
+    "sync": "npm run build:www && npx cap sync ios",
+    "check": "node scripts/check-www.mjs"
+  },
+  "dependencies": {
+    "@capacitor/core": "8.6.2",
+    "@capacitor/ios": "8.6.2",
+    "@capacitor-community/text-to-speech": "8.0.2"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "8.6.2"
+  }
+}
