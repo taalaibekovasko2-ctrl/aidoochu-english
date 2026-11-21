@@ -9,9 +9,10 @@
     "check": "node scripts/check-www.mjs"
   },
   "dependencies": {
+    "@capacitor-community/text-to-speech": "8.0.2",
     "@capacitor/core": "8.6.2",
     "@capacitor/ios": "8.6.2",
-    "@capacitor-community/text-to-speech": "8.0.2"
+    "@capgo/native-purchases": "^8.9.17"
   },
   "devDependencies": {
     "@capacitor/cli": "8.6.2"

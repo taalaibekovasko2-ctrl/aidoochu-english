@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
   push:
     branches: [claude/ios-capacitor]
-    paths: ["ios-app/**", ".github/workflows/ios-build.yml"]
+    paths: ["ios-app/**", "docs/index.html", "docs/img/**", ".github/workflows/ios-build.yml"]
 permissions:
   contents: read
 concurrency:
