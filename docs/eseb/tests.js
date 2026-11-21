@@ -596,4 +596,14 @@ eq("fixture anonymized",/ANVAR|ALAPAEV|WARING|PHILADELPHIA|8008442080/i.test(JSO
      T2=C.totals({stmts:[a,c],tx:[],loads:[],trips:[]},["2026-11-01","2026-11-30"]);
  eq("MPG never mixed: 300 gal of one statement ÷ ITS 2,100 mi = 7.00 (not 4,100 mi ÷ 300 = 13.67)",[T2.miles,T2.mpg],[4100,7]);
  eq("RPM never mixed: a statement without miles is left out ($5,000 ÷ 2,000 mi = $2.50, not $9,000 ÷ 2,000 = $4.50)",[T.miles,T.rpm.gross,T.rpm.loaded,T.rpm.driver,T.rpm.net,T.rpm.skipped],[2000,250,278,250,250,1])})();
+// ===== ST-005856 check numbers (synthetic copy, two layouts): Total 3,035.30 / Loaded 3,026.79 mi, Other Pay, fuel gallons =====
+(function(){["synth_st005856_table_pdf_items.json","synth_st005856_text_pdf_items.json"].forEach(function(n,i){var r=C.cellRows(fx(n)),R=C.readAll({texts:[{name:"pdf",text:rowsText(r),rows:r}]}),k=C.stmtCalc(R),MO=C.milesOf(R);
+  eq("ST-005856 "+(i?"text":"table")+": Gross / Earnings / Deductions / Other Pay / Net (printed = calculated) / auto",[R.gross,k.earn,k.ded,k.other+k.reimb,R.net,k.net,C.decide(R).act],[844297,759867,316790,28422,471499,471499,"save"]);
+  eq("ST-005856 "+(i?"text":"table")+": miles Total 3,035.30 (not 180, not one trip), Loaded 3,026.79, empty = Total − Loaded; trips 1,180.24 kept to 0.01 and checked against the total",[MO.total,MO.loaded,MO.empty,MO.src.em,R.loads.length,R.loads[2].mi,MO.chk.ok],[3035.3,3026.79,8.51,"diff",4,1180.24,true]);
+  eq("ST-005856 "+(i?"text":"table")+": fuel $2,717.90 with 411.02 gal",[C.sum(R.ded.filter(function(d){return d.c==="diesel"}),"a"),C.sum(R.fuel||[],"gal")],[271790,41102]);
+  var st=Object.assign({id:"x"+i},R,{miLoaded:MO.loaded,miEmpty:MO.empty,miles:MO.total}),T=C.totals({stmts:[st],tx:[],loads:[],trips:[]},["2026-11-01","2026-11-30"]);
+  eq("ST-005856 "+(i?"text":"table")+": Gross RPM 2.78 · Driver RPM 2.50 · fuel/mi 0.90 · MPG 7.38",[T.rpm.gross,T.rpm.driver,Math.round(T.fuelCost/T.miles),T.mpg],[278,250,90,7.38])});
+ var P=C.parseStatement("X LLC\nLoad 101 11/09/2026 CHICAGO, IL DALLAS, TX $2,100.00\nTotal Gross $2,100.00\nNet Pay $2,000.00");eq("a load number is never taken as miles (no 'mi', no Miles column)",P.loads[0].mi,null);
+ eq("only Total printed → loaded and empty unknown (null, not 0)",JSON.stringify(C.milesOf({docMiles:1500,loads:[]})),JSON.stringify({total:1500,loaded:null,empty:null,src:{tot:"printed",ld:null,em:null},chk:null}));
+ eq("'Miles 3,035.30', 'Total Mileage 3,035.30 mi', 'Mileage: 3,035.30' all read",["Miles 3,035.30","Total Mileage 3,035.30 mi","Mileage: 3,035.30"].map(function(x){return C.parseStatement("X LLC\n"+x+"\nNet Pay $1.00").docMiles}),[3035.3,3035.3,3035.3])})();
 console.log("\nPASS "+pass+"  FAIL "+fail+"  NOT RUN "+SKIP);process.exit(fail||SKIP?1:0);
